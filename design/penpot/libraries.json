@@ -1,0 +1,66 @@
+{
+  "$comment": "Machine-readable encoding of the Penpot library structure described in design/penpot/README.md. Penpot cannot be driven from this repo (no network, no API access); this file is the authoritative spec so later tooling or a human operator can apply the structure programmatically. Keep in sync with penpot/README.md and penpot-map.json.",
+  "libraries": [
+    {
+      "id": "vscode-ui-reference",
+      "name": "VS Code UI Reference",
+      "purpose": "imported Webview UI Toolkit (@vscode/webview-ui-toolkit) frames kept for visual/behavioral reference during extraction",
+      "readOnly": true,
+      "editorial": "conceptually read-only in Penpot; never edit; never a source for production design; product code never imports the toolkit (PRINCIPLES.md rule 2)",
+      "productionUse": false,
+      "pages": [
+        {
+          "name": "Toolkit Reference",
+          "contains": "original @vscode/webview-ui-toolkit component visuals mapped to --vscode-* variables"
+        }
+      ]
+    },
+    {
+      "id": "obra-design-system",
+      "name": "Obra Design System",
+      "purpose": "the single library production UI is designed from; component ids must match design/penpot-map.json",
+      "readOnly": false,
+      "productionUse": true,
+      "tokenSource": "design/generated/penpot-tokens.json",
+      "pages": [
+        { "name": "00 Foundations", "folders": [] },
+        {
+          "name": "01 Primitives",
+          "folders": [],
+          "components": [
+            "obra/button", "obra/icon-button", "obra/text-field", "obra/text-area",
+            "obra/checkbox", "obra/radio-group", "obra/radio", "obra/select",
+            "obra/option", "obra/badge", "obra/divider", "obra/spinner",
+            "obra/progress", "obra/tabs", "obra/tab", "obra/tab-panel",
+            "obra/tooltip", "obra/menu", "obra/menu-item"
+          ]
+        },
+        {
+          "name": "02 Patterns",
+          "folders": [],
+          "components": [
+            "obra/form-field", "obra/property-row", "obra/toolbar",
+            "obra/filter-bar", "obra/section-header", "obra/empty-state",
+            "obra/error-state", "obra/loading-state", "obra/data-table",
+            "obra/master-detail", "obra/confirmation-dialog"
+          ]
+        },
+        {
+          "name": "03 Templates",
+          "folders": ["Composed Layouts"],
+          "components": ["obra/stack"],
+          "containsNotes": "page skeletons composed only from 01 Primitives and 02 Patterns (e.g. Stack-based forms, list + detail); the Stack layout primitive itself (obra/stack) also lives here"
+        },
+        {
+          "name": "04 Product Surfaces",
+          "folders": [],
+          "components": [],
+          "containsNotes": "named production surfaces from UX contracts per design/SURFACE_RULES.md (surface ids like cost-control, company-view, project-view); conceptual-only ids such as obra/property-panel live here as placeholders until they export from @obra/ui"
+        },
+        { "name": "05 Explorations", "folders": [], "components": [], "containsNotes": "working area; nothing here is authoritative or referenced as production" }
+      ]
+    }
+  ],
+  "componentIdSource": "design/penpot-map.json",
+  "syncDirection": "packages/obra-ui/src/index.ts -> design/penpot-map.json -> Penpot component ids -> stories"
+}
