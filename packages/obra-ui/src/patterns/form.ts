@@ -24,8 +24,16 @@ export class ObraFormField extends ObraElement {
       <span part="hint" id="${this.uid}-hint"></span>
       <span part="error" id="${this.uid}-error" role="alert"></span>`;
   }
-  protected override onConnected(): void { this.sync(); }
-  override attributeChangedCallback(): void { if (this.isConnected) this.sync(); }
+  protected override onConnected(): void {
+    this.sync();
+    const label = this.$('[part="label"]') as HTMLElement;
+    label.onclick = () => {
+      const control = this.querySelector('obra-text-field, obra-text-area, obra-select, input, textarea') as HTMLElement | null;
+      const native = control?.shadowRoot?.querySelector('input, textarea, select') as HTMLElement | null;
+      (native ?? control)?.focus();
+    };
+  }
+  override attributeChangedCallback(): void { if (this.$('[part="text"]')) this.sync(); }
   private sync(): void {
     const hasError = !!this.getAttribute('error');
     (this.$('[part="text"]') as HTMLElement).textContent = this.getAttribute('label') ?? '';
@@ -35,6 +43,10 @@ export class ObraFormField extends ObraElement {
     const control = this.querySelector('[part="control"], input, textarea, obra-text-field, obra-text-area, obra-select') as HTMLElement | null;
     if (control) {
       control.id = control.id || this.uid;
+      control.setAttribute('aria-label', this.getAttribute('label') ?? '');
+      control.setAttribute('aria-description', [this.getAttribute('error'), this.getAttribute('hint')].filter(Boolean).join(' '));
+      control.toggleAttribute('invalid', hasError);
+      control.toggleAttribute('required', this.getBool('required'));
       control.setAttribute('aria-invalid', String(hasError));
       const describedby = [hasError ? `${this.uid}-error` : '', this.getAttribute('hint') ? `${this.uid}-hint` : ''].filter(Boolean).join(' ');
       if (describedby) control.setAttribute('aria-describedby', describedby);
@@ -54,16 +66,18 @@ export class ObraPropertyRow extends ObraElement {
   static observedAttributes = ['label', 'value'];
   protected override styles(): string {
     return `${BASE_CSS}
-      :host { display: grid; grid-template-columns: minmax(8ch, 40%) 1fr; gap: var(--obra-space-sm);
-        padding: var(--obra-space-xs) 0; border-bottom: var(--obra-border-width-default) solid var(--obra-border-default); }
+      :host { display: block; }
+      [part="control"] { display: grid; grid-template-columns: minmax(8ch, 40%) minmax(0, 1fr); gap: var(--obra-space-sm);
+        margin: 0; padding: var(--obra-space-xs) 0; border-bottom: var(--obra-border-width-default) solid var(--obra-border-default); }
+      dt, dd { margin: 0; }
       [part="label"] { color: var(--obra-text-secondary); font-size: var(--obra-font-small); }
       [part="value"] { color: var(--obra-text-primary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }`;
   }
   protected override template(): string {
-    return `<dt part="label"></dt><dd part="value"></dd>`;
+    return `<dl part="control"><dt part="label"></dt><dd part="value"></dd></dl>`;
   }
   protected override onConnected(): void { this.sync(); }
-  override attributeChangedCallback(): void { if (this.isConnected) this.sync(); }
+  override attributeChangedCallback(): void { if (this.$('[part="label"]')) this.sync(); }
   private sync(): void {
     const label = this.getAttribute('label') ?? '';
     const value = this.getAttribute('value') ?? '';

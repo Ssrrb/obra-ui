@@ -30,17 +30,29 @@ export class ObraTabs extends ObraElement {
     });
     this.syncFromAttr();
   }
-  override attributeChangedCallback(): void { if (this.isConnected) this.syncFromAttr(); }
+  override attributeChangedCallback(_name?: string, oldValue?: string | null, newValue?: string | null): void {
+    if (this.isConnected && oldValue !== newValue) this.syncFromAttr();
+  }
   private tabs(): ObraTab[] { return [...this.querySelectorAll('obra-tab')] as ObraTab[]; }
   private activate(tab: ObraTab): void {
     const id = tab.getAttribute('id') ?? '';
-    this.setAttribute('active', id);
+    if (this.getAttribute('active') !== id) {
+      this.setAttribute('active', id);
+      return; // attribute callback performs the update once, without recursion
+    }
     this.tabs().forEach((t) => {
       const on = t === tab;
+      t.setAttribute('role', 'tab');
       t.setAttribute('aria-selected', String(on));
+      t.setAttribute('aria-controls', `${t.id}-panel`);
       t.tabIndex = on ? 0 : -1;
       const panel = this.querySelector(`obra-tab-panel[for="${t.getAttribute('id')}"]`);
-      if (panel) (panel as HTMLElement).hidden = !on;
+      if (panel) {
+        panel.id = `${t.id}-panel`;
+        panel.setAttribute('role', 'tabpanel');
+        panel.setAttribute('aria-labelledby', t.id);
+        (panel as HTMLElement).hidden = !on;
+      }
     });
     this.dispatchEvent(new CustomEvent('obra-change', { bubbles: true, composed: true, detail: { active: id } }));
   }
@@ -60,6 +72,7 @@ export class ObraTab extends ObraElement {
   protected override styles(): string {
     return `${BASE_CSS}${FOCUS_CSS}
       :host { display: inline-block; }
+      :host(:focus-visible) { outline: var(--obra-border-width-thick) solid var(--obra-focus-ring); }
       [part="control"] {
         display: inline-flex; align-items: center; height: var(--obra-button-height);
         padding: 0 var(--obra-space-sm); cursor: pointer; color: var(--obra-text-secondary);
@@ -70,7 +83,7 @@ export class ObraTab extends ObraElement {
       }`;
   }
   protected override template(): string {
-    return `<span part="control" role="tab" aria-selected="false" tabindex="-1"><slot></slot></span>`;
+    return `<span part="control"><slot></slot></span>`;
   }
 }
 export const defineTab = () =>
@@ -81,7 +94,7 @@ export class ObraTabPanel extends ObraElement {
     return `${BASE_CSS} :host { display: block; padding: var(--obra-space-sm) 0; } :host([hidden]) { display: none; }`;
   }
   protected override template(): string {
-    return `<div part="control" role="tabpanel"><slot></slot></div>`;
+    return `<div part="control"><slot></slot></div>`;
   }
 }
 export const defineTabPanel = () =>

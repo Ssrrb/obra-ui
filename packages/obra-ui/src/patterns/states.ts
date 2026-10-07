@@ -39,7 +39,7 @@ export class ObraEmptyState extends ObraElement {
       <div part="actions"><slot name="actions"></slot></div>`;
   }
   protected override onConnected(): void { this.sync(); }
-  override attributeChangedCallback(): void { if (this.isConnected) this.sync(); }
+  override attributeChangedCallback(): void { if (this.$('[part="title"]')) this.sync(); }
   private sync(): void {
     (this.$('[part="title"]') as HTMLElement).textContent = this.getAttribute('heading') ?? '';
     (this.$('[part="message"]') as HTMLElement).textContent = this.getAttribute('message') ?? '';
@@ -60,7 +60,7 @@ export class ObraErrorState extends ObraElement {
       <div part="actions"><slot name="actions"></slot></div>`;
   }
   protected override onConnected(): void { this.sync(); }
-  override attributeChangedCallback(): void { if (this.isConnected) this.sync(); }
+  override attributeChangedCallback(): void { if (this.$('[part="message"]')) this.sync(); }
   private sync(): void {
     (this.$('[part="message"]') as HTMLElement).textContent = this.getAttribute('message') ?? '';
   }

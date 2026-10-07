@@ -18,13 +18,16 @@ const INPUT_CSS = `${BASE_CSS}${FOCUS_CSS}${DISABLED_CSS}
   }
   input, textarea {
     flex: 1; min-width: 0; border: 0; background: transparent; color: inherit;
-    font: inherit; outline: none; padding: 0; resize: none;
+    font: inherit; padding: 0; resize: none;
+  }
+  input:focus-visible, textarea:focus-visible {
+    outline: var(--obra-border-width-thick) solid var(--obra-focus-ring);
   }
   input::placeholder, textarea::placeholder { color: var(--obra-text-secondary); }`;
 
 /** <obra-text-field> — single-line text input with value/placeholder/invalid. */
 export class ObraTextField extends ObraElement {
-  static observedAttributes = ['value', 'placeholder', 'disabled', 'invalid', 'type'];
+  static observedAttributes = ['value', 'placeholder', 'disabled', 'invalid', 'type', 'aria-label', 'aria-description', 'required'];
   protected override styles(): string { return INPUT_CSS; }
   protected override template(): string {
     return `<span part="control"><input part="input" /></span>`;
@@ -40,7 +43,11 @@ export class ObraTextField extends ObraElement {
   override attributeChangedCallback(): void { if (this.isConnected) this.sync(); }
   private sync(): void {
     const i = this.input; if (!i) return;
-    i.value = this.getAttribute('value') ?? '';
+    const value = this.getAttribute('value') ?? '';
+    if (i.value !== value) i.value = value;
+    i.setAttribute('aria-label', this.getAttribute('aria-label') ?? '');
+    i.setAttribute('aria-description', this.getAttribute('aria-description') ?? '');
+    i.required = this.getBool('required');
     i.placeholder = this.getAttribute('placeholder') ?? '';
     i.type = this.getAttribute('type') ?? 'text';
     i.disabled = this.getBool('disabled');

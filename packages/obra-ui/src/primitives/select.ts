@@ -7,7 +7,8 @@ import { BASE_CSS, FOCUS_CSS, DISABLED_CSS } from '../foundations/styles.js';
  * themed with tokens (the toolkit mapped dropdown -> --vscode-dropdown-*).
  */
 export class ObraSelect extends ObraElement {
-  static observedAttributes = ['disabled', 'value'];
+  static observedAttributes = ['disabled', 'value', 'aria-label', 'aria-description', 'required'];
+  private observer: MutationObserver | null = null;
   protected override styles(): string {
     return `${BASE_CSS}${FOCUS_CSS}${DISABLED_CSS}
       [part="control"] {
@@ -16,7 +17,8 @@ export class ObraSelect extends ObraElement {
         border: var(--obra-border-width-default) solid var(--obra-border-input);
         border-radius: var(--obra-text-field-radius); padding: 0 var(--obra-space-xs);
       }
-      select { flex: 1; border: 0; background: transparent; color: inherit; font: inherit; outline: none; }`;
+      select { flex: 1; min-width: 0; border: 0; background: transparent; color: inherit; font: inherit; }
+      select:focus-visible { outline: var(--obra-border-width-thick) solid var(--obra-focus-ring); }`;
   }
   protected override template(): string {
     return `<span part="control"><select part="select" aria-label="select"><slot></slot></select></span>`;
@@ -35,14 +37,28 @@ export class ObraSelect extends ObraElement {
       }
       const v = this.getAttribute('value');
       if (v != null) sel.value = v;
-      sel.disabled = this.getBool('disabled');
+      this.sync();
     };
     rebuild();
-    new MutationObserver(rebuild).observe(this, { childList: true, subtree: true, characterData: true });
-    this.select.addEventListener('change', () => {
+    this.observer?.disconnect();
+    this.observer = new MutationObserver(rebuild);
+    this.observer.observe(this, { childList: true, subtree: true, characterData: true });
+    this.select.onchange = () => {
       this.setAttribute('value', this.select.value);
       this.dispatchEvent(new CustomEvent('obra-change', { bubbles: true, composed: true, detail: { value: this.select.value } }));
-    });
+    };
+  }
+  override disconnectedCallback(): void { this.observer?.disconnect(); }
+  override attributeChangedCallback(): void { this.sync(); }
+  private sync(): void {
+    const select = this.select;
+    if (!select) return;
+    const value = this.getAttribute('value');
+    if (value !== null) select.value = value;
+    select.disabled = this.getBool('disabled');
+    select.setAttribute('aria-label', this.getAttribute('aria-label') ?? 'Select');
+    select.setAttribute('aria-description', this.getAttribute('aria-description') ?? '');
+    select.required = this.getBool('required');
   }
   get value(): string { return this.select?.value ?? this.getAttribute('value') ?? ''; }
 }

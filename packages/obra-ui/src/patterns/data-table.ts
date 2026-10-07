@@ -40,11 +40,12 @@ export class ObraDataTable extends ObraElement {
       @media (hover: hover) { tbody tr:hover { background: var(--obra-data-table-row-hover-background); } }
       tbody tr[aria-selected="true"] { background: var(--obra-data-table-row-selected-background);
         color: var(--obra-list-active-selection-foreground, var(--obra-text-primary)); }
+      [part="control"]:focus-visible { outline: var(--obra-border-width-thick) solid var(--obra-focus-ring); }
       tbody tr:focus-visible { outline: var(--obra-border-width-thick) solid var(--obra-focus-ring); outline-offset: -2px; }
       td[align="end"], th[align="end"] { text-align: end; }`;
   }
   protected override template(): string {
-    return `<div part="control" tabindex="0" role="grid" aria-label="data table"></div>`;
+    return `<div part="control" tabindex="0" role="region" aria-label="${this.escape(this.getAttribute('aria-label') ?? 'Data table')}"></div>`;
   }
   private get grid(): HTMLElement { return this.$('[part="control"]') as HTMLElement; }
 
@@ -66,6 +67,9 @@ export class ObraDataTable extends ObraElement {
     this.selected = -1;
     this.draw();
   }
+
+  /** Restore persisted selection without stealing focus from filters/forms. */
+  selectRow(index: number, focus = false): void { this.select(index, focus); }
 
   private draw(): void {
     const status = (this.getAttribute('status') as DataTableStatus) ?? 'ready';
@@ -91,8 +95,8 @@ export class ObraDataTable extends ObraElement {
       `<tr data-index="${i}" role="row" tabindex="-1" aria-selected="${i === this.selected}">` +
       this.columns.map((c) => `<td role="gridcell"${c.align ? ` align="${c.align}"` : ''} title="${this.escape(String(row[c.key] ?? ''))}">${this.escape(String(row[c.key] ?? ''))}</td>`).join('') +
       `</tr>`).join('');
-    grid.innerHTML = `<table role="grid"><thead role="rowgroup"><tr role="row">${head}</tr></thead><tbody role="rowgroup">${body}</tbody></table>`;
-    grid.setAttribute('aria-rowcount', String(this.rows.length));
+    grid.innerHTML = `<table role="grid" aria-label="${this.escape(this.getAttribute('aria-label') ?? 'Data table')}" aria-rowcount="${this.rows.length + 1}"><thead role="rowgroup"><tr role="row">${head}</tr></thead><tbody role="rowgroup">${body}</tbody></table>`;
+    grid.removeAttribute('aria-rowcount');
   }
 
   private select(index: number, focus = false): void {

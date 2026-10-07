@@ -46,7 +46,7 @@ export const defineSpinner = () =>
 
 /** <obra-progress value="0..100"> — determinate bar; indeterminate when no value. */
 export class ObraProgress extends ObraElement {
-  static observedAttributes = ['value'];
+  static observedAttributes = ['value', 'aria-label', 'aria-valuetext'];
   protected override styles(): string {
     return `${BASE_CSS}
       :host { display: block; width: 100%; }
@@ -57,12 +57,15 @@ export class ObraProgress extends ObraElement {
     return `<div part="track" role="progressbar" aria-valuemin="0" aria-valuemax="100"><div part="bar"></div></div>`;
   }
   protected override onConnected(): void { this.sync(); }
-  override attributeChangedCallback(): void { if (this.isConnected) this.sync(); }
+  override attributeChangedCallback(): void { if (this.$('[part="bar"]')) this.sync(); }
   private sync(): void {
     const v = Number(this.getAttribute('value') ?? NaN);
     const pct = Number.isFinite(v) ? Math.max(0, Math.min(100, v)) : 0;
     (this.$('[part="bar"]') as HTMLElement).style.width = `${pct}%`;
-    this.$('[part="track"]')?.setAttribute('aria-valuenow', String(pct));
+    const track = this.$('[part="track"]');
+    track?.setAttribute('aria-valuenow', String(pct));
+    track?.setAttribute('aria-label', this.getAttribute('aria-label') ?? 'Progress');
+    track?.setAttribute('aria-valuetext', this.getAttribute('aria-valuetext') ?? `${pct}%`);
   }
 }
 export const defineProgress = () =>
