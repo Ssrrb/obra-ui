@@ -1,0 +1,27 @@
+{
+  "name": "@obra/ui",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Obra Studio UI kit: primitives and patterns built on semantic tokens over VS Code theme variables.",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./tokens.css": "./../../design/generated/tokens.css",
+    "./vscode-fallback.css": "./../../design/generated/vscode-fallback.css"
+  },
+  "files": ["dist", "src"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\"",
+    "test": "node --test \"tests/**/*.test.mjs\""
+  },
+  "devDependencies": {
+    "typescript": "^5.6.0"
+  }
+}
