@@ -1,0 +1,26 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build output
+dist/
+build/
+*.tsbuildinfo
+storybook-static/
+
+# Test / coverage
+coverage/
+playwright-report/
+test-results/
+.tmp/
+
+# Generated token artifacts are committed on purpose (CI checks drift).
+# Do NOT ignore design/generated/.
+
+# Reference checkouts (kept locally, not part of this repo)
+/vscode-webview-ui-toolkit/
+/old-reference/
+
+# OS / editor
+.DS_Store
+*.log
