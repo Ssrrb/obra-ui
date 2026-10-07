@@ -1,0 +1,6 @@
+{
+  "name": "cost-control-fixture",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Minimal fixture workspace opened by the cost-control ui flow in the real Code OSS fork."
+}

@@ -1,0 +1,10 @@
+{
+  "name": "@obra/ui-automation",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Code OSS fork automation harness: launch, flow runner, capture. See README.md.",
+  "devDependencies": {
+    "playwright-core": "^1.50.1"
+  }
+}

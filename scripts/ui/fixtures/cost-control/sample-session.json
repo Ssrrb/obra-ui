@@ -1,0 +1,21 @@
+{
+  "sample": true,
+  "description": "Sample Obra session cost data for the cost-control fixture workspace. Shape is provisional until the product screen is implemented.",
+  "sessions": [
+    {
+      "id": "session-001",
+      "name": "example refactor",
+      "tokensIn": 18400,
+      "tokensOut": 4200,
+      "costUsd": 0.31
+    },
+    {
+      "id": "session-002",
+      "name": "token audit",
+      "tokensIn": 9800,
+      "tokensOut": 1500,
+      "costUsd": 0.14
+    }
+  ],
+  "budgetUsd": 5.0
+}
