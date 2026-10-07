@@ -1,0 +1,73 @@
+/*
+ * Harness page chrome.
+ *
+ * Every colour, spacing, radius, and font value comes from a generated
+ * --obra-* token (design/generated/tokens.css, imported by src/main.ts).
+ * `0` appears only where a browser default is reset, never as a design value
+ * (Principles 4 and 5).
+ *
+ * The shell mimics a real webview panel: the page has a definite height, so the
+ * surface owns the remaining space and scrolls inside its own panes instead of
+ * stretching the document. That keeps element screenshots the same size no
+ * matter how many rows a fixture renders.
+ */
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--obra-surface-default);
+  color: var(--obra-text-primary);
+  font-family: var(--obra-font-family-base);
+  font-size: var(--obra-font-body);
+}
+
+#harness-root {
+  display: grid;
+  box-sizing: border-box;
+  height: 100%;
+  padding: var(--obra-space-md);
+}
+
+/* The sample surface (src/surfaces/cost-control.ts). The class name is the
+   stable surface id from design/SURFACE_RULES.md and is the same selector
+   scripts/ui/flows/cost-control.mjs waits for in the real Code OSS host. */
+.obra-cost-control {
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr);
+  gap: var(--obra-space-md);
+  min-height: 0;
+}
+
+.obra-cost-control__master {
+  display: grid;
+  min-height: 0;
+}
+
+.obra-cost-control__detail {
+  display: grid;
+  gap: var(--obra-space-xs);
+  align-content: start;
+  padding: var(--obra-space-sm);
+}
+
+.obra-cost-control__meter {
+  display: grid;
+  gap: var(--obra-space-xs);
+  padding: var(--obra-space-xs) 0;
+}
+
+.obra-cost-control__meter-label {
+  color: var(--obra-text-secondary);
+  font-size: var(--obra-font-small);
+}
+
+.obra-cost-control__hint {
+  margin: 0;
+  color: var(--obra-text-secondary);
+  font-size: var(--obra-font-small);
+  max-width: 46ch;
+}
