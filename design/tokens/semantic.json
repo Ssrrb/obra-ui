@@ -1,0 +1,58 @@
+{
+  "$schema": "https://dtcg.org/draft/specification/",
+  "surface": {
+    "default": { "$type": "color", "$value": "{vscode.editor.background}", "$description": "Base canvas" },
+    "raised": { "$type": "color", "$value": "{vscode.sideBar.background}", "$description": "Panels, cards" },
+    "input": { "$type": "color", "$value": "{vscode.input.background}", "$description": "Text inputs" },
+    "hover": { "$type": "color", "$value": "{vscode.list.hoverBackground}", "$description": "Row/item hover" },
+    "selected": { "$type": "color", "$value": "{vscode.list.activeSelectionBackground}", "$description": "Active selection" }
+  },
+  "text": {
+    "primary": { "$type": "color", "$value": "{vscode.foreground}" },
+    "secondary": { "$type": "color", "$value": "{vscode.descriptionForeground}" },
+    "onAction": { "$type": "color", "$value": "{vscode.button.foreground}" },
+    "link": { "$type": "color", "$value": "{vscode.textLink.foreground}" },
+    "danger": { "$type": "color", "$value": "{vscode.errorForeground}" }
+  },
+  "border": {
+    "default": { "$type": "color", "$value": "{vscode.widget.border}" },
+    "focus": { "$type": "color", "$value": "{vscode.focusBorder}" },
+    "input": { "$type": "color", "$value": "{vscode.input.border}" },
+    "contrast": { "$type": "color", "$value": "{vscode.contrastBorder}" }
+  },
+  "action": {
+    "primary": {
+      "background": { "$type": "color", "$value": "{vscode.button.background}" },
+      "backgroundHover": { "$type": "color", "$value": "{vscode.button.hoverBackground}" },
+      "foreground": { "$type": "color", "$value": "{vscode.button.foreground}" }
+    },
+    "secondary": {
+      "background": { "$type": "color", "$value": "{vscode.button.secondaryBackground}" },
+      "backgroundHover": { "$type": "color", "$value": "{vscode.button.secondaryHoverBackground}" },
+      "foreground": { "$type": "color", "$value": "{vscode.button.secondaryForeground}" }
+    }
+  },
+  "danger": {
+    "background": { "$type": "color", "$value": "{vscode.inputValidation.errorBackground}" },
+    "border": { "$type": "color", "$value": "{vscode.inputValidation.errorBorder}" }
+  },
+  "focus": {
+    "ring": { "$type": "color", "$value": "{vscode.focusBorder}" }
+  },
+  "space": {
+    "xs": { "$type": "dimension", "$value": "{space.1}" },
+    "sm": { "$type": "dimension", "$value": "{space.2}" },
+    "md": { "$type": "dimension", "$value": "{space.3}" },
+    "lg": { "$type": "dimension", "$value": "{space.4}" },
+    "xl": { "$type": "dimension", "$value": "{space.5}" }
+  },
+  "radius": {
+    "control": { "$type": "dimension", "$value": "{radius.small}" },
+    "surface": { "$type": "dimension", "$value": "{radius.medium}" }
+  },
+  "font": {
+    "body": { "$type": "dimension", "$value": "{font.size.sm}" },
+    "small": { "$type": "dimension", "$value": "{font.size.xs}" },
+    "title": { "$type": "dimension", "$value": "{font.size.lg}" }
+  }
+}

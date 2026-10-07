@@ -1,0 +1,40 @@
+{
+  "$schema": "https://dtcg.org/draft/specification/",
+  "$description": "Per-component tokens. Reference semantic tokens only; never a literal value.",
+  "button": {
+    "height": { "$type": "dimension", "$value": "26px" },
+    "paddingX": { "$type": "dimension", "$value": "{space.3}" },
+    "radius": { "$type": "dimension", "$value": "{radius.control}" },
+    "fontSize": { "$type": "dimension", "$value": "{font.body}" },
+    "primaryBackground": { "$type": "color", "$value": "{action.primary.background}" },
+    "primaryBackgroundHover": { "$type": "color", "$value": "{action.primary.backgroundHover}" },
+    "primaryForeground": { "$type": "color", "$value": "{action.primary.foreground}" },
+    "secondaryBackground": { "$type": "color", "$value": "{action.secondary.background}" },
+    "secondaryBackgroundHover": { "$type": "color", "$value": "{action.secondary.backgroundHover}" },
+    "secondaryForeground": { "$type": "color", "$value": "{action.secondary.foreground}" }
+  },
+  "textField": {
+    "height": { "$type": "dimension", "$value": "26px" },
+    "paddingX": { "$type": "dimension", "$value": "{space.2}" },
+    "radius": { "$type": "dimension", "$value": "{radius.control}" },
+    "background": { "$type": "color", "$value": "{surface.input}" },
+    "foreground": { "$type": "color", "$value": "{text.primary}" },
+    "border": { "$type": "color", "$value": "{border.input}" },
+    "borderFocus": { "$type": "color", "$value": "{border.focus}" },
+    "backgroundError": { "$type": "color", "$value": "{danger.background}" },
+    "borderError": { "$type": "color", "$value": "{danger.border}" }
+  },
+  "badge": {
+    "radius": { "$type": "dimension", "$value": "{radius.round}" },
+    "paddingX": { "$type": "dimension", "$value": "{space.2}" },
+    "background": { "$type": "color", "$value": "{vscode.badge.background}" },
+    "foreground": { "$type": "color", "$value": "{vscode.badge.foreground}" }
+  },
+  "dataTable": {
+    "rowHeight": { "$type": "dimension", "$value": "22px" },
+    "cellPaddingX": { "$type": "dimension", "$value": "{space.2}" },
+    "rowHoverBackground": { "$type": "color", "$value": "{surface.hover}" },
+    "rowSelectedBackground": { "$type": "color", "$value": "{surface.selected}" },
+    "border": { "$type": "color", "$value": "{border.default}" }
+  }
+}

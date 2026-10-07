@@ -1,0 +1,57 @@
+{
+  "$schema": "https://dtcg.org/draft/specification/",
+  "$description": "Bridge layer: each token maps a VS Code theme variable to a dark-theme fallback. Semantic tokens alias these; the generator emits var(--vscode-*, fallback).",
+  "vscode": {
+    "editor": {
+      "background": { "$type": "color", "$value": "#1e1e1e", "$extensions": { "obra.vscodeVar": "--vscode-editor-background" } }
+    },
+    "sideBar": {
+      "background": { "$type": "color", "$value": "#252526", "$extensions": { "obra.vscodeVar": "--vscode-sideBar-background" } }
+    },
+    "foreground": { "$type": "color", "$value": "#cccccc", "$extensions": { "obra.vscodeVar": "--vscode-foreground" } },
+    "descriptionForeground": { "$type": "color", "$value": "#9d9d9d", "$extensions": { "obra.vscodeVar": "--vscode-descriptionForeground" } },
+    "errorForeground": { "$type": "color", "$value": "#f48771", "$extensions": { "obra.vscodeVar": "--vscode-errorForeground" } },
+    "focusBorder": { "$type": "color", "$value": "#007fd4", "$extensions": { "obra.vscodeVar": "--vscode-focusBorder" } },
+    "contrastBorder": { "$type": "color", "$value": "#00000000", "$extensions": { "obra.vscodeVar": "--vscode-contrastBorder" } },
+    "widget": {
+      "border": { "$type": "color", "$value": "#454545", "$extensions": { "obra.vscodeVar": "--vscode-widget-border" } }
+    },
+    "input": {
+      "background": { "$type": "color", "$value": "#3c3c3c", "$extensions": { "obra.vscodeVar": "--vscode-input-background" } },
+      "foreground": { "$type": "color", "$value": "#cccccc", "$extensions": { "obra.vscodeVar": "--vscode-input-foreground" } },
+      "border": { "$type": "color", "$value": "#3c3c3c", "$extensions": { "obra.vscodeVar": "--vscode-input-border" } },
+      "placeholderForeground": { "$type": "color", "$value": "#a6a6a6", "$extensions": { "obra.vscodeVar": "--vscode-input-placeholderForeground" } }
+    },
+    "inputValidation": {
+      "errorBackground": { "$type": "color", "$value": "#5a1d1d", "$extensions": { "obra.vscodeVar": "--vscode-inputValidation-errorBackground" } },
+      "errorBorder": { "$type": "color", "$value": "#be1100", "$extensions": { "obra.vscodeVar": "--vscode-inputValidation-errorBorder" } }
+    },
+    "button": {
+      "background": { "$type": "color", "$value": "#0e639c", "$extensions": { "obra.vscodeVar": "--vscode-button-background" } },
+      "foreground": { "$type": "color", "$value": "#ffffff", "$extensions": { "obra.vscodeVar": "--vscode-button-foreground" } },
+      "hoverBackground": { "$type": "color", "$value": "#1177bb", "$extensions": { "obra.vscodeVar": "--vscode-button-hoverBackground" } },
+      "secondaryBackground": { "$type": "color", "$value": "#3a3d41", "$extensions": { "obra.vscodeVar": "--vscode-button-secondaryBackground" } },
+      "secondaryForeground": { "$type": "color", "$value": "#ffffff", "$extensions": { "obra.vscodeVar": "--vscode-button-secondaryForeground" } },
+      "secondaryHoverBackground": { "$type": "color", "$value": "#45494e", "$extensions": { "obra.vscodeVar": "--vscode-button-secondaryHoverBackground" } }
+    },
+    "list": {
+      "hoverBackground": { "$type": "color", "$value": "#2a2d2e", "$extensions": { "obra.vscodeVar": "--vscode-list-hoverBackground" } },
+      "activeSelectionBackground": { "$type": "color", "$value": "#04395e", "$extensions": { "obra.vscodeVar": "--vscode-list-activeSelectionBackground" } },
+      "activeSelectionForeground": { "$type": "color", "$value": "#ffffff", "$extensions": { "obra.vscodeVar": "--vscode-list-activeSelectionForeground" } }
+    },
+    "textLink": {
+      "foreground": { "$type": "color", "$value": "#3794ff", "$extensions": { "obra.vscodeVar": "--vscode-textLink-foreground" } }
+    },
+    "badge": {
+      "background": { "$type": "color", "$value": "#4d4d4d", "$extensions": { "obra.vscodeVar": "--vscode-badge-background" } },
+      "foreground": { "$type": "color", "$value": "#ffffff", "$extensions": { "obra.vscodeVar": "--vscode-badge-foreground" } }
+    },
+    "progressBar": {
+      "background": { "$type": "color", "$value": "#0e70c0", "$extensions": { "obra.vscodeVar": "--vscode-progressBar-background" } }
+    },
+    "font": {
+      "family": { "$type": "string", "$value": "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", "$extensions": { "obra.vscodeVar": "--vscode-font-family" } },
+      "size": { "$type": "dimension", "$value": "13px", "$extensions": { "obra.vscodeVar": "--vscode-font-size" } }
+    }
+  }
+}

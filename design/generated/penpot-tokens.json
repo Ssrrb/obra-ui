@@ -1,0 +1,522 @@
+{
+  "obra": {
+    "action": {
+      "primary": {
+        "background": {
+          "$type": "color",
+          "$value": "var(--vscode-button-background, #0e639c)"
+        },
+        "backgroundHover": {
+          "$type": "color",
+          "$value": "var(--vscode-button-hoverBackground, #1177bb)"
+        },
+        "foreground": {
+          "$type": "color",
+          "$value": "var(--vscode-button-foreground, #ffffff)"
+        }
+      },
+      "secondary": {
+        "background": {
+          "$type": "color",
+          "$value": "var(--vscode-button-secondaryBackground, #3a3d41)"
+        },
+        "backgroundHover": {
+          "$type": "color",
+          "$value": "var(--vscode-button-secondaryHoverBackground, #45494e)"
+        },
+        "foreground": {
+          "$type": "color",
+          "$value": "var(--vscode-button-secondaryForeground, #ffffff)"
+        }
+      }
+    },
+    "badge": {
+      "background": {
+        "$type": "color",
+        "$value": "var(--vscode-badge-background, #4d4d4d)"
+      },
+      "foreground": {
+        "$type": "color",
+        "$value": "var(--vscode-badge-foreground, #ffffff)"
+      },
+      "paddingX": {
+        "$type": "dimension",
+        "$value": "8px"
+      },
+      "radius": {
+        "$type": "dimension",
+        "$value": "999px"
+      }
+    },
+    "border": {
+      "contrast": {
+        "$type": "color",
+        "$value": "var(--vscode-contrastBorder, #00000000)"
+      },
+      "default": {
+        "$type": "color",
+        "$value": "var(--vscode-widget-border, #454545)"
+      },
+      "focus": {
+        "$type": "color",
+        "$value": "var(--vscode-focusBorder, #007fd4)"
+      },
+      "input": {
+        "$type": "color",
+        "$value": "var(--vscode-input-border, #3c3c3c)"
+      },
+      "width": {
+        "default": {
+          "$type": "dimension",
+          "$value": "1px"
+        },
+        "thick": {
+          "$type": "dimension",
+          "$value": "2px"
+        }
+      }
+    },
+    "button": {
+      "fontSize": {
+        "$type": "dimension",
+        "$value": "13px"
+      },
+      "height": {
+        "$type": "dimension",
+        "$value": "26px"
+      },
+      "paddingX": {
+        "$type": "dimension",
+        "$value": "12px"
+      },
+      "primaryBackground": {
+        "$type": "color",
+        "$value": "var(--vscode-button-background, #0e639c)"
+      },
+      "primaryBackgroundHover": {
+        "$type": "color",
+        "$value": "var(--vscode-button-hoverBackground, #1177bb)"
+      },
+      "primaryForeground": {
+        "$type": "color",
+        "$value": "var(--vscode-button-foreground, #ffffff)"
+      },
+      "radius": {
+        "$type": "dimension",
+        "$value": "2px"
+      },
+      "secondaryBackground": {
+        "$type": "color",
+        "$value": "var(--vscode-button-secondaryBackground, #3a3d41)"
+      },
+      "secondaryBackgroundHover": {
+        "$type": "color",
+        "$value": "var(--vscode-button-secondaryHoverBackground, #45494e)"
+      },
+      "secondaryForeground": {
+        "$type": "color",
+        "$value": "var(--vscode-button-secondaryForeground, #ffffff)"
+      }
+    },
+    "color": {
+      "transparent": {
+        "$type": "color",
+        "$value": "#00000000"
+      }
+    },
+    "danger": {
+      "background": {
+        "$type": "color",
+        "$value": "var(--vscode-inputValidation-errorBackground, #5a1d1d)"
+      },
+      "border": {
+        "$type": "color",
+        "$value": "var(--vscode-inputValidation-errorBorder, #be1100)"
+      }
+    },
+    "dataTable": {
+      "border": {
+        "$type": "color",
+        "$value": "var(--vscode-widget-border, #454545)"
+      },
+      "cellPaddingX": {
+        "$type": "dimension",
+        "$value": "8px"
+      },
+      "rowHeight": {
+        "$type": "dimension",
+        "$value": "22px"
+      },
+      "rowHoverBackground": {
+        "$type": "color",
+        "$value": "var(--vscode-list-hoverBackground, #2a2d2e)"
+      },
+      "rowSelectedBackground": {
+        "$type": "color",
+        "$value": "var(--vscode-list-activeSelectionBackground, #04395e)"
+      }
+    },
+    "focus": {
+      "ring": {
+        "$type": "color",
+        "$value": "var(--vscode-focusBorder, #007fd4)"
+      }
+    },
+    "font": {
+      "body": {
+        "$type": "dimension",
+        "$value": "13px"
+      },
+      "family": {
+        "base": {
+          "$type": "string",
+          "$value": "var(--vscode-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif)"
+        }
+      },
+      "size": {
+        "lg": {
+          "$type": "dimension",
+          "$value": "16px"
+        },
+        "md": {
+          "$type": "dimension",
+          "$value": "14px"
+        },
+        "sm": {
+          "$type": "dimension",
+          "$value": "13px"
+        },
+        "xs": {
+          "$type": "dimension",
+          "$value": "11px"
+        }
+      },
+      "small": {
+        "$type": "dimension",
+        "$value": "11px"
+      },
+      "title": {
+        "$type": "dimension",
+        "$value": "16px"
+      },
+      "weight": {
+        "bold": {
+          "$type": "number",
+          "$value": "600"
+        },
+        "medium": {
+          "$type": "number",
+          "$value": "500"
+        },
+        "regular": {
+          "$type": "number",
+          "$value": "400"
+        }
+      }
+    },
+    "opacity": {
+      "disabled": {
+        "$type": "number",
+        "$value": "0.4"
+      }
+    },
+    "radius": {
+      "control": {
+        "$type": "dimension",
+        "$value": "2px"
+      },
+      "medium": {
+        "$type": "dimension",
+        "$value": "4px"
+      },
+      "none": {
+        "$type": "dimension",
+        "$value": "0px"
+      },
+      "round": {
+        "$type": "dimension",
+        "$value": "999px"
+      },
+      "small": {
+        "$type": "dimension",
+        "$value": "2px"
+      },
+      "surface": {
+        "$type": "dimension",
+        "$value": "4px"
+      }
+    },
+    "space": {
+      "0": {
+        "$type": "dimension",
+        "$value": "0px"
+      },
+      "1": {
+        "$type": "dimension",
+        "$value": "4px"
+      },
+      "2": {
+        "$type": "dimension",
+        "$value": "8px"
+      },
+      "3": {
+        "$type": "dimension",
+        "$value": "12px"
+      },
+      "4": {
+        "$type": "dimension",
+        "$value": "16px"
+      },
+      "5": {
+        "$type": "dimension",
+        "$value": "24px"
+      },
+      "6": {
+        "$type": "dimension",
+        "$value": "32px"
+      },
+      "lg": {
+        "$type": "dimension",
+        "$value": "16px"
+      },
+      "md": {
+        "$type": "dimension",
+        "$value": "12px"
+      },
+      "sm": {
+        "$type": "dimension",
+        "$value": "8px"
+      },
+      "xl": {
+        "$type": "dimension",
+        "$value": "24px"
+      },
+      "xs": {
+        "$type": "dimension",
+        "$value": "4px"
+      }
+    },
+    "surface": {
+      "default": {
+        "$type": "color",
+        "$value": "var(--vscode-editor-background, #1e1e1e)"
+      },
+      "hover": {
+        "$type": "color",
+        "$value": "var(--vscode-list-hoverBackground, #2a2d2e)"
+      },
+      "input": {
+        "$type": "color",
+        "$value": "var(--vscode-input-background, #3c3c3c)"
+      },
+      "raised": {
+        "$type": "color",
+        "$value": "var(--vscode-sideBar-background, #252526)"
+      },
+      "selected": {
+        "$type": "color",
+        "$value": "var(--vscode-list-activeSelectionBackground, #04395e)"
+      }
+    },
+    "text": {
+      "danger": {
+        "$type": "color",
+        "$value": "var(--vscode-errorForeground, #f48771)"
+      },
+      "link": {
+        "$type": "color",
+        "$value": "var(--vscode-textLink-foreground, #3794ff)"
+      },
+      "onAction": {
+        "$type": "color",
+        "$value": "var(--vscode-button-foreground, #ffffff)"
+      },
+      "primary": {
+        "$type": "color",
+        "$value": "var(--vscode-foreground, #cccccc)"
+      },
+      "secondary": {
+        "$type": "color",
+        "$value": "var(--vscode-descriptionForeground, #9d9d9d)"
+      }
+    },
+    "textField": {
+      "background": {
+        "$type": "color",
+        "$value": "var(--vscode-input-background, #3c3c3c)"
+      },
+      "backgroundError": {
+        "$type": "color",
+        "$value": "var(--vscode-inputValidation-errorBackground, #5a1d1d)"
+      },
+      "border": {
+        "$type": "color",
+        "$value": "var(--vscode-input-border, #3c3c3c)"
+      },
+      "borderError": {
+        "$type": "color",
+        "$value": "var(--vscode-inputValidation-errorBorder, #be1100)"
+      },
+      "borderFocus": {
+        "$type": "color",
+        "$value": "var(--vscode-focusBorder, #007fd4)"
+      },
+      "foreground": {
+        "$type": "color",
+        "$value": "var(--vscode-foreground, #cccccc)"
+      },
+      "height": {
+        "$type": "dimension",
+        "$value": "26px"
+      },
+      "paddingX": {
+        "$type": "dimension",
+        "$value": "8px"
+      },
+      "radius": {
+        "$type": "dimension",
+        "$value": "2px"
+      }
+    },
+    "vscode": {
+      "badge": {
+        "background": {
+          "$type": "color",
+          "$value": "var(--vscode-badge-background, #4d4d4d)"
+        },
+        "foreground": {
+          "$type": "color",
+          "$value": "var(--vscode-badge-foreground, #ffffff)"
+        }
+      },
+      "button": {
+        "background": {
+          "$type": "color",
+          "$value": "var(--vscode-button-background, #0e639c)"
+        },
+        "foreground": {
+          "$type": "color",
+          "$value": "var(--vscode-button-foreground, #ffffff)"
+        },
+        "hoverBackground": {
+          "$type": "color",
+          "$value": "var(--vscode-button-hoverBackground, #1177bb)"
+        },
+        "secondaryBackground": {
+          "$type": "color",
+          "$value": "var(--vscode-button-secondaryBackground, #3a3d41)"
+        },
+        "secondaryForeground": {
+          "$type": "color",
+          "$value": "var(--vscode-button-secondaryForeground, #ffffff)"
+        },
+        "secondaryHoverBackground": {
+          "$type": "color",
+          "$value": "var(--vscode-button-secondaryHoverBackground, #45494e)"
+        }
+      },
+      "contrastBorder": {
+        "$type": "color",
+        "$value": "var(--vscode-contrastBorder, #00000000)"
+      },
+      "descriptionForeground": {
+        "$type": "color",
+        "$value": "var(--vscode-descriptionForeground, #9d9d9d)"
+      },
+      "editor": {
+        "background": {
+          "$type": "color",
+          "$value": "var(--vscode-editor-background, #1e1e1e)"
+        }
+      },
+      "errorForeground": {
+        "$type": "color",
+        "$value": "var(--vscode-errorForeground, #f48771)"
+      },
+      "focusBorder": {
+        "$type": "color",
+        "$value": "var(--vscode-focusBorder, #007fd4)"
+      },
+      "font": {
+        "family": {
+          "$type": "string",
+          "$value": "var(--vscode-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif)"
+        },
+        "size": {
+          "$type": "dimension",
+          "$value": "var(--vscode-font-size, 13px)"
+        }
+      },
+      "foreground": {
+        "$type": "color",
+        "$value": "var(--vscode-foreground, #cccccc)"
+      },
+      "input": {
+        "background": {
+          "$type": "color",
+          "$value": "var(--vscode-input-background, #3c3c3c)"
+        },
+        "border": {
+          "$type": "color",
+          "$value": "var(--vscode-input-border, #3c3c3c)"
+        },
+        "foreground": {
+          "$type": "color",
+          "$value": "var(--vscode-input-foreground, #cccccc)"
+        },
+        "placeholderForeground": {
+          "$type": "color",
+          "$value": "var(--vscode-input-placeholderForeground, #a6a6a6)"
+        }
+      },
+      "inputValidation": {
+        "errorBackground": {
+          "$type": "color",
+          "$value": "var(--vscode-inputValidation-errorBackground, #5a1d1d)"
+        },
+        "errorBorder": {
+          "$type": "color",
+          "$value": "var(--vscode-inputValidation-errorBorder, #be1100)"
+        }
+      },
+      "list": {
+        "activeSelectionBackground": {
+          "$type": "color",
+          "$value": "var(--vscode-list-activeSelectionBackground, #04395e)"
+        },
+        "activeSelectionForeground": {
+          "$type": "color",
+          "$value": "var(--vscode-list-activeSelectionForeground, #ffffff)"
+        },
+        "hoverBackground": {
+          "$type": "color",
+          "$value": "var(--vscode-list-hoverBackground, #2a2d2e)"
+        }
+      },
+      "progressBar": {
+        "background": {
+          "$type": "color",
+          "$value": "var(--vscode-progressBar-background, #0e70c0)"
+        }
+      },
+      "sideBar": {
+        "background": {
+          "$type": "color",
+          "$value": "var(--vscode-sideBar-background, #252526)"
+        }
+      },
+      "textLink": {
+        "foreground": {
+          "$type": "color",
+          "$value": "var(--vscode-textLink-foreground, #3794ff)"
+        }
+      },
+      "widget": {
+        "border": {
+          "$type": "color",
+          "$value": "var(--vscode-widget-border, #454545)"
+        }
+      }
+    }
+  }
+}
