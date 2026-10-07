@@ -1,0 +1,196 @@
+/*
+ * Storybook theme layers + story scaffolding.
+ *
+ * This file is the PREVIEW equivalent of `design/generated/tokens.css`: it is
+ * the one place the preview is allowed to hold literal color values, because a
+ * token layer is where literals belong. Stories themselves never hardcode a
+ * color — they reference `--obra-*` tokens only.
+ *
+ * Layer model (the "token-layer swap"):
+ *   :root / [data-obra-theme="dark"]  -> `@obra/ui/tokens.css` (generated, dark)
+ *   [data-obra-theme="light"]         -> VS Code Light+ equivalents
+ *   [data-obra-theme="high-contrast"] -> VS Code High Contrast equivalents,
+ *                                        deferring to the OS forced-colors
+ *                                        palette when that mode is active.
+ *
+ * The addon-themes switcher sets `data-obra-theme` on <html>; a themed story
+ * wrapper sets it on an element, which overrides the layer for its subtree.
+ */
+
+/* ---- Workbench + story scaffolding (token-driven) ---- */
+
+body,
+.sb-show-main,
+.docs-story {
+  background: var(--obra-surface-default);
+  color: var(--obra-text-primary);
+  font-family: var(--obra-font-family-base);
+  font-size: var(--obra-font-body);
+}
+
+.obra-story-frame {
+  display: block;
+}
+
+.obra-story-surface {
+  background: var(--obra-surface-default);
+  color: var(--obra-text-primary);
+  padding: var(--obra-space-lg);
+  border-radius: var(--obra-radius-surface);
+}
+
+.obra-story-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--obra-space-sm);
+}
+
+.obra-story-column {
+  display: flex;
+  flex-direction: column;
+  gap: var(--obra-space-sm);
+}
+
+/* KeyboardFocus stories: paint the same ring FOCUS_CSS paints, without JS. */
+.obra-story-keyboard-focus::part(control) {
+  outline: var(--obra-border-width-thick) solid var(--obra-focus-ring);
+  outline-offset: 1px;
+}
+
+/* ---- Light layer (VS Code Light+) ---- */
+
+[data-obra-theme='light'] {
+  --obra-surface-default: #ffffff;
+  --obra-surface-raised: #f3f3f3;
+  --obra-surface-input: #ffffff;
+  --obra-surface-hover: #e8e8e8;
+  --obra-surface-selected: #0060c0;
+  --obra-text-primary: #3b3b3b;
+  --obra-text-secondary: #616161;
+  --obra-text-on-action: #ffffff;
+  --obra-text-link: #005fb8;
+  --obra-text-danger: #a1260d;
+  --obra-border-default: #cecece;
+  --obra-border-input: #cecece;
+  --obra-border-focus: #0090f1;
+  --obra-border-contrast: #00000000;
+  --obra-action-primary-background: #005fb8;
+  --obra-action-primary-background-hover: #0258a8;
+  --obra-action-primary-foreground: #ffffff;
+  --obra-action-secondary-background: #e5e5e5;
+  --obra-action-secondary-background-hover: #d9d9d9;
+  --obra-action-secondary-foreground: #3b3b3b;
+  --obra-badge-background: #c4c4c4;
+  --obra-badge-foreground: #333333;
+  --obra-danger-background: #f2dede;
+  --obra-danger-border: #be1100;
+  --obra-data-table-border: #cecece;
+  --obra-data-table-row-hover-background: #e8e8e8;
+  --obra-data-table-row-selected-background: #0060c0;
+  --obra-focus-ring: #0090f1;
+  --obra-text-field-background: #ffffff;
+  --obra-text-field-foreground: #3b3b3b;
+  --obra-text-field-border: #cecece;
+  --obra-text-field-border-focus: #0090f1;
+  --obra-text-field-background-error: #f2dede;
+  --obra-text-field-border-error: #be1100;
+  --obra-button-primary-background: #005fb8;
+  --obra-button-primary-background-hover: #0258a8;
+  --obra-button-primary-foreground: #ffffff;
+  --obra-button-secondary-background: #e5e5e5;
+  --obra-button-secondary-background-hover: #d9d9d9;
+  --obra-button-secondary-foreground: #3b3b3b;
+}
+
+/* ---- High contrast layer (VS Code High Contrast) ---- */
+
+[data-obra-theme='high-contrast'] {
+  --obra-surface-default: #000000;
+  --obra-surface-raised: #000000;
+  --obra-surface-input: #000000;
+  --obra-surface-hover: #1f1f1f;
+  --obra-surface-selected: #0078d4;
+  --obra-text-primary: #ffffff;
+  --obra-text-secondary: #ffffff;
+  --obra-text-on-action: #ffffff;
+  --obra-text-link: #3794ff;
+  --obra-text-danger: #f48771;
+  --obra-border-default: #6fc3df;
+  --obra-border-input: #6fc3df;
+  --obra-border-focus: #f38518;
+  --obra-border-contrast: #6fc3df;
+  --obra-action-primary-background: #0e639c;
+  --obra-action-primary-background-hover: #1177bb;
+  --obra-action-primary-foreground: #ffffff;
+  --obra-action-secondary-background: #000000;
+  --obra-action-secondary-background-hover: #1f1f1f;
+  --obra-action-secondary-foreground: #ffffff;
+  --obra-badge-background: #000000;
+  --obra-badge-foreground: #ffffff;
+  --obra-danger-background: #000000;
+  --obra-danger-border: #f48771;
+  --obra-data-table-border: #6fc3df;
+  --obra-data-table-row-hover-background: #1f1f1f;
+  --obra-data-table-row-selected-background: #0078d4;
+  --obra-focus-ring: #f38518;
+  --obra-text-field-background: #000000;
+  --obra-text-field-foreground: #ffffff;
+  --obra-text-field-border: #6fc3df;
+  --obra-text-field-border-focus: #f38518;
+  --obra-text-field-background-error: #000000;
+  --obra-text-field-border-error: #f48771;
+  --obra-button-primary-background: #0e639c;
+  --obra-button-primary-background-hover: #1177bb;
+  --obra-button-primary-foreground: #ffffff;
+  --obra-button-secondary-background: #000000;
+  --obra-button-secondary-background-hover: #1f1f1f;
+  --obra-button-secondary-foreground: #ffffff;
+}
+
+/* When the OS forces colors, defer to the same system palette the components
+   already target via `@media (forced-colors: active)` in FOCUS_CSS. */
+@media (forced-colors: active) {
+  [data-obra-theme='high-contrast'] {
+    --obra-surface-default: Canvas;
+    --obra-surface-raised: Canvas;
+    --obra-surface-input: Field;
+    --obra-surface-hover: Highlight;
+    --obra-surface-selected: Highlight;
+    --obra-text-primary: CanvasText;
+    --obra-text-secondary: CanvasText;
+    --obra-text-on-action: ButtonText;
+    --obra-text-link: LinkText;
+    --obra-text-danger: LinkText;
+    --obra-border-default: ButtonBorder;
+    --obra-border-input: ButtonBorder;
+    --obra-border-focus: Highlight;
+    --obra-border-contrast: ButtonBorder;
+    --obra-action-primary-background: ButtonFace;
+    --obra-action-primary-background-hover: ButtonFace;
+    --obra-action-primary-foreground: ButtonText;
+    --obra-action-secondary-background: ButtonFace;
+    --obra-action-secondary-background-hover: ButtonFace;
+    --obra-action-secondary-foreground: ButtonText;
+    --obra-badge-background: Canvas;
+    --obra-badge-foreground: CanvasText;
+    --obra-danger-background: Canvas;
+    --obra-danger-border: LinkText;
+    --obra-data-table-border: ButtonBorder;
+    --obra-data-table-row-hover-background: Highlight;
+    --obra-data-table-row-selected-background: Highlight;
+    --obra-focus-ring: Highlight;
+    --obra-text-field-background: Field;
+    --obra-text-field-foreground: CanvasText;
+    --obra-text-field-border: ButtonBorder;
+    --obra-text-field-border-focus: Highlight;
+    --obra-text-field-background-error: Field;
+    --obra-text-field-border-error: LinkText;
+    --obra-button-primary-background: ButtonFace;
+    --obra-button-primary-background-hover: ButtonFace;
+    --obra-button-primary-foreground: ButtonText;
+    --obra-button-secondary-background: ButtonFace;
+    --obra-button-secondary-background-hover: ButtonFace;
+    --obra-button-secondary-foreground: ButtonText;
+  }
+}
