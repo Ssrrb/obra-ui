@@ -5,8 +5,8 @@
  * `@obra/ui` components only, driven by the fixture's initial state and
  * host->webview messages. The harness mounts exactly one surface per page.
  *
- * Phase 9 replaces this sample with the real cost-control product surface;
- * the contract below is what every future surface must satisfy.
+ * The cost-control benchmark workspace (Phase 9, ux/cost-control.yaml) is the
+ * reference implementation of this contract.
  */
 import type { VsCodeApi } from '../vscode-api.js';
 

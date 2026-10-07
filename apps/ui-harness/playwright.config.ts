@@ -17,8 +17,14 @@ import { defineConfig } from '@playwright/test';
  *   script has been delivered *and* dispatched) plus a `data-state` assertion
  *   instead of sleeping a fixed number of milliseconds.
  */
+const port = Number(process.env.OBRA_HARNESS_PORT ?? 5173);
+const baseURL = `http://127.0.0.1:${port}`;
+
 export default defineConfig({
   testDir: './tests',
+  // Pure logic tests (tests/logic/*.test.ts) run under `node --test` after a
+  // tsc compile — Playwright must not collect them.
+  testIgnore: ['**/logic/**'],
   fullyParallel: true,
   forbidOnly: Boolean(process.env.CI),
   retries: 0,
@@ -26,7 +32,7 @@ export default defineConfig({
   outputDir: './test-results',
 
   use: {
-    baseURL: 'http://127.0.0.1:5173',
+    baseURL,
     trace: 'retain-on-failure',
     screenshot: 'only-on-failure',
     video: 'off',
@@ -68,8 +74,8 @@ export default defineConfig({
   snapshotPathTemplate: '{testDir}/__screenshots__/{projectName}/{arg}{ext}',
 
   webServer: {
-    command: 'pnpm dev',
-    url: 'http://127.0.0.1:5173',
+    command: `./node_modules/.bin/vite --host 127.0.0.1 --port ${port}`,
+    url: baseURL,
     reuseExistingServer: !process.env.CI,
     timeout: 60_000,
   },

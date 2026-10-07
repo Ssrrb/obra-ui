@@ -11,6 +11,14 @@ fork (`pnpm obra:launch`, `pnpm ui:e2e <flow>`) proves the workflow in the
 actual host before merge. The harness is fast feedback, **never the merge
 gate**.
 
+## Phase 9 benchmark
+
+The cost-control workspace is the first end-to-end browser benchmark: project
+navigation, toolbar, table, filters, editable panels, empty/loading/error states,
+keyboard workflows, and deterministic AI proposal review. Start with
+`?fixture=multiProject`. See [BENCHMARK.md](./BENCHMARK.md) for the walkthrough,
+acceptance matrix, executed checks and outstanding real-host/design gates.
+
 ## Prerequisites
 
 The harness does not vendor dependencies. From the workspace root
@@ -30,11 +38,15 @@ Missing dependencies must never be worked around by copying code out of
 ```sh
 pnpm dev       # vite dev server on http://127.0.0.1:5173
 pnpm build     # production build into dist/
-pnpm visual    # playwright test (starts the dev server itself via webServer)
+pnpm visual    # all browser specs + visual diffs (approved baselines required)
+pnpm test:logic        # Node logic tests, compiled into a temporary directory
+pnpm test:interaction  # workflow and mock API checks, no baseline prerequisite
+pnpm test:a11y         # automated axe checks
 ```
 
 Open `http://127.0.0.1:5173/?fixture=error` (etc.) in a browser to inspect a
-fixture by hand.
+fixture by hand. If port 5173 is occupied, start `pnpm dev -- --port 5174`
+and set `OBRA_HARNESS_PORT=5174` when running Playwright commands.
 
 ### URL selection
 
@@ -53,11 +65,20 @@ delayed. No clock reads, no `Math.random()`, no network.
 |--------------------|-----------------------------------------------------------------|
 | `normal`           | Happy path: data, budget meter, persisted selection via `getState()`. |
 | `loading`          | Initial-load state before any data arrives (Principle 8).       |
-| `empty`            | Valid zero-row response with the host's empty message.          |
-| `error`            | Failure message plus a retry action that posts `cost-control/retry`. |
+| `empty`            | Zero-row project; add its first cost item through the responder. |
+| `error`            | Failure message; Retry recovers to normal data via the mock host. |
 | `slow`             | Delayed success (1200 ms) — the delayed-state stabilization path. |
 | `permissionDenied` | Forbidden identity: message without retry (retry cannot grant a scope). |
 | `largeDataset`     | Extreme content: 1000 deterministic rows in one message.        |
+| `multiProject`     | Three projects; real scope switching against the mock registry. |
+| `readOnly`         | Data visible; edit and analysis scopes denied. |
+| `oneRow`           | Exactly one row; manual injection/no automatic response. |
+| `longValues`       | Long item/category labels; full wrapping values in details. |
+
+Interactive fixtures provide `createResponder()`: isolated mock-host worlds
+answer requests with correlated messages through the same scheduler. Mutations
+require an acknowledgment; AI proposals require explicit confirmation. Fixtures
+without a responder support manual injection and no-response tests.
 
 ## The mocked VS Code API
 
@@ -94,7 +115,7 @@ Chromium-only, pinned viewport/locale/timezone, `reducedMotion: 'reduce'`,
 Generate or refresh baselines:
 
 ```sh
-pnpm --filter @obra/ui-harness exec playwright test --update-snapshots
+pnpm --filter @obra/ui-harness exec playwright test visual.spec.ts --update-snapshots
 ```
 
 Delayed states (`slow`) need no special handling: `whenSettled()` waits out

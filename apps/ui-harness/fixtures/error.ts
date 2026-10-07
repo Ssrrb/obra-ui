@@ -5,6 +5,8 @@
  * retry action that posts `cost-control/retry` back through the mock.
  */
 import type { HarnessFixture } from './types.js';
+import { SMALL_ROWS } from './data.js';
+import { createWorldResponder } from './responder.js';
 
 export const errorFixture: HarnessFixture = {
   id: 'error',
@@ -19,4 +21,5 @@ export const errorFixture: HarnessFixture = {
       },
     },
   ],
+  createResponder: () => createWorldResponder({ initialProjectId: 'aurora', projects: [{ id: 'aurora', name: 'Aurora Migration', currency: 'USD', rows: SMALL_ROWS }] }),
 };

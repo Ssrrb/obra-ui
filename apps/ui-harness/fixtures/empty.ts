@@ -5,6 +5,8 @@
  * The message carries the copy the empty state must render verbatim.
  */
 import type { HarnessFixture } from './types.js';
+import { costDataPayload } from './data.js';
+import { createWorldResponder } from './responder.js';
 
 export const emptyFixture: HarnessFixture = {
   id: 'empty',
@@ -14,9 +16,10 @@ export const emptyFixture: HarnessFixture = {
   messages: [
     {
       data: {
-        type: 'cost-control/empty',
-        payload: { message: 'No cost lines recorded for this project yet.' },
+        type: 'cost-control/data',
+        payload: costDataPayload([]),
       },
     },
   ],
+  createResponder: () => createWorldResponder({ initialProjectId: 'aurora', projects: [{ id: 'aurora', name: 'Aurora Migration', currency: 'USD', rows: [] }] }),
 };

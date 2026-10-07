@@ -16,7 +16,7 @@ export const permissionDeniedFixture: HarnessFixture = {
     {
       data: {
         type: 'cost-control/permission-denied',
-        payload: { message: 'Your account lacks the obra.cost.read scope for this project.' },
+        payload: { message: 'Your account lacks the obra.cost.read scope for this project. Contact the project administrator to request access.' },
       },
     },
   ],

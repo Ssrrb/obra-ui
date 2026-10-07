@@ -32,14 +32,186 @@ body {
   padding: var(--obra-space-md);
 }
 
-/* The sample surface (src/surfaces/cost-control.ts). The class name is the
-   stable surface id from design/SURFACE_RULES.md and is the same selector
-   scripts/ui/flows/cost-control.mjs waits for in the real Code OSS host. */
+/* The cost-control benchmark workspace (src/surfaces/cost-control/). The
+   class name is the stable surface id from design/SURFACE_RULES.md and is the
+   same selector scripts/ui/flows/cost-control.mjs waits for in the real Code
+   OSS host. Doubles as the container for MasterDetail's narrow-layout
+   collapse. */
 .obra-cost-control {
-  display: grid;
-  grid-template-rows: auto auto minmax(0, 1fr);
+  display: flex;
+  flex-direction: column;
   gap: var(--obra-space-md);
   min-height: 0;
+  container-type: inline-size;
+}
+
+/* The component shadow styles set display on :host; document-level rules win,
+   and `hidden` must always win — dialogs, forms, and buttons toggle it. */
+.obra-cost-control [hidden] {
+  display: none !important;
+}
+
+.obra-cost-control__banner {
+  margin: 0;
+  padding: var(--obra-space-xs) var(--obra-space-sm);
+  border: var(--obra-border-width-default) solid var(--obra-border-default);
+  border-radius: var(--obra-radius-surface);
+  background: var(--obra-surface-raised);
+  color: var(--obra-text-primary);
+  font-size: var(--obra-font-small);
+}
+
+.obra-cost-control__error {
+  margin: 0;
+  color: var(--obra-text-danger);
+  font-size: var(--obra-font-small);
+}
+
+/* Sections (obra-tabs): the tablist takes its natural height, the active
+   panel takes the remaining space and scrolls inside it, so a 1000-row table
+   never stretches the surface (stable element screenshots). */
+.obra-cost-control__sections {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.obra-cost-control__sections obra-tab-panel {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.obra-cost-control__sections obra-tab-panel::part(control) {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.obra-cost-control__items {
+  display: flex;
+  flex-direction: column;
+  gap: var(--obra-space-sm);
+  flex: 1;
+  min-height: 0;
+}
+
+.obra-cost-control__items obra-master-detail {
+  flex: 1;
+  height: auto;
+  min-height: 0;
+}
+
+.obra-cost-control__header {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--obra-space-sm);
+}
+
+.obra-cost-control__title {
+  margin: 0;
+  flex: 1;
+  font-size: var(--obra-font-body);
+  color: var(--obra-text-primary);
+}
+
+.obra-cost-control obra-toolbar::part(control) {
+  display: flex;
+  align-items: end;
+  flex-wrap: wrap;
+  gap: var(--obra-space-sm);
+  min-width: 0;
+  width: 100%;
+}
+
+.obra-cost-control obra-form-field,
+.obra-cost-control obra-select {
+  min-width: 0;
+  max-width: 100%;
+}
+
+.obra-cost-control__toolbar-end {
+  flex: 1;
+}
+
+@container (max-width: 480px) {
+  .obra-cost-control__toolbar-end { flex-basis: 100%; }
+  .obra-cost-control__items { overflow: auto; }
+  .obra-cost-control__items obra-master-detail { flex: none; height: auto; }
+}
+
+.obra-cost-control__filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--obra-space-sm);
+  padding: 0 var(--obra-space-sm);
+}
+
+.obra-cost-control__filters obra-form-field {
+  flex: 0 1 auto;
+}
+
+.obra-cost-control__filter-search {
+  flex: 1 1 auto !important;
+  min-width: 0;
+}
+
+.obra-cost-control__count {
+  color: var(--obra-text-secondary);
+  font-size: var(--obra-font-small);
+  padding-bottom: var(--obra-space-xs);
+}
+
+/* Add/edit forms: token spacing and borders, no bespoke controls. */
+.obra-cost-control__form {
+  display: grid;
+  gap: var(--obra-space-sm);
+  margin: 0 var(--obra-space-sm);
+  padding: var(--obra-space-sm);
+  border: var(--obra-border-width-default) solid var(--obra-border-default);
+  border-radius: var(--obra-radius-surface);
+  background: var(--obra-surface-raised);
+}
+
+.obra-cost-control__form-title {
+  margin: 0;
+  font-size: var(--obra-font-body);
+  font-weight: var(--obra-font-weight-bold);
+  color: var(--obra-text-primary);
+}
+
+.obra-cost-control__toolbar-end {
+  display: inline-flex;
+  align-items: center;
+}
+
+.obra-cost-control__pane {
+  display: grid;
+  gap: var(--obra-space-xs);
+  align-content: start;
+  padding: var(--obra-space-sm);
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+/* Full (untruncated) values: table cells ellipsize with a title tooltip, the
+   detail pane wraps the complete text so long values stay reachable. */
+.obra-cost-control obra-property-row::part(value) {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.obra-cost-control__full-value {
+  margin: 0;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  color: var(--obra-text-primary);
+  font-size: var(--obra-font-small);
 }
 
 .obra-cost-control__master {

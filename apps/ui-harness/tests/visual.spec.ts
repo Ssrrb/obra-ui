@@ -25,6 +25,11 @@ const CASES = [
   { fixture: 'slow', state: 'ready' },
   { fixture: 'permissionDenied', state: 'permission-denied' },
   { fixture: 'largeDataset', state: 'ready' },
+  // Phase 9 benchmark fixtures (ux/cost-control.yaml).
+  { fixture: 'multiProject', state: 'ready' },
+  { fixture: 'readOnly', state: 'ready' },
+  { fixture: 'oneRow', state: 'ready' },
+  { fixture: 'longValues', state: 'ready' },
 ] as const;
 
 for (const { fixture, state } of CASES) {

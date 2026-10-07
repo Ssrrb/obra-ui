@@ -15,6 +15,11 @@
  *   ?surface=<id>  surface from src/surfaces/index.ts (default: the fixture's)
  * An unknown id renders a harness error and never falls back.
  *
+ * Interactive fixtures (Phase 9) may carry `createResponder()`: a
+ * deterministic mock host that answers the surface's requests through the
+ * same scheduled-delivery path as fixture messages, so `whenSettled()` stays
+ * authoritative for every host answer a test triggers.
+ *
  * Test handle: `window.__obraHarness` (see the interface below) is what
  * Playwright uses to settle delayed fixtures, assert outbound messages, inject
  * extra host messages, and reset the page deterministically.
@@ -25,11 +30,12 @@ import './harness.css';
 import { defineObraUI } from '@obra/ui';
 import { fixtures } from '../fixtures/index.js';
 import type { HarnessFixture } from '../fixtures/types.js';
+import type { FixtureMessage, FixtureResponder } from '../fixtures/types.js';
 import { el } from './dom.js';
 import { surfaces } from './surfaces/index.js';
 import type { HarnessSurface } from './surfaces/types.js';
 import { installVsCodeApiMock } from './vscode-api.js';
-import type { VsCodeApiMock } from './vscode-api.js';
+import type { VsCodeApi, VsCodeApiMock } from './vscode-api.js';
 
 /** Test/automation handle published on `window.__obraHarness`. */
 export interface ObraHarnessHandle {
@@ -75,6 +81,8 @@ function failHarness(message: string): void {
 
 function start(fixture: HarnessFixture, surface: HarnessSurface): void {
   let mock: VsCodeApiMock = installVsCodeApiMock(fixture.initialState);
+  // Fresh responder world per run/reset — no state leaks between sessions.
+  let responder: FixtureResponder | null = fixture.createResponder?.() ?? null;
   let disposeSurface: (() => void) | null = null;
   let timers: number[] = [];
   let pending = 0;
@@ -90,12 +98,19 @@ function start(fixture: HarnessFixture, surface: HarnessSurface): void {
     }
   }
 
+  /** Schedule one host->webview delivery (fixed delayMs literal or 0). */
+  function scheduleMessage(scheduled: FixtureMessage): void {
+    pending += 1;
+    const timer = window.setTimeout(() => {
+      timers = timers.filter((entry) => entry !== timer);
+      deliver(scheduled.data);
+    }, scheduled.delayMs ?? 0);
+    timers.push(timer);
+  }
+
   /** Schedule every fixture message; delayed ones use their fixed delayMs. */
   function scheduleMessages(): void {
-    pending = fixture.messages.length;
-    for (const scheduled of fixture.messages) {
-      timers.push(window.setTimeout(() => deliver(scheduled.data), scheduled.delayMs ?? 0));
-    }
+    for (const scheduled of fixture.messages) scheduleMessage(scheduled);
   }
 
   function nextFrame(): Promise<void> {
@@ -105,7 +120,7 @@ function start(fixture: HarnessFixture, surface: HarnessSurface): void {
   }
 
   async function whenSettled(): Promise<void> {
-    if (pending > 0) {
+    while (pending > 0) {
       await new Promise<void>((resolve) => {
         settleWaiters.push(resolve);
       });
@@ -123,7 +138,22 @@ function start(fixture: HarnessFixture, surface: HarnessSurface): void {
     if (!acquire) {
       throw new Error('acquireVsCodeApi mock missing from window — install it before mounting a surface.');
     }
-    disposeSurface = surface.mount(root, acquire());
+    const api = acquire();
+    // Bridge the surface's outbound channel through the fixture responder:
+    // every reply is scheduled like a fixture message, so whenSettled() also
+    // waits out delayed mock-host answers (e.g. the AI analysis).
+    const bridged: VsCodeApi = {
+      getState: () => api.getState(),
+      setState: (state) => api.setState(state),
+      postMessage(message: unknown): void {
+        api.postMessage(message);
+        if (!responder) return;
+        const replies = responder(message);
+        if (!replies) return;
+        for (const reply of replies) scheduleMessage(reply);
+      },
+    };
+    disposeSurface = surface.mount(root, bridged);
     scheduleMessages();
   }
 
@@ -132,6 +162,7 @@ function start(fixture: HarnessFixture, surface: HarnessSurface): void {
     disposeSurface = null;
     for (const timer of timers) window.clearTimeout(timer);
     timers = [];
+    const interruptedWaiters = settleWaiters;
     settleWaiters = [];
     pending = 0;
     root.replaceChildren();
@@ -140,7 +171,9 @@ function start(fixture: HarnessFixture, surface: HarnessSurface): void {
     // recording starts from zero, so a reset run is byte-identical to a
     // fresh page load.
     mock = installVsCodeApiMock(fixture.initialState);
+    responder = fixture.createResponder?.() ?? null;
     run();
+    for (const resolve of interruptedWaiters) resolve();
   }
 
   run();

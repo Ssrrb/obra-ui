@@ -91,8 +91,8 @@ components:
   new: []                             # no new shared components; none needed
   new_justification: {}
   plain_elements: >
-    Only non-interactive semantic/layout elements (div, p, span, headings via
-    SectionHeader) appear outside @obra/ui, styled exclusively with --obra-*
+    Only non-interactive semantic/layout elements (main, header, div, p, span,
+    h1 and supporting headings) appear outside @obra/ui, styled exclusively with --obra-*
     tokens in src/harness.css (Principles 3–5). No bespoke buttons, inputs, or
     tables.
 
@@ -137,19 +137,19 @@ states:
       detail pane shows the FULL value in a wrapping text block
       (longValues fixture).
     large_dataset: 1000 deterministic rows (largeDataset fixture); table scrolls in its own pane.
-    small_dataset: single row (oneRow fixture) verified.
+    small_dataset: single-row browser interaction test passed.
     narrow_layout: >
       MasterDetail collapses to one column below 480px container width;
       filters and toolbar wrap; all table content stays reachable by
       scrolling; full long values remain readable in the detail pane.
     rtl: >
-      Not verified in this phase — no RTL rendering harness exists
-      (open_gates). Layout uses logical CSS (flex/grid, text-align: start/end
-      via DataTable columns), no directional literals added.
+      Primary keyboard interactions were tested with document.dir=rtl under
+      forced-colors. Full spatial mirroring and assistive-technology review
+      remain pending; basic interaction success does not approve the layout.
     high_contrast: >
-      Not visually verified (open_gates). All colors resolve to --obra-*
-      semantic tokens over --vscode-* variables; focus ring uses
-      --obra-focus-ring with a forced-colors Highlight fallback (FOCUS_CSS).
+      Primary interactions and a visible focus indicator were verified under
+      forced-colors. All colors resolve to --obra-* semantic tokens; full
+      independent visual/theme approval remains pending.
 
 keyboard:
   - key: Tab
@@ -184,9 +184,9 @@ data:
     Every mutating webview->host request carries a requestId ("cc-req-N",
     per-session counter). Correlated host answers echo it; answers with a
     stale requestId are ignored (project switch, cancellation, refresh
-    races). Uncorrelated host messages (no requestId — Phase 6 fixtures and
-    manual test injection) are always accepted, keeping the Phase 6 contract
-    and no-response scenarios testable.
+    races). Uncorrelated messages are accepted only when no data request is
+    pending: unsolicited pushes cannot acknowledge saves. Fixtures/manual
+    injection remain testable outside an active request.
   host_messages:
     # webview -> host
     - { direction: webview->host, type: "cost-control/ready" }
@@ -217,13 +217,12 @@ data:
     Intl/locale). Stable row ids come from the fixture world.
   fixtures: >
     normal, loading, empty, error, slow, permissionDenied, largeDataset
-    (Phase 6, unchanged ids and data-states) + multiProject (3-project
-    registry, interactive responder), readOnly (canEdit/canAnalyze false),
-    oneRow, longValues. Interactive fixtures carry a deterministic
-    createResponder() mock host (fixtures/responder.ts): fixed-latency
-    answers, pure arithmetic, no clock/random/network. Fixtures WITHOUT a
-    responder (error, loading, empty, slow, permissionDenied, largeDataset)
-    keep no-response and manual-injection scenarios testable.
+    (unchanged ids and initial data-states) + multiProject (3-project
+    registry), readOnly, oneRow, longValues. normal/multiProject/readOnly/empty/
+    error have deterministic createResponder() mock hosts: fixed-latency,
+    pure arithmetic, no clock/random/network. empty supports its first row;
+    error recovers via Retry. Remaining fixtures support no-response and
+    manual-injection tests without automatic responders.
 
 ai_behavior:
   action: >
@@ -287,7 +286,7 @@ validation:
     status.
 
 review:
-  implemented_by: phase9-worker (implementation agent)
+  implemented_by: phase9-worker plus parent completion (implementation agents)
   visual_baseline_story: >
     No Storybook pattern exists for this product surface; component-level
     state references live in @obra/ui-storybook (Primitives/Button,
@@ -307,14 +306,12 @@ open_gates:
       fails honestly with "not-implemented" (exit 2). Principle 10 requires
       the workflow to run green in the real Code OSS host before merge.
       PENDING integration of the product extension.
-  - id: playwright-execution
+  - id: manual-assistive-technology-review
     gate: >
-      All Playwright specs are authored but NOT executed in Phase 9 (no
-      pnpm install / browser downloads allowed). Keyboard, focus, screen
-      reader, and visual behavior are therefore NOT verified by execution —
-      source-level conformance only. Run: pnpm install && pnpm --filter
-      @obra/ui build && pnpm --filter @obra/ui-harness exec playwright
-      install chromium && pnpm --filter @obra/ui-harness visual.
+      Chromium interaction and automated axe checks passed after the owner
+      authorized dependency installation. Existing browsers were used with
+      no browser download. Manual screen-reader and full zoom/theme review
+      remain pending; automated checks do not certify AT behavior.
   - id: visual-baselines
     gate: >
       No screenshot baselines are recorded, and none may be self-approved
@@ -322,15 +319,22 @@ open_gates:
       design reviewer approves.
   - id: contract-review
     gate: review.approved_by must be filled by a design reviewer before merge.
-  - id: component-a11y-gaps
+  - id: broader-component-review
     gate: >
-      Upstream @obra/ui gaps worked around WITHOUT touching the package:
-      (1) FormField binds label[for] to a generated uid, so visible labels
-      are not programmatically associated when controls carry their own ids —
-      the surface sets aria-label on the inner input/select via the open
-      shadow root; (2) FilterBar's search field has no accessible name (not
-      used); (3) ObraTab puts role=tab on an inner span while roving tabindex
-      lands on the host. These need component fixes + stories before product
-      use; recorded here, not silently patched.
+      Browser-tested integration fixes now cover tab activation/semantics,
+      state initialization, native input/select labels and state, FormField
+      label focus and descriptions, table selection/grid structure,
+      PropertyRow definition-list semantics, and Progress naming.
+      Full library review remains separate; unused FilterBar label support
+      and the other component stories were not exhaustively audited.
   - id: rtl-high-contrast
-    gate: RTL mirroring and high-contrast rendering are token/compliance-level only; no execution harness exists to verify them in Phase 9.
+    gate: Full RTL mirroring and independent visual/theme approval remain pending despite passing primary-interaction checks.
+
+verification:
+  typecheck: Passed for the UI package and complete harness.
+  build: Production Vite build passed.
+  logic_tests: 24 passing Node tests.
+  browser_tests: 19 cost-control workflows and 2 mock-API tests passing in Chromium.
+  accessibility: 15 axe WCAG A/AA/2.1 AA cases passed (all fixtures plus forms/summary/AI).
+  visuals: Draft fixture captures inspected; not approved regression baselines.
+  real_host: Not run; Obra command/webview integration absent.

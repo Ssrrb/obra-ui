@@ -17,6 +17,10 @@ state plus an ordered list of host→webview messages. The harness
 | `slow`             | `slow.ts`              | `ready` (after 1200 ms)   |
 | `permissionDenied` | `permissionDenied.ts`  | `permission-denied`       |
 | `largeDataset`     | `largeDataset.ts`      | `ready` (1000 rows)       |
+| `multiProject`     | `multiProject.ts`      | `ready` (three projects)  |
+| `readOnly`         | `readOnly.ts`          | `ready` (restricted actions) |
+| `oneRow`           | `oneRow.ts`            | `ready` (one row) |
+| `longValues`       | `longValues.ts`        | `ready` (wrapping full detail values) |
 
 An unknown `?fixture=` renders a harness error. The registry never falls back
 to a default fixture, so a typo cannot silently record the wrong baseline.
@@ -31,6 +35,7 @@ interface HarnessFixture {
   description: string;                     // reviewer context
   initialState: CostControlPersistedState | null;  // getState() at mount
   messages: readonly FixtureMessage[];     // host->webview, in order
+  createResponder?: () => FixtureResponder; // fresh mock-host world on reset
 }
 
 interface FixtureMessage {
@@ -49,12 +54,31 @@ pure arithmetic over the row index.
   fixed `delayMs` literal. Tests never sleep: `whenSettled()` resolves after
   every scheduled message — delayed ones included — has been dispatched, plus
   two animation frames. That is how the `slow` fixture stabilizes.
-- **Derived data stays derived.** Budget totals are computed from the rows
-  (`costDataPayload`), so table and meter can never disagree.
+- **Derived data stays derived.** Costs sum in integer cents. Initial budget
+  allocations are twice the initial total; the responder keeps that allocation
+  fixed while mutations change budget usage. No 50% meter illusion after editing.
 - **Reset is a re-run, not a repair.** `window.__obraHarness.reset()`
   reinstalls the mock from the same fixture object and remounts the surface,
   producing a byte-identical session. Fixtures are frozen data; nothing may
   mutate them at runtime (the mock structured-clones on every boundary).
+
+## Interactive mock host
+
+`normal`, `multiProject`, `readOnly`, `empty` and `error` create isolated
+responders in `responder.ts`. Requests are recorded before responses are scheduled.
+The responder validates mutations and permissions, then echoes `requestId` with
+fresh data. The surface accepts uncorrelated pushes only when no data request is
+pending; an unsolicited message cannot acknowledge a save.
+
+AI proposals use a fixed 300ms delay and the highest-cost item (85% of its amount).
+Apply requires the matching, uncancelled analysis and an unchanged source amount.
+Cancellation invalidates the surface request even if its scheduled reply arrives.
+`reset()` cancels old timers, replaces the responder world and lets outstanding
+settle waiters follow the new run rather than hanging.
+
+`loading`, `slow`, `permissionDenied`, `largeDataset`, `oneRow` and `longValues`
+have no automatic responder: tests can inject valid correlated messages to prove
+pending/rejected/stale acknowledgment handling without race-prone sleeps.
 
 ## Adding a fixture
 

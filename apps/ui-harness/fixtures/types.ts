@@ -3,6 +3,19 @@
  */
 import type { CostControlHostMessage, CostControlPersistedState } from './protocol.js';
 
+/**
+ * Deterministic mock-host responder (Phase 9).
+ *
+ * Receives every webview->host message the surface posts and returns the
+ * host->webview replies the mock host would send — synchronously computed,
+ * optionally with a fixed `delayMs`. Returning `undefined`/`[]` means "no
+ * answer", which keeps no-response scenarios testable. A responder never
+ * reads a clock, `Math.random()`, or the network (fixtures/README.md).
+ */
+export type FixtureResponder = (
+  message: unknown,
+) => readonly FixtureMessage[] | undefined;
+
 /** One scheduled host->webview delivery. */
 export interface FixtureMessage {
   /** Message payload, dispatched as a `message` event on `window`. */
@@ -28,4 +41,11 @@ export interface HarnessFixture {
   readonly initialState: CostControlPersistedState | null;
   /** Host->webview messages, in delivery order. */
   readonly messages: readonly FixtureMessage[];
+  /**
+   * Factory for the interactive mock host, called once per harness run (and
+   * again on every `reset()`), so responder world state never leaks between
+   * runs. Fixtures without one are push-only: the surface posts into the
+   * void and tests drive answers through `injectHostMessage`.
+   */
+  readonly createResponder?: () => FixtureResponder;
 }
