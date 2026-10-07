@@ -1,0 +1,14 @@
+component: Divider
+obra: "@obra/ui Divider"
+source:
+  vscode_toolkit: divider
+extract:
+  aria_behavior: role=separator with aria-orientation horizontal|vertical.
+  theme_variables: [--vscode-widget-border]
+  sizing: 1px line; full width (horizontal) or full height (vertical).
+mapping:
+  color: --vscode-widget-border
+do_not_copy: [FAST template, deprecated runtime dependency]
+notes: >
+  Toolkit used --vscode-settings-dropdownListBorder as a divider default; we map
+  to the semantic border.default (--vscode-widget-border) instead.

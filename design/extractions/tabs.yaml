@@ -1,0 +1,17 @@
+component: Tabs
+obra: "@obra/ui Tabs, Tab, TabPanel"
+source:
+  vscode_toolkit: panels
+extract:
+  keyboard_behavior: horizontal roving tabindex; ArrowLeft/Right move, Home/End jump; selection follows focus.
+  aria_behavior: role=tablist/tab/tabpanel; aria-selected; panel hidden when inactive; aria-describedby wiring via ids.
+  theme_variables: [--vscode-panelTitle-activeBorder, --vscode-panelTitle-activeForeground, --vscode-panelTitle-inactiveForeground]
+  focus_treatment: focus ring on the active tab.
+mapping:
+  activeBorder: action.primary.background   # --vscode-button-background (underline)
+  activeForeground: --vscode-foreground
+  inactiveForeground: --vscode-descriptionForeground
+do_not_copy: [FAST template, deprecated runtime dependency]
+notes: >
+  Obra uses an accent underline for the active tab rather than the panel-title
+  border var, keeping within the semantic token graph.

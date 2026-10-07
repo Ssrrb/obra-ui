@@ -1,0 +1,13 @@
+component: Badge
+obra: "@obra/ui Badge"
+source:
+  vscode_toolkit: [badge, tag]
+extract:
+  aria_behavior: role=status for count/status announcements.
+  theme_variables: [--vscode-badge-background, --vscode-badge-foreground]
+  sizing: 18px min pill, round radius, small font.
+mapping:
+  background: --vscode-badge-background   # default #4d4d4d
+  foreground: --vscode-badge-foreground   # default #ffffff
+  radius: radius.round
+do_not_copy: [FAST template, deprecated runtime dependency]

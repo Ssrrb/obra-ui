@@ -1,0 +1,15 @@
+component: Progress / Spinner
+obra: "@obra/ui Progress, Spinner"
+source:
+  vscode_toolkit: progress-ring
+extract:
+  aria_behavior: role=progressbar; determinate sets aria-valuenow/min/max, indeterminate omits valuenow.
+  theme_variables: [--vscode-progressBar-background]
+  motion: rotation gated behind prefers-reduced-motion (better-ui skill).
+mapping:
+  bar: --vscode-progressBar-background   # default #0e70c0
+  track: surface.hover
+do_not_copy: [FAST template, deprecated runtime dependency]
+notes: >
+  Obra splits the toolkit progress-ring into determinate Progress (value 0..100)
+  and indeterminate Spinner. Both respect prefers-reduced-motion.

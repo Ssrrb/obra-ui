@@ -1,0 +1,20 @@
+component: Select
+obra: "@obra/ui Select, Option"
+source:
+  vscode_toolkit: [dropdown, option]
+extract:
+  keyboard_behavior: delegates to the native <select> for correct Arrow/Typeahead/Alt+Down behavior.
+  aria_behavior: native select semantics; label via aria-label / FormField.
+  theme_variables: [--vscode-dropdown-background, --vscode-dropdown-border, --vscode-dropdown-foreground, --vscode-dropdown-listBackground, --vscode-focusBorder]
+  sizing: 26px control height matching Button/TextField.
+  focus_treatment: focus ring via --vscode-focusBorder.
+  disabled_behavior: native disabled; opacity 0.4.
+mapping:
+  background: --vscode-input-background   # obra uses surface.input for consistency
+  border: --vscode-input-border
+  foreground: --vscode-foreground
+do_not_copy: [FAST listbox rendering, deprecated runtime dependency]
+notes: >
+  We keep a real <select> under the hood (projecting <obra-option> children into
+  <option>) so keyboard/ARIA/typeahead come free and are correct across platforms.
+  The toolkit's custom listbox is intentionally not reproduced.

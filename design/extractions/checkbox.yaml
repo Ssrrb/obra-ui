@@ -1,0 +1,22 @@
+component: Checkbox
+obra: "@obra/ui Checkbox"
+source:
+  vscode_toolkit: checkbox
+extract:
+  keyboard_behavior: Space toggles; click toggles; disabled blocks both.
+  aria_behavior: role=checkbox, aria-checked reflects state, focusable when enabled.
+  theme_variables: [--vscode-checkbox-background, --vscode-checkbox-border, --vscode-checkbox-foreground, --vscode-focusBorder]
+  sizing: 14px box aligned to text baseline.
+  focus_treatment: focus ring on the control part via --vscode-focusBorder.
+  disabled_behavior: opacity 0.4, pointer-events none.
+mapping:
+  box.background: --vscode-input-background      # we use input surface for the box
+  box.border: --vscode-input-border
+  checked.fill: --vscode-action-primary-background (--vscode-button-background)
+  check.foreground: --vscode-button-foreground
+do_not_copy: [FAST template, deprecated runtime dependency]
+notes: >
+  Obra maps the checkbox box to the semantic surface.input + action.primary tokens
+  rather than the toolkit's dedicated checkbox-* vars, so it stays consistent with
+  our token graph. The dedicated --vscode-checkbox-* vars are recorded here for
+  reference and can be added to design/tokens/vscode.json if a theme needs them.

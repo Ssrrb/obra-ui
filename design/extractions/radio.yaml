@@ -1,0 +1,19 @@
+component: Radio / RadioGroup
+obra: "@obra/ui Radio, RadioGroup"
+source:
+  vscode_toolkit: [radio, radio-group]
+extract:
+  keyboard_behavior: ArrowUp/Down (and Left/Right) move selection within the group; Home/End jump; Space selects focused.
+  aria_behavior: group role=radiogroup; each option role=radio with aria-checked; roving tabindex (one tab stop per group).
+  theme_variables: [--vscode-input-background, --vscode-input-border, --vscode-button-background, --vscode-focusBorder]
+  sizing: 14px round control with 6px inner dot.
+  focus_treatment: focus ring on the active radio only.
+  disabled_behavior: group disabled blocks selection; opacity 0.4.
+mapping:
+  dot.border: --vscode-input-border
+  dot.background: --vscode-input-background
+  selected.inner: --vscode-button-background
+do_not_copy: [FAST behaviors, deprecated runtime dependency]
+notes: >
+  Roving tabindex + arrow navigation reimplemented in foundations/a11y.ts
+  (rovingIndex/applyRovingTabindex), covered by unit tests.

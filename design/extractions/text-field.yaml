@@ -1,0 +1,19 @@
+component: TextField / TextArea
+obra: "@obra/ui TextField, TextArea"
+source:
+  vscode_toolkit: [text-field, text-area]
+extract:
+  keyboard_behavior: native input/textarea editing; emits obra-input on change.
+  aria_behavior: aria-invalid reflects error; aria-describedby wires hint+error via FormField; placeholder uses --vscode-input-placeholderForeground.
+  theme_variables: [--vscode-input-background, --vscode-input-foreground, --vscode-input-border, --vscode-input-placeholderForeground, --vscode-inputValidation-errorBackground, --vscode-inputValidation-errorBorder, --vscode-focusBorder]
+  sizing: 26px single-line height; textarea min 2 rows, vertical resize.
+  focus_treatment: focus ring via --vscode-focusBorder on the control.
+  disabled_behavior: native disabled; opacity 0.4.
+  invalid_state: error background + border from --vscode-inputValidation-error*.
+mapping:
+  background: --vscode-input-background
+  foreground: --vscode-input-foreground
+  border: --vscode-input-border
+  backgroundError: --vscode-inputValidation-errorBackground
+  borderError: --vscode-inputValidation-errorBorder
+do_not_copy: [FAST template, deprecated runtime dependency]

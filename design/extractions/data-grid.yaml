@@ -1,0 +1,23 @@
+component: DataTable
+obra: "@obra/ui DataTable"
+source:
+  vscode_toolkit: data-grid
+extract:
+  keyboard_behavior: ArrowUp/Down move row selection, Home/End jump, Enter activates a row; single tab stop on the grid.
+  aria_behavior: role=grid with rowgroup/row/columnheader/gridcell; aria-selected on rows; aria-rowcount for large sets.
+  theme_variables: [--vscode-list-hoverBackground, --vscode-list-activeSelectionBackground, --vscode-list-activeSelectionForeground, --vscode-widget-border]
+  sizing: 22px row height; sticky header; cell truncation with title tooltip (extreme content).
+  states: loading, empty, error(with retry), ready — required by Principle 8.
+mapping:
+  rowHoverBackground: --vscode-list-hoverBackground
+  rowSelectedBackground: --vscode-list-activeSelectionBackground
+  selectedForeground: --vscode-list-activeSelectionForeground
+  border: --vscode-widget-border
+do_not_copy:
+  - FAST data-grid virtualization internals
+  - deprecated runtime dependency
+notes: >
+  We intentionally do NOT ship a virtualization dependency. Very large datasets
+  are paged/windowed by the host; the component renders what it is given and
+  exposes aria-rowcount. Selection + keyboard nav reimplemented here and covered
+  by interaction tests.

@@ -1,0 +1,41 @@
+component: Button / IconButton
+obra: "@obra/ui Button, IconButton"
+source:
+  vscode_toolkit: button
+  files:
+    - vscode-webview-ui-toolkit/src/button/
+    - vscode-webview-ui-toolkit/src/design-tokens.ts (button* tokens)
+
+extract:
+  keyboard_behavior: Space and Enter activate; disabled/loading never activate.
+  aria_behavior: role=button, aria-disabled reflects disabled+loading, focusable only when enabled.
+  theme_variables: see mapping below.
+  sizing: 26px control height, design-unit 4px horizontal padding scale.
+  focus_treatment: single focus ring using --vscode-focusBorder, high-contrast safe.
+  disabled_behavior: opacity 0.4, pointer-events none, tabIndex -1.
+  variants: primary (default) and secondary.
+
+mapping:
+  button.primaryBackground: --vscode-button-background        # default #0e639c
+  button.primaryForeground: --vscode-button-foreground        # default #ffffff
+  button.primaryHoverBackground: --vscode-button-hoverBackground  # default #1177bb
+  button.secondaryBackground: --vscode-button-secondaryBackground # default #3a3d41
+  button.secondaryForeground: --vscode-button-secondaryForeground # default #ffffff
+  button.secondaryHoverBackground: --vscode-button-secondaryHoverBackground # default #45494e
+  button.border: --vscode-button-border                       # default transparent
+  focus: --vscode-focusBorder
+
+obra_tokens:
+  - action.primary.background / backgroundHover / foreground
+  - action.secondary.background / backgroundHover / foreground
+  - button.height, button.paddingX, button.radius, button.fontSize
+
+do_not_copy:
+  - FAST element template + behaviors
+  - deprecated runtime dependency
+  - buttonIconHoverBackground '--fake-vscode-token' hack (we use surface.hover)
+
+notes: >
+  IconButton reuses the same tokens with a square hit area and an accessible
+  label (aria-label from `label` or `icon`). Press feedback follows the better-ui
+  skill (scale 0.96 / 150ms ease-out), which the toolkit did not define.
