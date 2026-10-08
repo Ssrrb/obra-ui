@@ -1,0 +1,13 @@
+✔ five native containers and setting-gated trees (0.52425ms)
+✔ standalone build checks drift without overwriting (1.911625ms)
+✔ sample matches Storybook hierarchy exactly and has no preview DOM dependency (0.180916ms)
+✔ empty startup, exact sample hierarchy/icons, read-only scheme, toggles and disposal (2.127083ms)
+✔ empty-window onboarding opens projects once and reload clears sample (0.447875ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 5
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 37.048292

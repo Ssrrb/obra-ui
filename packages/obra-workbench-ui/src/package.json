@@ -1,0 +1,167 @@
+{
+  "name": "obra-workbench-ui",
+  "displayName": "Obra Navigation",
+  "description": "Native Obra company and project navigation.",
+  "publisher": "obra",
+  "version": "0.1.0",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.110.0"
+  },
+  "main": "./extension.cjs",
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "extensionKind": [
+    "ui"
+  ],
+  "contributes": {
+    "configuration": {
+      "title": "Obra",
+      "properties": {
+        "obra.sidebar.enabled": {
+          "type": "boolean",
+          "default": true,
+          "scope": "window",
+          "description": "%enabled%"
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "obra.showSample",
+        "title": "%showSample%",
+        "category": "Obra",
+        "enablement": "config.obra.sidebar.enabled"
+      },
+      {
+        "command": "obra.exitPreview",
+        "title": "%exitPreview%",
+        "category": "Obra",
+        "enablement": "obra.preview"
+      }
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "obra-projects",
+          "title": "%projects%",
+          "icon": "$(project)",
+          "order": 0
+        },
+        {
+          "id": "obra-inbox",
+          "title": "%inbox%",
+          "icon": "$(inbox)",
+          "order": 1
+        },
+        {
+          "id": "obra-cashflow",
+          "title": "%cashflow%",
+          "icon": "$(graph)",
+          "order": 2
+        },
+        {
+          "id": "obra-accounts",
+          "title": "%accounts%",
+          "icon": "$(organization)",
+          "order": 3
+        },
+        {
+          "id": "obra-explorer",
+          "title": "%explorer%",
+          "icon": "$(files)",
+          "order": 4
+        }
+      ]
+    },
+    "views": {
+      "obra-projects": [
+        {
+          "id": "obra.projects.tree",
+          "name": "%projects%",
+          "when": "config.obra.sidebar.enabled",
+          "visibility": "visible",
+          "icon": "$(project)"
+        }
+      ],
+      "obra-inbox": [
+        {
+          "id": "obra.inbox.tree",
+          "name": "%inbox%",
+          "when": "config.obra.sidebar.enabled",
+          "visibility": "visible",
+          "icon": "$(inbox)"
+        }
+      ],
+      "obra-cashflow": [
+        {
+          "id": "obra.cashflow.tree",
+          "name": "%cashflow%",
+          "when": "config.obra.sidebar.enabled",
+          "visibility": "visible",
+          "icon": "$(graph)"
+        }
+      ],
+      "obra-accounts": [
+        {
+          "id": "obra.accounts.tree",
+          "name": "%accounts%",
+          "when": "config.obra.sidebar.enabled",
+          "visibility": "visible",
+          "icon": "$(organization)"
+        }
+      ],
+      "obra-explorer": [
+        {
+          "id": "obra.explorer.tree",
+          "name": "%explorer%",
+          "when": "config.obra.sidebar.enabled",
+          "visibility": "visible",
+          "icon": "$(files)"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "obra.projects.tree",
+        "contents": "%projectsWelcome%",
+        "when": "!obra.preview"
+      },
+      {
+        "view": "obra.inbox.tree",
+        "contents": "%inboxWelcome%",
+        "when": "!obra.preview"
+      },
+      {
+        "view": "obra.cashflow.tree",
+        "contents": "%cashflowWelcome%",
+        "when": "!obra.preview"
+      },
+      {
+        "view": "obra.accounts.tree",
+        "contents": "%accountsWelcome%",
+        "when": "!obra.preview"
+      },
+      {
+        "view": "obra.explorer.tree",
+        "contents": "%explorerWelcome%",
+        "when": "!obra.preview"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "obra.exitPreview",
+          "when": "obra.preview && view =~ /^obra\\./",
+          "group": "navigation"
+        }
+      ]
+    }
+  },
+  "files": [
+    "extension.cjs",
+    "sample.cjs",
+    "package.nls*.json"
+  ]
+}

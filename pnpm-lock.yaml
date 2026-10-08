@@ -51,6 +51,8 @@ importers:
         specifier: ^5.6.0
         version: 5.9.3
 
+  packages/obra-workbench-ui: {}
+
 packages:
 
   '@adobe/css-tools@4.5.0':

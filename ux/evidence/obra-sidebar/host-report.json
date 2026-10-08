@@ -1,0 +1,25 @@
+{
+  "status": "passed",
+  "launch": "VSCODE_SKIP_PRELAUNCH=1 ./scripts/code.sh --user-data-dir <temporary-profile> --new-window; no extensionDevelopmentPath",
+  "checks": [
+    "Ordinary code.sh discovers built-in extension and all five activity icons",
+    "Five native empty states; first activation opens Projects",
+    "Preview command; native text document rejects edits",
+    "Native tree expansion and arrow-key navigation",
+    "Dark, light, both high-contrast themes and Modern UI captures",
+    "Exit command and reload reset preview; reload preserves selected Inbox",
+    "Live native configuration off/on hides containers and resets preview",
+    "Upstream native Explorer remains available"
+  ],
+  "screenshots": [
+    "01-dark-empty.png",
+    "02-dark-preview.png",
+    "03-light-preview.png",
+    "04-hc-dark-preview.png",
+    "05-hc-light-preview.png",
+    "06-modern-ui.png"
+  ],
+  "errors": [],
+  "testedProductBranch": "feat/obra-sidebar (candidate upstream integration build)",
+  "humanVisualApproval": "pending"
+}

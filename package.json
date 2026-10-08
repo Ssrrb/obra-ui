@@ -11,6 +11,8 @@
     "ui:test": "pnpm --filter @obra/ui test",
     "ui:storybook": "pnpm --filter @obra/ui-storybook storybook",
     "ui:a11y": "pnpm --filter @obra/ui-storybook a11y",
+    "workbench:sync": "pnpm --filter @obra/workbench-ui sync",
+    "workbench:check": "pnpm --filter @obra/workbench-ui check",
     "obra:launch": "node scripts/ui/launch-code.mjs",
     "ui:e2e": "node scripts/ui/run-flow.mjs"
   },

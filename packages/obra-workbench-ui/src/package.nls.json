@@ -1,0 +1,22 @@
+{
+  "enabled": "Mostrar la navegación nativa de Obra. Los cambios se aplican inmediatamente.",
+  "showSample": "Mostrar proyecto de ejemplo",
+  "exitPreview": "Salir de vista previa",
+  "sample": "Contenido de ejemplo",
+  "previewText": "Vista previa de solo lectura. Contenido de ejemplo; no representa datos reales.",
+  "projects": "Proyectos",
+  "projectsEmpty": "No hay proyectos abiertos.",
+  "inbox": "Bandeja",
+  "inboxEmpty": "La bandeja está vacía.",
+  "cashflow": "Flujo de caja",
+  "cashflowEmpty": "No hay movimientos de caja.",
+  "accounts": "Cuentas",
+  "accountsEmpty": "No hay cuentas conectadas.",
+  "explorer": "Explorador de Obra",
+  "explorerEmpty": "Sin proyecto abierto. Abre un proyecto para ver sus documentos.",
+  "projectsWelcome": "No hay proyectos abiertos.\n[Mostrar proyecto de ejemplo](command:obra.showSample)",
+  "inboxWelcome": "La bandeja está vacía.",
+  "cashflowWelcome": "No hay movimientos de caja.",
+  "accountsWelcome": "No hay cuentas conectadas.",
+  "explorerWelcome": "Sin proyecto abierto. Abre un proyecto para ver sus documentos.\n[Mostrar proyecto de ejemplo](command:obra.showSample)"
+}

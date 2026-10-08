@@ -1,0 +1,8 @@
+{
+  "status": "passed",
+  "canonicalSha256": "db7aa2b19bdd1f3344f23f04acb9aea3a013379884ba70a0fe95506b099bd81d",
+  "candidateOnlyWorkingTreeGuard": true,
+  "coreFiles": 6,
+  "moduleFiles": 6,
+  "baseline": "61783517d502424e9a82c1fa3b9521782d1ce557"
+}
