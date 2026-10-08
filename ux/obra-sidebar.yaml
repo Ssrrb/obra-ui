@@ -1,0 +1,36 @@
+surface: obra-sidebar
+reference: packages/obra-ui-storybook/stories/workbench-shell.stories.ts
+intent: Match the calm Obra shell treatment in the native activity bar and primary sidebar.
+surface_type: native-workbench
+owner: Obra Studio
+package: '@obra/workbench-ui'
+reused:
+  - Native VS Code activity bar, sidebar title/actions, views, and virtualized trees
+  - Obra semantic tokens and VS Code live theme variables
+searched:
+  - '@obra/ui primitives and patterns: no native workbench chrome adapter exists'
+  - 'Storybook workbench replica: preview-only; never shipped as product DOM'
+implementation:
+  - Styling only; no new controls, webviews, navigation data, or backend behavior
+  - Native geometry, row metrics, labels, commands, menus, and drag-and-drop remain intact
+  - New UI package emits a scoped stylesheet copied into the fork for standalone builds
+  - 'obra.sidebar.enabled defaults to true and restores native appearance immediately when false'
+  - Modern UI keeps its layout; Obra owns appearance within the two targeted regions
+states:
+  loading: Preserve native progress and loading indicators.
+  empty: Preserve native empty views and welcome content.
+  error: Preserve native messages, actions, and notifications.
+  keyboard: Preserve focus order, keyboard commands, and visible high-contrast focus indicators.
+  extreme_content: Preserve virtualization, ellipsis, scrolling, badges, and tree indentation.
+  themes: Dark, light, high-contrast dark/light, forced colors, and live customizations.
+  layout: Primary sidebar on either side; activity bar at side, top, bottom, or hidden.
+  lifecycle: Startup, live setting changes, new auxiliary windows, and disposal.
+acceptance:
+  - Native sidebar navigation and resizing work with the treatment enabled and disabled
+  - Editor, panel, secondary sidebar, menus, and title/status bars retain native styling
+  - Generated stylesheet is reproducible and does not depend on the UI checkout at runtime
+  - Real Code OSS screenshots and behavior checks accompany review
+review:
+  approved_by: pending
+  visual_baseline: pending human design review
+  automated_visual_regression: unavailable in the existing repository
