@@ -1,0 +1,22 @@
+[warn] 1. manifest resolves
+         5 repositories resolve. No remote (unbacked): design, factory. WRONG BRANCH: docs: on `main`, manifest names `penpot-experiment`; design: on `feat/obra-sidebar`, manifest names `main`; app: on `feat/obra-sidebar`, manifest names `main`.
+[FAIL] 2. contracts fresh
+         gen-patch-ledger.mjs: gen-patch-ledger: contracts/patch-ledger.yaml is stale. Run: node scripts/gen-patch-ledger.mjs
+[warn] 3. rule coverage ratchet
+         0/258 rules proven (0.0%), 0 partial, 7 approved rules with no check. Ratchet was 0. Run with --update-ratchet after you add coverage.
+[warn] 4. patch ledger budget
+         13 files, 6 core (budget 10), 6 uncosted (budget 6), 6 core file(s) without an OBRA() sentinel, 13 without an owner.
+[warn] 5. ux contracts
+         1 contract(s). All required fields present. Awaiting the design reviewer (HG-1): obra-sidebar.
+[FAIL] 6. component registry
+         ui/design/penpot-map.json is missing.
+[ok  ] 7. no forbidden deps or colors
+         product code consumes tokens and @obra/ui only.
+[ok  ] 8. token build
+         design/generated is reproducible from design/tokens.
+[warn] 9. vendor pins
+         e2e still at factory/e2e, not factory/vendor/e2e; ponytail: prompt vendored as a skill, no clone to pin
+[ok  ] 10. no dangling references
+         3 workspace package(s); every filter, script target, glob and story path resolves.
+
+check-factory: 10 checks, 2 failure(s), 5 warning(s).
