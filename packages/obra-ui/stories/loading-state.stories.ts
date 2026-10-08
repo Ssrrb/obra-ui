@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/web-components';
+import type { Meta, StoryObj } from '@storybook/web-components-vite';
 import { el, themed } from './_dom';
 
 const loading = (label = 'Loading…') => el('obra-loading-state', { label });

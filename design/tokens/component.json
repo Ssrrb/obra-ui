@@ -48,8 +48,34 @@
   "dataTable": {
     "rowHeight": { "$type": "dimension", "$value": "22px" },
     "cellPaddingX": { "$type": "dimension", "$value": "{space.2}" },
+    "indentStep": { "$type": "dimension", "$value": "{space.4}" },
     "rowHoverBackground": { "$type": "color", "$value": "{surface.hover}" },
     "rowSelectedBackground": { "$type": "color", "$value": "{surface.selected}" },
     "border": { "$type": "color", "$value": "{border.default}" }
+  },
+  "workbench": {
+    "$description": "Metrics of the VS Code workbench replica (packages/obra-ui-storybook). Preview-only: measured from the Code OSS workbench and the design previews; dimensions are literal by nature, colors stay in chrome.*.",
+    "titleBarHeight": { "$type": "dimension", "$value": "35px" },
+    "activityBarWidth": { "$type": "dimension", "$value": "48px" },
+    "activityBarWidthLabeled": { "$type": "dimension", "$value": "80px" },
+    "activityItemSize": { "$type": "dimension", "$value": "48px" },
+    "sideBarWidth": { "$type": "dimension", "$value": "250px" },
+    "auxiliaryBarWidth": { "$type": "dimension", "$value": "300px" },
+    "statusBarHeight": { "$type": "dimension", "$value": "22px" },
+    "tabHeight": { "$type": "dimension", "$value": "35px" },
+    "tabMinWidth": { "$type": "dimension", "$value": "120px" },
+    "breadcrumbHeight": { "$type": "dimension", "$value": "22px" },
+    "panelHeaderHeight": { "$type": "dimension", "$value": "35px" },
+    "panelMinHeight": { "$type": "dimension", "$value": "160px" },
+    "treeRowHeight": { "$type": "dimension", "$value": "22px" },
+    "titleBarSearchWidth": { "$type": "dimension", "$value": "600px" },
+    "titleBarSearchHeight": { "$type": "dimension", "$value": "26px" },
+    "panelHeight": { "$type": "dimension", "$value": "200px" },
+    "iconSize": { "$type": "dimension", "$value": "16px" },
+    "activityIconSize": { "$type": "dimension", "$value": "24px" },
+    "windowControlSize": { "$type": "dimension", "$value": "12px" },
+    "chromeButtonWidth": { "$type": "dimension", "$value": "28px" },
+    "chromeButtonHeight": { "$type": "dimension", "$value": "24px" },
+    "scrollbarSize": { "$type": "dimension", "$value": "10px" }
   }
 }

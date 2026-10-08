@@ -21,6 +21,76 @@
     "input": { "$type": "color", "$value": "{vscode.input.border}" },
     "contrast": { "$type": "color", "$value": "{vscode.contrastBorder}" }
   },
+  "chrome": {
+    "$description": "Workbench chrome regions (title bar, activity bar, side bar, tabs, panel, status bar). Preview and replica surfaces consume these; product content keeps the surface/text/action tokens.",
+    "activityBar": {
+      "background": { "$type": "color", "$value": "{vscode.activityBar.background}" },
+      "foreground": { "$type": "color", "$value": "{vscode.activityBar.foreground}" },
+      "inactiveForeground": { "$type": "color", "$value": "{vscode.activityBar.inactiveForeground}" },
+      "border": { "$type": "color", "$value": "{vscode.activityBar.border}" },
+      "activeBorder": { "$type": "color", "$value": "{vscode.activityBar.activeBorder}" }
+    },
+    "sideBar": {
+      "background": { "$type": "color", "$value": "{vscode.workbench.sideBar.background}" },
+      "border": { "$type": "color", "$value": "{vscode.workbench.sideBar.border}" }
+    },
+    "editor": {
+      "background": { "$type": "color", "$value": "{vscode.workbench.editor.background}" }
+    },
+    "sectionHeader": {
+      "background": { "$type": "color", "$value": "{vscode.sideBarSectionHeader.background}" },
+      "foreground": { "$type": "color", "$value": "{vscode.sideBarSectionHeader.foreground}" },
+      "border": { "$type": "color", "$value": "{vscode.sideBarSectionHeader.border}" }
+    },
+    "titleBar": {
+      "background": { "$type": "color", "$value": "{vscode.titleBar.activeBackground}" },
+      "foreground": { "$type": "color", "$value": "{vscode.titleBar.activeForeground}" },
+      "border": { "$type": "color", "$value": "{vscode.titleBar.border}" }
+    },
+    "statusBar": {
+      "background": { "$type": "color", "$value": "{vscode.statusBar.background}" },
+      "foreground": { "$type": "color", "$value": "{vscode.statusBar.foreground}" },
+      "border": { "$type": "color", "$value": "{vscode.statusBar.border}" }
+    },
+    "tabs": {
+      "background": { "$type": "color", "$value": "{vscode.editorGroupHeader.tabsBackground}" },
+      "border": { "$type": "color", "$value": "{vscode.editorGroupHeader.border}" },
+      "tabBorder": { "$type": "color", "$value": "{vscode.tab.border}" },
+      "hoverBackground": { "$type": "color", "$value": "{vscode.tab.hoverBackground}" },
+      "activeBackground": { "$type": "color", "$value": "{vscode.tab.activeBackground}" },
+      "activeForeground": { "$type": "color", "$value": "{vscode.tab.activeForeground}" },
+      "activeBorderTop": { "$type": "color", "$value": "{vscode.tab.activeBorderTop}" },
+      "inactiveBackground": { "$type": "color", "$value": "{vscode.tab.inactiveBackground}" },
+      "inactiveForeground": { "$type": "color", "$value": "{vscode.tab.inactiveForeground}" }
+    },
+    "panel": {
+      "background": { "$type": "color", "$value": "{vscode.panel.background}" },
+      "border": { "$type": "color", "$value": "{vscode.panel.border}" },
+      "titleActiveForeground": { "$type": "color", "$value": "{vscode.panel.titleActiveForeground}" },
+      "titleInactiveForeground": { "$type": "color", "$value": "{vscode.panel.titleInactiveForeground}" },
+      "titleActiveBorder": { "$type": "color", "$value": "{vscode.panel.titleActiveBorder}" }
+    },
+    "breadcrumb": {
+      "background": { "$type": "color", "$value": "{vscode.breadcrumb.background}" },
+      "foreground": { "$type": "color", "$value": "{vscode.breadcrumb.foreground}" },
+      "focusForeground": { "$type": "color", "$value": "{vscode.breadcrumb.focusForeground}" }
+    },
+    "selection": {
+      "background": { "$type": "color", "$value": "{surface.selected}" },
+      "foreground": { "$type": "color", "$value": "{vscode.list.activeSelectionForeground}" },
+      "hoverBackground": { "$type": "color", "$value": "{surface.hover}" }
+    },
+    "scrollbar": {
+      "slider": { "$type": "color", "$value": "{vscode.scrollbarSlider.background}" },
+      "sliderHover": { "$type": "color", "$value": "{vscode.scrollbarSlider.hoverBackground}" },
+      "sliderActive": { "$type": "color", "$value": "{vscode.scrollbarSlider.activeBackground}" }
+    },
+    "window": {
+      "close": { "$type": "color", "$value": "{color.mac.windowClose}" },
+      "minimize": { "$type": "color", "$value": "{color.mac.windowMinimize}" },
+      "zoom": { "$type": "color", "$value": "{color.mac.windowZoom}" }
+    }
+  },
   "action": {
     "primary": {
       "background": { "$type": "color", "$value": "{vscode.button.background}" },
@@ -54,6 +124,7 @@
   "font": {
     "body": { "$type": "dimension", "$value": "{font.size.sm}" },
     "small": { "$type": "dimension", "$value": "{font.size.xs}" },
-    "title": { "$type": "dimension", "$value": "{font.size.lg}" }
+    "title": { "$type": "dimension", "$value": "{font.size.lg}" },
+    "mono": { "$type": "string", "$value": "{font.family.mono}" }
   }
 }

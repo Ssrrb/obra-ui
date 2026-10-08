@@ -3,11 +3,11 @@
 Read this before touching any UI in Obra Studio. The authority is
 `design/PRINCIPLES.md`; this file is the operating checklist. Repo layout:
 
-- Wiki/docs: `../docs`
+- Wiki/docs: `../wiki`
 - VS Code fork (the real host): `../vscode`
 - Design rules: `design/`
 - Components: `packages/obra-ui/` (`@obra/ui`)
-- Browser harness: `apps/ui-harness/`
+- Stories: `packages/obra-ui/stories/`, run by `packages/obra-ui-storybook/`
 - Host automation: `scripts/ui/`
 - Extraction archive (reference only, never import): `design/extractions/reference/`
   The `vscode-webview-ui-toolkit/` checkout has been deleted — extraction is done.
@@ -33,8 +33,7 @@ Read this before touching any UI in Obra Studio. The authority is
 pnpm ui:tokens      # regenerate token artifacts (commit the result)
 pnpm ui:storybook   # build/browse components and states
 pnpm ui:test        # unit + interaction tests
-pnpm ui:a11y        # accessibility checks
-pnpm ui:visual      # visual regression against approved baselines
+pnpm ui:a11y        # accessibility checks (axe over the built Storybook)
 pnpm obra:launch    # launch the real Code OSS fork, print CDP handle
 pnpm ui:e2e <flow>  # run a workflow inside the real host
 ```
@@ -45,6 +44,10 @@ pnpm ui:e2e <flow>  # run a workflow inside the real host
 - Components come from `@obra/ui`; colors/spacing come from tokens.
 - `pnpm ui:tokens` leaves a clean tree (no drift).
 - Story covers every state, including high-contrast and extreme content.
-- `pnpm ui:test`, `pnpm ui:a11y`, `pnpm ui:visual` pass.
+- `pnpm ui:test` and `pnpm ui:a11y` pass.
+- Visual regression has **no runner**: the browser harness (`apps/ui-harness/`)
+  and its Playwright suites were deleted in `ade66bb`. Do not claim a visual
+  gate until a screenshot suite over the built Storybook exists. Track it as an
+  open gate, never as satisfied.
 - The workflow runs green in the real host via `pnpm ui:e2e`.
 - A design reviewer (not you) approved the visual baseline.

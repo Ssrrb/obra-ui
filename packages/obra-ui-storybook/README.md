@@ -10,6 +10,9 @@ run in the real Code OSS host (design/PRINCIPLES.md rule 10).
   `Patterns/DataTable`, `Layouts/Stack`)
 - The workbench config lives here: `.storybook/main.ts`, `.storybook/preview.ts`,
   `.storybook/preview.css`
+- The **VS Code workbench replica** (`Workbench/*` stories) lives here too:
+  `src/workbench/` builds the chrome and `stories/` assembles it. See
+  [Workbench replica](#workbench-replica) below and `design/README.md`.
 
 ## First-time setup
 
@@ -34,6 +37,58 @@ pnpm --filter @obra/ui-storybook build-storybook   # static build -> storybook-s
 ```
 
 `pnpm ui:storybook` routes to this package's `storybook` script.
+
+## Workbench replica (`Workbench/*`)
+
+The `Workbench/*` stories are a **VS Code workbench replica**: a token-driven
+reproduction of the Code OSS chrome (title bar, activity bar, primary side bar,
+editor group with tabs and breadcrumbs, bottom panel, Chat auxiliary bar,
+status bar) that hosts `@obra/ui` surfaces for design and UX review in a
+browser. It is the testing interface `ui/screens/` and `ui/previews/` design
+against.
+
+| Story | What it is |
+|---|---|
+| `Workbench/Shell` | The chrome alone: empty explorer, neutral editor, optional panel / Chat, activity labels, all three themes |
+| `Workbench/Company` | Company view (CV-01 Proyectos): activity bar, empty explorer, projects editor, Chat, status bar — plus loading / empty / error / no-results |
+| `Workbench/Project` | Project view (PV-00/PV-01): explorer tree, editor tabs, breadcrumbs, budget grid, overcommitment, engine error |
+| `Workbench/Regions` | Each region on its own, for focused keyboard and visual review |
+
+Where the code lives:
+
+- `src/workbench/workbench.ts` — region builders + whole-workbench assembly
+- `src/workbench/tree.ts` — explorer tree (`role=tree`, arrow keys, selection)
+- `src/workbench/content.ts` — demo surfaces (CV-01, PV-00, PV-01, Chat, terminal)
+- `src/workbench/icons.ts` + `assets/codicon.ttf` — Microsoft Codicons, copied
+  unmodified from the fork's pinned `@vscode/codicons` (CC BY 4.0 / MIT; see
+  `assets/CODICONS-LICENSE*.txt`)
+
+Rules the replica follows:
+
+- Colors come only from `chrome.*` tokens; metrics only from `workbench.*`
+  tokens (`design/tokens/`). Light and high-contrast layers live in
+  `.storybook/preview.css`. No literal color appears in `src/workbench/`.
+- Demo surfaces compose `@obra/ui` (`obra-data-table`, `obra-tabs`,
+  `obra-button`, `obra-empty-state`, `obra-error-state`, `obra-loading-state`,
+  `obra-property-row`, `obra-select`, `obra-text-field`, `obra-text-area`).
+- The replica is preview-only. It never ships in a webview, and it is not the
+  merge gate (PRINCIPLES.md rule 10).
+
+Replica gaps that are now closed (kept here so they never reopen silently):
+
+| Gap | Closed by |
+|---|---|
+| Per-row actions (`Abrir`, `⋯`) in tables | `DataTable` column `render` cells — `Patterns/DataTable › Per-row actions` |
+| Bold group and total rows | `DataTable` row `emphasis: 'group' \| 'total'` — `Patterns/DataTable › Tree, groups and totals` |
+| Tabular figures in money columns | `DataTable` column `figures: 'tabular'` |
+| Tree indentation of budget lines | `DataTable` row `level` (rubro → subrubro → línea) |
+
+Known replica gaps (work to close, never a silent pass):
+
+| Gap | Why | Where it belongs |
+|---|---|---|
+| Surface titles larger than 16px | the type scale tops out at `font.size.lg` | a token decision (design reviewer) |
+| Activity bar labels | stock VS Code is icon-only; the company preview labels items | already a story option (`ActivityLabels`); keep testing both |
 
 ## Themes
 

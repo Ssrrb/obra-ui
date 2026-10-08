@@ -9,5 +9,5 @@
     "skipLibCheck": true,
     "types": []
   },
-  "include": [".storybook/**/*.ts", "../obra-ui/stories/**/*.ts"]
+  "include": [".storybook/**/*.ts", "../obra-ui/stories/**/*.ts", "src/**/*.ts", "stories/**/*.ts"]
 }

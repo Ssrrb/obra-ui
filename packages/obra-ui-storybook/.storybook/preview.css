@@ -107,6 +107,48 @@ body,
   --obra-button-secondary-background: #e5e5e5;
   --obra-button-secondary-background-hover: #d9d9d9;
   --obra-button-secondary-foreground: #3b3b3b;
+  /* Workbench chrome — VS Code Light Modern equivalents (chrome only; the
+     component surface tokens above stay Light+). */
+  --obra-chrome-activity-bar-background: #f8f8f8;
+  --obra-chrome-activity-bar-foreground: #1f1f1f;
+  --obra-chrome-activity-bar-inactive-foreground: #616161;
+  --obra-chrome-activity-bar-border: #e5e5e5;
+  --obra-chrome-activity-bar-active-border: #005fb8;
+  --obra-chrome-side-bar-background: #f8f8f8;
+  --obra-chrome-side-bar-border: #e5e5e5;
+  --obra-chrome-editor-background: #ffffff;
+  --obra-chrome-section-header-background: #f8f8f8;
+  --obra-chrome-section-header-foreground: #1f1f1f;
+  --obra-chrome-section-header-border: #e5e5e5;
+  --obra-chrome-title-bar-background: #f8f8f8;
+  --obra-chrome-title-bar-foreground: #1f1f1f;
+  --obra-chrome-title-bar-border: #e5e5e5;
+  --obra-chrome-status-bar-background: #f8f8f8;
+  --obra-chrome-status-bar-foreground: #1f1f1f;
+  --obra-chrome-status-bar-border: #e5e5e5;
+  --obra-chrome-tabs-background: #f8f8f8;
+  --obra-chrome-tabs-border: #e5e5e5;
+  --obra-chrome-tabs-tab-border: #e5e5e5;
+  --obra-chrome-tabs-hover-background: #ffffff;
+  --obra-chrome-tabs-active-background: #ffffff;
+  --obra-chrome-tabs-active-foreground: #1f1f1f;
+  --obra-chrome-tabs-active-border-top: #005fb8;
+  --obra-chrome-tabs-inactive-background: #f8f8f8;
+  --obra-chrome-tabs-inactive-foreground: #6f6f6f;
+  --obra-chrome-panel-background: #f8f8f8;
+  --obra-chrome-panel-border: #e5e5e5;
+  --obra-chrome-panel-title-active-foreground: #1f1f1f;
+  --obra-chrome-panel-title-inactive-foreground: #6f6f6f;
+  --obra-chrome-panel-title-active-border: #005fb8;
+  --obra-chrome-breadcrumb-background: #ffffff;
+  --obra-chrome-breadcrumb-foreground: #616161cc;
+  --obra-chrome-breadcrumb-focus-foreground: #1f1f1f;
+  --obra-chrome-selection-background: #0060c0;
+  --obra-chrome-selection-foreground: #ffffff;
+  --obra-chrome-selection-hover-background: #e8e8e8;
+  --obra-chrome-scrollbar-slider: #64646466;
+  --obra-chrome-scrollbar-slider-hover: #646464b3;
+  --obra-chrome-scrollbar-slider-active: #bfbfbf66;
 }
 
 /* ---- High contrast layer (VS Code High Contrast) ---- */
@@ -158,6 +200,47 @@ body,
   --obra-button-secondary-background: #000000;
   --obra-button-secondary-background-hover: #1f1f1f;
   --obra-button-secondary-foreground: #ffffff;
+  /* Workbench chrome — VS Code High Contrast equivalents. */
+  --obra-chrome-activity-bar-background: #000000;
+  --obra-chrome-activity-bar-foreground: #ffffff;
+  --obra-chrome-activity-bar-inactive-foreground: #ffffff;
+  --obra-chrome-activity-bar-border: #6fc3df;
+  --obra-chrome-activity-bar-active-border: #6fc3df;
+  --obra-chrome-side-bar-background: #000000;
+  --obra-chrome-side-bar-border: #6fc3df;
+  --obra-chrome-editor-background: #000000;
+  --obra-chrome-section-header-background: #000000;
+  --obra-chrome-section-header-foreground: #ffffff;
+  --obra-chrome-section-header-border: #6fc3df;
+  --obra-chrome-title-bar-background: #000000;
+  --obra-chrome-title-bar-foreground: #ffffff;
+  --obra-chrome-title-bar-border: #6fc3df;
+  --obra-chrome-status-bar-background: #000000;
+  --obra-chrome-status-bar-foreground: #ffffff;
+  --obra-chrome-status-bar-border: #6fc3df;
+  --obra-chrome-tabs-background: #000000;
+  --obra-chrome-tabs-border: #6fc3df;
+  --obra-chrome-tabs-tab-border: #6fc3df;
+  --obra-chrome-tabs-hover-background: #1f1f1f;
+  --obra-chrome-tabs-active-background: #000000;
+  --obra-chrome-tabs-active-foreground: #ffffff;
+  --obra-chrome-tabs-active-border-top: #6fc3df;
+  --obra-chrome-tabs-inactive-background: #000000;
+  --obra-chrome-tabs-inactive-foreground: #ffffff;
+  --obra-chrome-panel-background: #000000;
+  --obra-chrome-panel-border: #6fc3df;
+  --obra-chrome-panel-title-active-foreground: #ffffff;
+  --obra-chrome-panel-title-inactive-foreground: #ffffff;
+  --obra-chrome-panel-title-active-border: #6fc3df;
+  --obra-chrome-breadcrumb-background: #000000;
+  --obra-chrome-breadcrumb-foreground: #ffffff;
+  --obra-chrome-breadcrumb-focus-foreground: #ffffff;
+  --obra-chrome-selection-background: #0078d4;
+  --obra-chrome-selection-foreground: #ffffff;
+  --obra-chrome-selection-hover-background: #1f1f1f;
+  --obra-chrome-scrollbar-slider: #6fc3df66;
+  --obra-chrome-scrollbar-slider-hover: #6fc3dfb3;
+  --obra-chrome-scrollbar-slider-active: #6fc3df;
 }
 
 /* When the OS forces colors, defer to the same system palette the components
@@ -210,5 +293,46 @@ body,
     --obra-button-secondary-background: ButtonFace;
     --obra-button-secondary-background-hover: ButtonFace;
     --obra-button-secondary-foreground: ButtonText;
+    /* Workbench chrome — defer to the system palette. */
+    --obra-chrome-activity-bar-background: Canvas;
+    --obra-chrome-activity-bar-foreground: CanvasText;
+    --obra-chrome-activity-bar-inactive-foreground: GrayText;
+    --obra-chrome-activity-bar-border: ButtonBorder;
+    --obra-chrome-activity-bar-active-border: Highlight;
+    --obra-chrome-side-bar-background: Canvas;
+    --obra-chrome-side-bar-border: ButtonBorder;
+    --obra-chrome-editor-background: Canvas;
+    --obra-chrome-section-header-background: Canvas;
+    --obra-chrome-section-header-foreground: CanvasText;
+    --obra-chrome-section-header-border: ButtonBorder;
+    --obra-chrome-title-bar-background: Canvas;
+    --obra-chrome-title-bar-foreground: CanvasText;
+    --obra-chrome-title-bar-border: ButtonBorder;
+    --obra-chrome-status-bar-background: Canvas;
+    --obra-chrome-status-bar-foreground: CanvasText;
+    --obra-chrome-status-bar-border: ButtonBorder;
+    --obra-chrome-tabs-background: Canvas;
+    --obra-chrome-tabs-border: ButtonBorder;
+    --obra-chrome-tabs-tab-border: ButtonBorder;
+    --obra-chrome-tabs-hover-background: Highlight;
+    --obra-chrome-tabs-active-background: Canvas;
+    --obra-chrome-tabs-active-foreground: CanvasText;
+    --obra-chrome-tabs-active-border-top: Highlight;
+    --obra-chrome-tabs-inactive-background: Canvas;
+    --obra-chrome-tabs-inactive-foreground: GrayText;
+    --obra-chrome-panel-background: Canvas;
+    --obra-chrome-panel-border: ButtonBorder;
+    --obra-chrome-panel-title-active-foreground: CanvasText;
+    --obra-chrome-panel-title-inactive-foreground: GrayText;
+    --obra-chrome-panel-title-active-border: Highlight;
+    --obra-chrome-breadcrumb-background: Canvas;
+    --obra-chrome-breadcrumb-foreground: CanvasText;
+    --obra-chrome-breadcrumb-focus-foreground: CanvasText;
+    --obra-chrome-selection-background: Highlight;
+    --obra-chrome-selection-foreground: HighlightText;
+    --obra-chrome-selection-hover-background: Highlight;
+    --obra-chrome-scrollbar-slider: ButtonBorder;
+    --obra-chrome-scrollbar-slider-hover: ButtonText;
+    --obra-chrome-scrollbar-slider-active: ButtonText;
   }
 }

@@ -28,7 +28,8 @@
       "bold": { "$type": "number", "$value": "600" }
     },
     "family": {
-      "base": { "$type": "string", "$value": "var(--vscode-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif)" }
+      "base": { "$type": "string", "$value": "var(--vscode-font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif)" },
+      "mono": { "$type": "string", "$value": "var(--vscode-editor-font-family, 'SF Mono', Menlo, Monaco, 'Courier New', monospace)" }
     }
   },
   "border": {
@@ -41,6 +42,11 @@
     "disabled": { "$type": "number", "$value": "0.4" }
   },
   "color": {
-    "transparent": { "$type": "color", "$value": "#00000000" }
+    "transparent": { "$type": "color", "$value": "#00000000" },
+    "mac": {
+      "windowClose": { "$type": "color", "$value": "#ff5f57", "$description": "macOS window control — close. OS chrome, not a VS Code theme color; the same in every theme." },
+      "windowMinimize": { "$type": "color", "$value": "#febc2e", "$description": "macOS window control — minimize. OS chrome, not a VS Code theme color." },
+      "windowZoom": { "$type": "color", "$value": "#28c840", "$description": "macOS window control — zoom. OS chrome, not a VS Code theme color." }
+    }
   }
 }

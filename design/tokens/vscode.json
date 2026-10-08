@@ -51,6 +51,68 @@
     "progressBar": {
       "background": { "$type": "color", "$value": "#0e70c0", "$extensions": { "obra.vscodeVar": "--vscode-progressBar-background" } }
     },
+    "activityBar": {
+      "background": { "$type": "color", "$value": "#181818", "$extensions": { "obra.vscodeVar": "--vscode-activityBar-background" } },
+      "foreground": { "$type": "color", "$value": "#d7dbdf", "$extensions": { "obra.vscodeVar": "--vscode-activityBar-foreground" } },
+      "inactiveForeground": { "$type": "color", "$value": "#868686", "$extensions": { "obra.vscodeVar": "--vscode-activityBar-inactiveForeground" } },
+      "border": { "$type": "color", "$value": "#2b2b2b", "$extensions": { "obra.vscodeVar": "--vscode-activityBar-border" } },
+      "activeBorder": { "$type": "color", "$value": "#0078d4", "$extensions": { "obra.vscodeVar": "--vscode-activityBar-activeBorder" } }
+    },
+    "titleBar": {
+      "activeBackground": { "$type": "color", "$value": "#181818", "$extensions": { "obra.vscodeVar": "--vscode-titleBar-activeBackground" } },
+      "activeForeground": { "$type": "color", "$value": "#cccccc", "$extensions": { "obra.vscodeVar": "--vscode-titleBar-activeForeground" } },
+      "border": { "$type": "color", "$value": "#2b2b2b", "$extensions": { "obra.vscodeVar": "--vscode-titleBar-border" } }
+    },
+    "statusBar": {
+      "background": { "$type": "color", "$value": "#181818", "$extensions": { "obra.vscodeVar": "--vscode-statusBar-background" } },
+      "foreground": { "$type": "color", "$value": "#cccccc", "$extensions": { "obra.vscodeVar": "--vscode-statusBar-foreground" } },
+      "border": { "$type": "color", "$value": "#2b2b2b", "$extensions": { "obra.vscodeVar": "--vscode-statusBar-border" } }
+    },
+    "editorGroupHeader": {
+      "tabsBackground": { "$type": "color", "$value": "#181818", "$extensions": { "obra.vscodeVar": "--vscode-editorGroupHeader-tabsBackground" } },
+      "border": { "$type": "color", "$value": "#2b2b2b", "$extensions": { "obra.vscodeVar": "--vscode-editorGroupHeader-border" } }
+    },
+    "tab": {
+      "activeBackground": { "$type": "color", "$value": "#1f1f1f", "$extensions": { "obra.vscodeVar": "--vscode-tab-activeBackground" } },
+      "activeForeground": { "$type": "color", "$value": "#ffffff", "$extensions": { "obra.vscodeVar": "--vscode-tab-activeForeground" } },
+      "inactiveBackground": { "$type": "color", "$value": "#181818", "$extensions": { "obra.vscodeVar": "--vscode-tab-inactiveBackground" } },
+      "inactiveForeground": { "$type": "color", "$value": "#9d9d9d", "$extensions": { "obra.vscodeVar": "--vscode-tab-inactiveForeground" } },
+      "border": { "$type": "color", "$value": "#2b2b2b", "$extensions": { "obra.vscodeVar": "--vscode-tab-border" } },
+      "hoverBackground": { "$type": "color", "$value": "#1f1f1f", "$extensions": { "obra.vscodeVar": "--vscode-tab-hoverBackground" } },
+      "activeBorderTop": { "$type": "color", "$value": "#0078d4", "$extensions": { "obra.vscodeVar": "--vscode-tab-activeBorderTop" } }
+    },
+    "sideBarSectionHeader": {
+      "background": { "$type": "color", "$value": "#181818", "$extensions": { "obra.vscodeVar": "--vscode-sideBarSectionHeader-background" } },
+      "foreground": { "$type": "color", "$value": "#cccccc", "$extensions": { "obra.vscodeVar": "--vscode-sideBarSectionHeader-foreground" } },
+      "border": { "$type": "color", "$value": "#2b2b2b", "$extensions": { "obra.vscodeVar": "--vscode-sideBarSectionHeader-border" } }
+    },
+    "panel": {
+      "background": { "$type": "color", "$value": "#181818", "$extensions": { "obra.vscodeVar": "--vscode-panel-background" } },
+      "border": { "$type": "color", "$value": "#2b2b2b", "$extensions": { "obra.vscodeVar": "--vscode-panel-border" } },
+      "titleActiveForeground": { "$type": "color", "$value": "#cccccc", "$extensions": { "obra.vscodeVar": "--vscode-panelTitle-activeForeground" } },
+      "titleInactiveForeground": { "$type": "color", "$value": "#9d9d9d", "$extensions": { "obra.vscodeVar": "--vscode-panelTitle-inactiveForeground" } },
+      "titleActiveBorder": { "$type": "color", "$value": "#0078d4", "$extensions": { "obra.vscodeVar": "--vscode-panelTitle-activeBorder" } }
+    },
+    "breadcrumb": {
+      "background": { "$type": "color", "$value": "#1f1f1f", "$extensions": { "obra.vscodeVar": "--vscode-breadcrumb-background" } },
+      "foreground": { "$type": "color", "$value": "#cccccccc", "$extensions": { "obra.vscodeVar": "--vscode-breadcrumb-foreground" } },
+      "focusForeground": { "$type": "color", "$value": "#e0e0e0", "$extensions": { "obra.vscodeVar": "--vscode-breadcrumb-focusForeground" } }
+    },
+    "scrollbarSlider": {
+      "background": { "$type": "color", "$value": "#79797966", "$extensions": { "obra.vscodeVar": "--vscode-scrollbarSlider-background" } },
+      "hoverBackground": { "$type": "color", "$value": "#646464b3", "$extensions": { "obra.vscodeVar": "--vscode-scrollbarSlider-hoverBackground" } },
+      "activeBackground": { "$type": "color", "$value": "#bfbfbf66", "$extensions": { "obra.vscodeVar": "--vscode-scrollbarSlider-activeBackground" } }
+    },
+    "workbench": {
+      "$description": "Chrome-only bridge entries. The dark fallbacks track VS Code Dark Modern, while the base `sideBar.background` above stays at its Dark+ value because the component layer (surface.raised) already resolves through it; a workbench surface must not re-theme the component layer.",
+      "sideBar": {
+        "background": { "$type": "color", "$value": "#181818", "$extensions": { "obra.vscodeVar": "--vscode-sideBar-background" } },
+        "border": { "$type": "color", "$value": "#2b2b2b", "$extensions": { "obra.vscodeVar": "--vscode-sideBar-border" } }
+      },
+      "editor": {
+        "background": { "$type": "color", "$value": "#1f1f1f", "$extensions": { "obra.vscodeVar": "--vscode-editor-background" } }
+      }
+    },
     "font": {
       "family": { "$type": "string", "$value": "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif", "$extensions": { "obra.vscodeVar": "--vscode-font-family" } },
       "size": { "$type": "dimension", "$value": "13px", "$extensions": { "obra.vscodeVar": "--vscode-font-size" } }

@@ -15,7 +15,10 @@
     "./tokens.css": "./../../design/generated/tokens.css",
     "./vscode-fallback.css": "./../../design/generated/vscode-fallback.css"
   },
-  "files": ["dist", "src"],
+  "files": [
+    "dist",
+    "src"
+  ],
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "clean": "node -e \"require('fs').rmSync('dist',{recursive:true,force:true})\"",

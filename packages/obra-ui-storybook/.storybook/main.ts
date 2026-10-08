@@ -11,18 +11,21 @@ import type { StorybookConfig } from '@storybook/web-components-vite';
  * paths in `design/penpot-map.json`.
  */
 const config: StorybookConfig = {
-  stories: ['../../obra-ui/stories/**/*.stories.@(ts|js)'],
+  stories: [
+    '../../obra-ui/stories/**/*.stories.@(ts|js)',
+    '../stories/**/*.stories.@(ts|js)',
+  ],
+
   addons: ['@storybook/addon-themes', '@storybook/addon-a11y'],
+
   framework: {
     name: '@storybook/web-components-vite',
     options: {},
   },
+
   core: {
     disableTelemetry: true,
-  },
-  docs: {
-    autodocs: false,
-  },
+  }
 };
 
 export default config;

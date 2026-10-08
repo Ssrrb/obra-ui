@@ -60,7 +60,7 @@ export const defineTextField = () =>
 
 /** <obra-text-area> — multi-line variant sharing the same tokens/behavior. */
 export class ObraTextArea extends ObraElement {
-  static observedAttributes = ['value', 'placeholder', 'disabled', 'invalid', 'rows'];
+  static observedAttributes = ['value', 'placeholder', 'disabled', 'invalid', 'rows', 'aria-label', 'aria-description'];
   protected override styles(): string {
     return INPUT_CSS.replace('height: var(--obra-text-field-height);', 'min-height: calc(var(--obra-text-field-height) * 2);')
       .replace('align-items: center;', 'align-items: stretch; padding: var(--obra-space-xs) 0;');
@@ -77,6 +77,11 @@ export class ObraTextArea extends ObraElement {
     i.placeholder = this.getAttribute('placeholder') ?? '';
     i.disabled = this.getBool('disabled');
     i.rows = Number(this.getAttribute('rows') ?? 3);
+    // Same label contract as ObraTextField: the accessible name lives on the
+    // host and is forwarded to the control inside the shadow root.
+    i.setAttribute('aria-label', this.getAttribute('aria-label') ?? '');
+    i.setAttribute('aria-description', this.getAttribute('aria-description') ?? '');
+    i.setAttribute('aria-invalid', String(this.getBool('invalid')));
   }
   get value(): string { return this.input?.value ?? ''; }
 }

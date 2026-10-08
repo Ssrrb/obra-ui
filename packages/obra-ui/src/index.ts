@@ -50,7 +50,7 @@ export { ObraMenu, defineMenu, ObraMenuItem, defineMenuItem } from './primitives
 export { ObraSectionHeader, defineSectionHeader, ObraEmptyState, defineEmptyState, ObraErrorState, defineErrorState, ObraLoadingState, defineLoadingState } from './patterns/states.js';
 export { ObraFormField, defineFormField, ObraPropertyRow, definePropertyRow, ObraToolbar, defineToolbar, ObraFilterBar, defineFilterBar } from './patterns/form.js';
 export { ObraDataTable, defineDataTable } from './patterns/data-table.js';
-export type { DataTableColumn, DataTableStatus } from './patterns/data-table.js';
+export type { DataTableColumn, DataTableStatus, DataTableRow, DataTableRowSpec, DataTableEmphasis, DataTableAction, DataTableActionItem } from './patterns/data-table.js';
 export { ObraMasterDetail, defineMasterDetail } from './patterns/master-detail.js';
 export { ObraConfirmationDialog, defineConfirmationDialog } from './patterns/confirmation-dialog.js';
 

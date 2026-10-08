@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/web-components';
+import type { Meta, StoryObj } from '@storybook/web-components-vite';
 import { el, row, svgIcon, themed } from './_dom';
 
 // States that do not apply (COMPONENT_RULES.md): a Link has no loading and no

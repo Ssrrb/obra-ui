@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Obra Studio UI platform: rules, @obra/ui, tokens, harnesses.",
+  "description": "Obra Studio UI platform: rules, @obra/ui, tokens, stories.",
   "scripts": {
     "ui:tokens": "node scripts/build-tokens.mjs",
     "ui:tokens:check": "node scripts/build-tokens.mjs && node scripts/check-clean.mjs",
@@ -11,7 +11,6 @@
     "ui:test": "pnpm --filter @obra/ui test",
     "ui:storybook": "pnpm --filter @obra/ui-storybook storybook",
     "ui:a11y": "pnpm --filter @obra/ui-storybook a11y",
-    "ui:visual": "pnpm --filter @obra/ui-harness visual",
     "obra:launch": "node scripts/ui/launch-code.mjs",
     "ui:e2e": "node scripts/ui/run-flow.mjs"
   },

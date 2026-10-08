@@ -1,4 +1,4 @@
-import type { Preview } from '@storybook/web-components';
+import type { Preview } from '@storybook/web-components-vite';
 import { withThemeByDataAttribute } from '@storybook/addon-themes';
 import { defineObraUI } from '@obra/ui';
 
@@ -7,6 +7,9 @@ import { defineObraUI } from '@obra/ui';
 // high-contrast preview layers override those tokens in `preview.css`.
 import '@obra/ui/tokens.css';
 import './preview.css';
+// Workbench replica chrome (activity bar, title bar, tabs, panel, status bar).
+// Preview-only: the real host paints this chrome itself.
+import '../src/workbench/workbench.css';
 
 // Register every Obra custom element exactly once, before any story renders.
 defineObraUI();
@@ -17,7 +20,7 @@ const preview: Preview = {
     controls: { expanded: true },
     // The workbench paints its own token surface (preview.css); Storybook's
     // independent background switcher would fight the theme layers.
-    backgrounds: { disable: true },
+    backgrounds: { disabled: true },
     a11y: {
       // Fail the addon panel on real violations; warnings stay visible.
       config: {},

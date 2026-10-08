@@ -29,8 +29,9 @@ A webview is chosen only when the UX contract records:
 
 - The webview loads the theme through the standard VS Code CSS variables
   (`--vscode-*`) that the host injects. It never ships its own color values.
-- `acquireVsCodeApi()` is called once. In tests and the harness it is mocked
-  (see `apps/ui-harness/`).
+- `acquireVsCodeApi()` is called once. In tests it is mocked; the mock lives
+  with the webview's own tests in the app repository
+  (`../vscode/extensions/obra-studio/`), not in this one.
 - The webview must render its loading, empty, error, and permission-denied
   states before any data arrives (Principle 8).
 - All focus must be reachable and visible by keyboard inside the webview.

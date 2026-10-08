@@ -48,20 +48,22 @@ export class ObraEmptyState extends ObraElement {
 export const defineEmptyState = () =>
   customElements.get('obra-empty-state') || customElements.define('obra-empty-state', ObraEmptyState);
 
-/** <obra-error-state message="..."> with a retry slot/action. */
+/** <obra-error-state heading="..." message="..."> with a retry slot/action. */
 export class ObraErrorState extends ObraElement {
-  static observedAttributes = ['message'];
+  static observedAttributes = ['heading', 'message'];
   protected override styles(): string {
     return STATE_CSS + ` [part="title"] { color: var(--obra-text-danger); }`;
   }
   protected override template(): string {
-    return `<div part="title" role="alert">Something went wrong</div>
+    return `<div part="title" role="alert"></div>
       <div part="message"></div>
       <div part="actions"><slot name="actions"></slot></div>`;
   }
   protected override onConnected(): void { this.sync(); }
   override attributeChangedCallback(): void { if (this.$('[part="message"]')) this.sync(); }
   private sync(): void {
+    (this.$('[part="title"]') as HTMLElement).textContent =
+      this.getAttribute('heading') ?? 'Something went wrong';
     (this.$('[part="message"]') as HTMLElement).textContent = this.getAttribute('message') ?? '';
   }
 }

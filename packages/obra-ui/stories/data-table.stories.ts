@@ -1,11 +1,11 @@
-import type { Meta, StoryObj } from '@storybook/web-components';
-import type { DataTableColumn, DataTableStatus } from '@obra/ui';
+import type { Meta, StoryObj } from '@storybook/web-components-vite';
+import type { DataTableColumn, DataTableRow, DataTableStatus } from '@obra/ui';
 import { el, themed } from './_dom';
 
 type TableElement = HTMLElement & {
   setData(
     columns: DataTableColumn[],
-    rows: Record<string, unknown>[],
+    rows: DataTableRow[],
     status?: DataTableStatus
   ): void;
 };
@@ -29,7 +29,7 @@ const rows = (count: number) => Array.from({ length: count }, (_, i) => row(i));
 function table(
   options: {
     columns?: DataTableColumn[];
-    rows?: Record<string, unknown>[];
+    rows?: DataTableRow[];
     status?: DataTableStatus;
     errorMessage?: string;
     emptyMessage?: string;
@@ -99,6 +99,68 @@ export const LongValues: Story = {
           updated: '2025-12-31T23:59:59.999Z',
         },
       ],
+    }),
+};
+
+export const TreeAndTotals: Story = {
+  name: 'Tree, groups and totals',
+  render: () =>
+    table({
+      columns: [
+        { key: 'code', header: 'Código' },
+        { key: 'description', header: 'Descripción' },
+        { key: 'amount', header: 'Monto (PYG)', align: 'end', figures: 'tabular' },
+      ],
+      rows: [
+        { values: { code: '01', description: 'Obras preliminares', amount: '6.300.000,00' }, emphasis: 'group' },
+        { values: { code: '01.01', description: 'Limpieza del terreno', amount: '4.200.000,00' }, level: 1 },
+        { values: { code: '01.01.01', description: 'Desmalezado', amount: '1.200.000,00' }, level: 2 },
+        { values: { code: '01.01.02', description: 'Retiro de escombros', amount: '3.000.000,00' }, level: 2 },
+        { values: { code: '01.02', description: 'Replanteo', amount: '2.100.000,00' }, level: 1 },
+        { values: { code: '', description: 'Total', amount: '6.300.000,00' }, emphasis: 'total' },
+      ],
+    }),
+};
+
+export const RowActions: Story = {
+  name: 'Per-row actions',
+  render: () =>
+    table({
+      columns: [
+        { key: 'name', header: 'Name' },
+        { key: 'status', header: 'Status' },
+        {
+          key: 'actions',
+          header: '',
+          headerLabel: 'Row actions',
+          align: 'end',
+          actions: () => [
+            { id: 'open', label: 'Open' },
+            {
+              id: 'more',
+              label: 'More actions',
+              kind: 'menu',
+              items: [
+                { id: 'open', label: 'Open' },
+                { id: 'archive', label: 'Archive' },
+              ],
+            },
+          ],
+        },
+      ],
+      rows: rows(3),
+    }),
+};
+
+export const CustomCells: Story = {
+  name: 'Custom cells',
+  render: () =>
+    table({
+      columns: [
+        { key: 'name', header: 'Name' },
+        { key: 'status', header: 'Status', render: (row) => el('obra-badge', {}, [String(row.status)]) },
+      ],
+      rows: rows(3),
     }),
 };
 
