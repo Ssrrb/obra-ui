@@ -61,7 +61,9 @@ const server = createServer((req, res) => {
   res.end(readFileSync(file));
 });
 
-const entries = JSON.parse(readFileSync(indexPath, 'utf8')).entries ?? [];
+// Storybook 8 writes `entries` as an id-keyed object; older builds used an array.
+const rawEntries = JSON.parse(readFileSync(indexPath, 'utf8')).entries ?? [];
+const entries = Array.isArray(rawEntries) ? rawEntries : Object.values(rawEntries);
 const stories = entries.filter((entry) => entry.type === 'story');
 if (stories.length === 0) {
   console.error('[a11y] No stories found in storybook-static/index.json.');
@@ -72,19 +74,33 @@ await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
 const { port } = server.address();
 const base = `http://127.0.0.1:${port}`;
 
+// Document-scope best-practice rules. A story iframe renders one component on an
+// otherwise empty page, so it can never have a <main>, an <h1>, or landmark-
+// contained content. Leaving them on buries every real component violation under
+// ~350 false positives. Landmark/heading structure is a *page* concern and is
+// checked where pages exist: the real Code OSS host (PRINCIPLES.md rule 10).
+const DOCUMENT_SCOPE_RULES = ['landmark-one-main', 'page-has-heading-one', 'region'];
+
 const browser = await chromium.launch();
-const page = await browser.newPage();
+// @axe-core/playwright requires a page from an explicit context.
+const context = await browser.newContext();
+const page = await context.newPage();
 let failing = 0;
+const ruleCounts = new Map();
 
 for (const story of stories) {
   const url = `${base}/iframe.html?id=${encodeURIComponent(story.id)}&viewMode=story`;
   await page.goto(url, { waitUntil: 'networkidle' });
-  const results = await new AxeBuilder({ page }).analyze();
+  const results = await new AxeBuilder({ page }).disableRules(DOCUMENT_SCOPE_RULES).analyze();
   if (results.violations.length > 0) {
     failing += 1;
     console.error(`[a11y] ${story.id}: ${results.violations.length} violation(s)`);
     for (const violation of results.violations) {
       console.error(`  - ${violation.id} (${violation.impact ?? 'n/a'}): ${violation.help}`);
+      for (const node of violation.nodes) {
+        console.error(`      ${node.target.join(' ')}`);
+      }
+      ruleCounts.set(violation.id, (ruleCounts.get(violation.id) ?? 0) + 1);
     }
   }
 }
@@ -92,5 +108,12 @@ for (const story of stories) {
 await browser.close();
 server.close();
 
-console.log(`[a11y] checked ${stories.length} stories; ${failing} with violations.`);
+console.log(
+  `[a11y] checked ${stories.length} stories; ${failing} with violations` +
+    (ruleCounts.size
+      ? ` (${[...ruleCounts].map(([id, n]) => `${id} x${n}`).join(', ')})`
+      : '') +
+    `.`
+);
+console.log(`[a11y] skipped document-scope rules: ${DOCUMENT_SCOPE_RULES.join(', ')}.`);
 process.exit(failing > 0 ? 1 : 0);

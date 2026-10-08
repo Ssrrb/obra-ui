@@ -10,7 +10,10 @@ must match `@obra/ui` exports and `design/penpot-map.json`, per
 ## Library 1 — "VS Code UI Reference"
 
 - **What it is:** imported Webview UI Toolkit (`@vscode/webview-ui-toolkit`)
-  frames, kept for visual/behavioral reference only.
+  frames, kept for visual/behavioral reference only. The local source checkout
+  has been deleted — extraction is complete and the archived notes live in
+  `design/extractions/reference/`. This Penpot library is the remaining visual
+  reference.
 - **Status:** conceptually read-only. Never edit inside Penpot; never use as a
   source for production design.
 - **Never production for agents.** Product code never imports the toolkit
@@ -26,7 +29,7 @@ The single library production UI is designed from. Page / folder hierarchy:
 | Page | Contents |
 |---|---|
 | `00 Foundations` | Semantic tokens (`design/generated/penpot-tokens.json`), spacing scale, type scale, focus ring, color roles |
-| `01 Primitives` | One frame per primitive: Button, IconButton, TextField, TextArea, Checkbox, Radio/RadioGroup, Select/Option, Badge, Divider, Spinner, Progress, Tabs, Tab, TabPanel, Tooltip, Menu, MenuItem. Each component frame shows all defined states (loading, empty, error, disabled, focus-visible, extreme content) |
+| `01 Primitives` | One frame per primitive: Button, IconButton, TextField, TextArea, Checkbox, Radio/RadioGroup, Select/Option, Badge, Tag, Link, Divider, Spinner, Progress, Tabs, Tab, TabPanel, Tooltip, Menu, MenuItem. Each component frame shows all defined states (loading, empty, error, disabled, focus-visible, extreme content) |
 | `02 Patterns` | FormField, PropertyRow, Toolbar, FilterBar, SectionHeader, EmptyState, ErrorState, LoadingState, DataTable, MasterDetail, ConfirmationDialog |
 | `03 Templates` | Composed page skeletons built only from the above (layout examples such as Stack-based forms, list + detail) |
 | `04 Product Surfaces` | Actual named surfaces from UX contracts (e.g. `cost-control`, `company-view`, `project-view` per `design/SURFACE_RULES.md`) |

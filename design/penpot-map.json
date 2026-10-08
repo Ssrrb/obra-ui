@@ -1,7 +1,7 @@
 {
   "$comment": "Authoritative map between Penpot component ids, @obra/ui exports, custom element tags, and story paths. Per design/COMPONENT_RULES.md every production component must appear here with its 'package', 'component', 'tag', and 'story' keys exactly as shown. Adding a component to src/index.ts REQUIRES adding an entry here (COMPONENT_RULES.md, 'Adding a component', step 7). 'compoundOf' marks child elements that belong to a host component's story (Tabs/Tab, Menu/MenuItem, Select/Option, Radio/RadioGroup).",
   "package": "@obra/ui",
-  "componentCount": 31,
+  "componentCount": 33,
   "components": {
     "obra/button": { "package": "@obra/ui", "component": "Button", "story": "Primitives/Button", "tag": "obra-button" },
     "obra/icon-button": { "package": "@obra/ui", "component": "IconButton", "story": "Primitives/IconButton", "tag": "obra-icon-button" },
@@ -13,6 +13,8 @@
     "obra/select": { "package": "@obra/ui", "component": "Select", "story": "Primitives/Select", "tag": "obra-select" },
     "obra/option": { "package": "@obra/ui", "component": "Option", "story": "Primitives/Select", "tag": "obra-option", "compoundOf": "obra/select" },
     "obra/badge": { "package": "@obra/ui", "component": "Badge", "story": "Primitives/Badge", "tag": "obra-badge" },
+    "obra/tag": { "package": "@obra/ui", "component": "Tag", "story": "Primitives/Tag", "tag": "obra-tag" },
+    "obra/link": { "package": "@obra/ui", "component": "Link", "story": "Primitives/Link", "tag": "obra-link" },
     "obra/divider": { "package": "@obra/ui", "component": "Divider", "story": "Primitives/Divider", "tag": "obra-divider" },
     "obra/spinner": { "package": "@obra/ui", "component": "Spinner", "story": "Primitives/Spinner", "tag": "obra-spinner" },
     "obra/progress": { "package": "@obra/ui", "component": "Progress", "story": "Primitives/Progress", "tag": "obra-progress" },

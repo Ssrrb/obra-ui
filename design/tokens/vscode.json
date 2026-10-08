@@ -32,7 +32,8 @@
       "hoverBackground": { "$type": "color", "$value": "#1177bb", "$extensions": { "obra.vscodeVar": "--vscode-button-hoverBackground" } },
       "secondaryBackground": { "$type": "color", "$value": "#3a3d41", "$extensions": { "obra.vscodeVar": "--vscode-button-secondaryBackground" } },
       "secondaryForeground": { "$type": "color", "$value": "#ffffff", "$extensions": { "obra.vscodeVar": "--vscode-button-secondaryForeground" } },
-      "secondaryHoverBackground": { "$type": "color", "$value": "#45494e", "$extensions": { "obra.vscodeVar": "--vscode-button-secondaryHoverBackground" } }
+      "secondaryHoverBackground": { "$type": "color", "$value": "#45494e", "$extensions": { "obra.vscodeVar": "--vscode-button-secondaryHoverBackground" } },
+      "border": { "$type": "color", "$value": "#00000000", "$extensions": { "obra.vscodeVar": "--vscode-button-border" } }
     },
     "list": {
       "hoverBackground": { "$type": "color", "$value": "#2a2d2e", "$extensions": { "obra.vscodeVar": "--vscode-list-hoverBackground" } },
@@ -40,7 +41,8 @@
       "activeSelectionForeground": { "$type": "color", "$value": "#ffffff", "$extensions": { "obra.vscodeVar": "--vscode-list-activeSelectionForeground" } }
     },
     "textLink": {
-      "foreground": { "$type": "color", "$value": "#3794ff", "$extensions": { "obra.vscodeVar": "--vscode-textLink-foreground" } }
+      "foreground": { "$type": "color", "$value": "#3794ff", "$extensions": { "obra.vscodeVar": "--vscode-textLink-foreground" } },
+      "activeForeground": { "$type": "color", "$value": "#3794ff", "$extensions": { "obra.vscodeVar": "--vscode-textLink-activeForeground" } }
     },
     "badge": {
       "background": { "$type": "color", "$value": "#4d4d4d", "$extensions": { "obra.vscodeVar": "--vscode-badge-background" } },

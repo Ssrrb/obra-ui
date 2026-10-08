@@ -60,7 +60,8 @@ any violation. Its real prerequisites are:
    `storybook-static/index.json`, which the script reads).
 3. A Playwright browser: `npx playwright install chromium`. **This downloads the
    browser and requires network access**; in a network-isolated environment it
-   fails, which is why no browser is checked in.
+   fails, which is why no browser is checked in. Where a Chromium build is
+   already in the Playwright cache, the script runs offline.
 
 Then, from the repository root:
 
@@ -73,15 +74,40 @@ entry from `index.json` in `iframe.html?id=<storyId>&viewMode=story`, and report
 violations per story. The `@storybook/addon-a11y` panel shows the same axe
 results interactively while the dev server runs.
 
+Three document-scope rules (`landmark-one-main`, `page-has-heading-one`,
+`region`) are disabled on purpose: a story iframe renders one component on an
+otherwise empty page, so it can never satisfy them, and leaving them on hid every
+real violation behind ~350 false positives. Landmark and heading structure is a
+page concern and is checked where pages exist — the real Code OSS host
+(PRINCIPLES.md rule 10).
+
+### Current backlog (gate is red until these are fixed)
+
+Last run: 200 stories, 21 violations, three root causes — all pre-existing,
+none specific to a single new component:
+
+| Rule | Count | Root cause | Fix belongs to |
+|---|---|---|---|
+| `label` (critical) | 16 | `TextField` / `TextArea` stories render a bare control with no accessible name | the stories (wrap in `FormField` or set `aria-label`), and a `label`/`aria-label` contract on the primitives |
+| `color-contrast` (serious) | 4 | the shared `DISABLED_CSS` treatment (`opacity: 0.4`) drops colored text below 4.5:1 — `Checkbox` disabled x2, `RadioGroup` disabled, `Link` disabled | a token decision: disabled needs a muted *color* token, not blanket opacity. Design reviewer call (Principle 9) |
+| `scrollable-region-focusable` (serious) | 1 | `MasterDetail` extreme-content pane scrolls without keyboard access | `patterns/master-detail.ts` (`tabindex="0"` + `role="region"` + label on the scroll pane) |
+
 ## What is validated here vs. what is not
 
-These files are scaffolded so the workbench is ready the moment dependencies
-exist. Without `pnpm install`:
+With dependencies installed, this workbench is live:
 
-- TypeScript/ESM syntax is valid (stories transpile cleanly), but the
-  `@storybook/*` and `axe-core` type imports are unresolved by design.
-- Storybook is **not** built and no browser is downloaded (no network).
-- `pnpm ui:a11y` cannot run until steps 1–3 above are complete.
+- `pnpm --filter @obra/ui-storybook build-storybook` succeeds and indexes every
+  story in `storybook-static/index.json` (200 stories across 28 files at the
+  time of writing, including `Primitives/Link` and `Primitives/Tag`).
+- `pnpm ui:a11y` runs axe over all of them and reports the backlog table above.
+- Every production component in `design/penpot-map.json` has a story file whose
+  `title` matches its `story` path.
 
-Run `pnpm --filter @obra/ui-storybook build-storybook` and `pnpm ui:a11y` after
-`pnpm install` to close that gap.
+What Storybook does **not** prove (PRINCIPLES.md rule 10):
+
+- Behavior inside the real Code OSS host — theme variables come from a live
+  workbench there, not from `preview.css`.
+- Document-level landmarks, headings, and focus order across a whole surface
+  (the three document-scope axe rules are disabled here on purpose).
+- Visual baseline approval, which is a design reviewer's call (Principle 9),
+  never an output of this workbench.

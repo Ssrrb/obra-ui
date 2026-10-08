@@ -9,14 +9,15 @@ Read this before touching any UI in Obra Studio. The authority is
 - Components: `packages/obra-ui/` (`@obra/ui`)
 - Browser harness: `apps/ui-harness/`
 - Host automation: `scripts/ui/`
-- Reference only (never import): `vscode-webview-ui-toolkit/`, `old-reference/`
+- Extraction archive (reference only, never import): `design/extractions/reference/`
+  The `vscode-webview-ui-toolkit/` checkout has been deleted — extraction is done.
 
 ## Non-negotiables
 
 1. Prefer a native VS Code surface before a webview. Justify any webview in the
    UX contract.
-2. Never import `@vscode/webview-ui-toolkit` in product code. It is a read-only
-   extraction reference.
+2. Never import `@vscode/webview-ui-toolkit` in product code. Extraction is
+   complete; the archived notes are in `design/extractions/`.
 3. Consume only `@obra/ui`. Do not hand-roll buttons, inputs, or tables.
 4. No hardcoded colors. Use semantic tokens.
 5. No hardcoded arbitrary spacing/radius/font-size. Use tokens.

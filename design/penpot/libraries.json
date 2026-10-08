@@ -30,7 +30,7 @@
           "components": [
             "obra/button", "obra/icon-button", "obra/text-field", "obra/text-area",
             "obra/checkbox", "obra/radio-group", "obra/radio", "obra/select",
-            "obra/option", "obra/badge", "obra/divider", "obra/spinner",
+            "obra/option", "obra/badge", "obra/tag", "obra/link", "obra/divider", "obra/spinner",
             "obra/progress", "obra/tabs", "obra/tab", "obra/tab-panel",
             "obra/tooltip", "obra/menu", "obra/menu-item"
           ]

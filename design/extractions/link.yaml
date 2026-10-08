@@ -1,0 +1,49 @@
+component: Link
+obra: "@obra/ui Link"
+source:
+  vscode_toolkit: link
+  files:
+    - reference/source/link/link.styles.ts (archived; the checkout is deleted)
+    - reference/component-docs/link.md
+    - reference/vscode-token-map.md (link-foreground, link-active-foreground)
+
+extract:
+  semantics: a link navigates; it is never an action or a command (toolkit README
+    "Don't use a link for actions" — use Button/IconButton instead).
+  keyboard_behavior: delegated to the native <a>: Tab to focus, Enter to activate.
+    No Space activation (that is a button), no synthetic key handling.
+  aria_behavior: native anchor semantics. Link text must convey its own purpose
+    (toolkit README: avoid vague link text). aria-disabled when disabled.
+  theme_variables: [--vscode-textLink-foreground, --vscode-textLink-activeForeground, --vscode-focusBorder]
+  sizing: inline-flex, inherits body font size/line height; word-break: break-word
+    so extreme content wraps instead of overflowing.
+  focus_treatment: the toolkit painted a 1px focusBorder *border* on focus; Obra
+    uses the shared FOCUS_CSS ring (2px outline + offset) so every component
+    focuses identically.
+  hover_behavior: color moves to link-active-foreground AND the content underlines
+    (both, per the toolkit). Hover styles are gated behind `@media (hover: hover)`
+    so touch pointers never latch a hover state (better-ui skill).
+  disabled_behavior: opacity 0.4, not focusable, navigation prevented.
+
+mapping:
+  link.foreground: --vscode-textLink-foreground          # default #3794ff
+  link.foregroundActive: --vscode-textLink-activeForeground  # default #3794ff (dark)
+  focus: --vscode-focusBorder
+  radius: radius.control                                 # toolkit corner-radius, default 2px
+
+obra_tokens:
+  - text.link / text.linkActive (semantic)
+  - link.foreground, link.foregroundActive, link.fontSize, link.radius
+
+do_not_copy:
+  - FAST Anchor template/behaviors and the deprecated runtime dependency
+  - delegatesFocus shadow option (Obra exposes a real <a part="control"> instead)
+  - the 1px-border-as-focus-ring treatment (superseded by FOCUS_CSS)
+
+notes: >
+  Obra keeps a real <a> in the shadow root and forwards href, target, rel,
+  download, hreflang, referrerpolicy and type, so navigation, open-in-new-tab,
+  context menus and screen-reader semantics are native. Two deliberate additions
+  over the toolkit: rel="noopener noreferrer" is forced when target="_blank" and
+  no rel was given, and `disabled` blocks navigation (the toolkit had no
+  disabled link state). Both are recorded here as Obra behavior, not extraction.

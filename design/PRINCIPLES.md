@@ -11,8 +11,10 @@ UI platform. When this file and any other UI document disagree, this file wins.
    first. A webview is a last resort, and it needs a reason recorded in a UX
    contract.
 2. **Product code never imports the deprecated Webview UI Toolkit**
-   (`@vscode/webview-ui-toolkit`). It stays in the repo only as a read-only
-   reference for extraction (see `design/extractions/`).
+   (`@vscode/webview-ui-toolkit`). Extraction is complete and the reference
+   checkout has been removed from the repo; what we kept — the token map, the
+   component docs, and the per-component behavior notes — lives in
+   `design/extractions/` (archive: `design/extractions/reference/`).
 3. **Product code consumes only `@obra/ui`.** No ad-hoc component libraries, no
    copy-pasted markup from other extensions, no bespoke buttons.
 4. **Hardcoded colors are forbidden.** Every color resolves to a semantic token,

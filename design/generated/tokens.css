@@ -46,6 +46,10 @@
   --obra-font-weight-bold: 600;
   --obra-font-weight-medium: 500;
   --obra-font-weight-regular: 400;
+  --obra-link-font-size: 13px;
+  --obra-link-foreground: #3794ff;
+  --obra-link-foreground-active: #3794ff;
+  --obra-link-radius: 2px;
   --obra-opacity-disabled: 0.4;
   --obra-radius-control: 2px;
   --obra-radius-medium: 4px;
@@ -70,8 +74,16 @@
   --obra-surface-input: #3c3c3c;
   --obra-surface-raised: #252526;
   --obra-surface-selected: #04395e;
+  --obra-tag-background: #4d4d4d;
+  --obra-tag-border: #00000000;
+  --obra-tag-font-size: 11px;
+  --obra-tag-foreground: #ffffff;
+  --obra-tag-height: 18px;
+  --obra-tag-padding-x: 4px;
+  --obra-tag-radius: 2px;
   --obra-text-danger: #f48771;
   --obra-text-link: #3794ff;
+  --obra-text-link-active: #3794ff;
   --obra-text-on-action: #ffffff;
   --obra-text-primary: #cccccc;
   --obra-text-secondary: #9d9d9d;
@@ -87,6 +99,7 @@
   --obra-vscode-badge-background: #4d4d4d;
   --obra-vscode-badge-foreground: #ffffff;
   --obra-vscode-button-background: #0e639c;
+  --obra-vscode-button-border: #00000000;
   --obra-vscode-button-foreground: #ffffff;
   --obra-vscode-button-hover-background: #1177bb;
   --obra-vscode-button-secondary-background: #3a3d41;
@@ -111,6 +124,7 @@
   --obra-vscode-list-hover-background: #2a2d2e;
   --obra-vscode-progress-bar-background: #0e70c0;
   --obra-vscode-side-bar-background: #252526;
+  --obra-vscode-text-link-active-foreground: #3794ff;
   --obra-vscode-text-link-foreground: #3794ff;
   --obra-vscode-widget-border: #454545;
 }

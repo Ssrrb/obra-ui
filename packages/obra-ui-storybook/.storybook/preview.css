@@ -70,6 +70,9 @@ body,
   --obra-text-secondary: #616161;
   --obra-text-on-action: #ffffff;
   --obra-text-link: #005fb8;
+  --obra-text-link-active: #005fb8;
+  --obra-link-foreground: #005fb8;
+  --obra-link-foreground-active: #005fb8;
   --obra-text-danger: #a1260d;
   --obra-border-default: #cecece;
   --obra-border-input: #cecece;
@@ -83,6 +86,9 @@ body,
   --obra-action-secondary-foreground: #3b3b3b;
   --obra-badge-background: #c4c4c4;
   --obra-badge-foreground: #333333;
+  --obra-tag-background: #c4c4c4;
+  --obra-tag-foreground: #333333;
+  --obra-tag-border: #00000000;
   --obra-danger-background: #f2dede;
   --obra-danger-border: #be1100;
   --obra-data-table-border: #cecece;
@@ -115,6 +121,9 @@ body,
   --obra-text-secondary: #ffffff;
   --obra-text-on-action: #ffffff;
   --obra-text-link: #3794ff;
+  --obra-text-link-active: #3794ff;
+  --obra-link-foreground: #3794ff;
+  --obra-link-foreground-active: #3794ff;
   --obra-text-danger: #f48771;
   --obra-border-default: #6fc3df;
   --obra-border-input: #6fc3df;
@@ -128,6 +137,9 @@ body,
   --obra-action-secondary-foreground: #ffffff;
   --obra-badge-background: #000000;
   --obra-badge-foreground: #ffffff;
+  --obra-tag-background: #000000;
+  --obra-tag-foreground: #ffffff;
+  --obra-tag-border: #6fc3df;
   --obra-danger-background: #000000;
   --obra-danger-border: #f48771;
   --obra-data-table-border: #6fc3df;
@@ -161,6 +173,9 @@ body,
     --obra-text-secondary: CanvasText;
     --obra-text-on-action: ButtonText;
     --obra-text-link: LinkText;
+    --obra-text-link-active: LinkText;
+    --obra-link-foreground: LinkText;
+    --obra-link-foreground-active: LinkText;
     --obra-text-danger: LinkText;
     --obra-border-default: ButtonBorder;
     --obra-border-input: ButtonBorder;
@@ -174,6 +189,9 @@ body,
     --obra-action-secondary-foreground: ButtonText;
     --obra-badge-background: Canvas;
     --obra-badge-foreground: CanvasText;
+    --obra-tag-background: Canvas;
+    --obra-tag-foreground: CanvasText;
+    --obra-tag-border: ButtonBorder;
     --obra-danger-background: Canvas;
     --obra-danger-border: LinkText;
     --obra-data-table-border: ButtonBorder;

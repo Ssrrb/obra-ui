@@ -34,8 +34,12 @@ apply, the story or contract says why.
 
 ## Extraction from the Webview UI Toolkit
 
-The Microsoft toolkit is a reference, not a dependency (Principle 2). When we
-build a component we record an extraction note in `design/extractions/`:
+The Microsoft toolkit is a reference, not a dependency (Principle 2). Extraction
+is **complete**: the local checkout was deleted, and the parts worth keeping —
+the full `--vscode-*` token map, the per-component docs, the last two style
+sources, and the theme bridge — are archived in
+`design/extractions/reference/`. When we build a component from that archive we
+record an extraction note in `design/extractions/`:
 
 ```yaml
 component: Button

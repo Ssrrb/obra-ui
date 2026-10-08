@@ -47,6 +47,10 @@
   --obra-font-weight-bold: 600;
   --obra-font-weight-medium: 500;
   --obra-font-weight-regular: 400;
+  --obra-link-font-size: 13px;
+  --obra-link-foreground: var(--vscode-textLink-foreground, #3794ff);
+  --obra-link-foreground-active: var(--vscode-textLink-activeForeground, #3794ff);
+  --obra-link-radius: 2px;
   --obra-opacity-disabled: 0.4;
   --obra-radius-control: 2px;
   --obra-radius-medium: 4px;
@@ -71,8 +75,16 @@
   --obra-surface-input: var(--vscode-input-background, #3c3c3c);
   --obra-surface-raised: var(--vscode-sideBar-background, #252526);
   --obra-surface-selected: var(--vscode-list-activeSelectionBackground, #04395e);
+  --obra-tag-background: var(--vscode-badge-background, #4d4d4d);
+  --obra-tag-border: var(--vscode-button-border, #00000000);
+  --obra-tag-font-size: 11px;
+  --obra-tag-foreground: var(--vscode-badge-foreground, #ffffff);
+  --obra-tag-height: 18px;
+  --obra-tag-padding-x: 4px;
+  --obra-tag-radius: 2px;
   --obra-text-danger: var(--vscode-errorForeground, #f48771);
   --obra-text-link: var(--vscode-textLink-foreground, #3794ff);
+  --obra-text-link-active: var(--vscode-textLink-activeForeground, #3794ff);
   --obra-text-on-action: var(--vscode-button-foreground, #ffffff);
   --obra-text-primary: var(--vscode-foreground, #cccccc);
   --obra-text-secondary: var(--vscode-descriptionForeground, #9d9d9d);
@@ -88,6 +100,7 @@
   --obra-vscode-badge-background: var(--vscode-badge-background, #4d4d4d);
   --obra-vscode-badge-foreground: var(--vscode-badge-foreground, #ffffff);
   --obra-vscode-button-background: var(--vscode-button-background, #0e639c);
+  --obra-vscode-button-border: var(--vscode-button-border, #00000000);
   --obra-vscode-button-foreground: var(--vscode-button-foreground, #ffffff);
   --obra-vscode-button-hover-background: var(--vscode-button-hoverBackground, #1177bb);
   --obra-vscode-button-secondary-background: var(--vscode-button-secondaryBackground, #3a3d41);
@@ -112,6 +125,7 @@
   --obra-vscode-list-hover-background: var(--vscode-list-hoverBackground, #2a2d2e);
   --obra-vscode-progress-bar-background: var(--vscode-progressBar-background, #0e70c0);
   --obra-vscode-side-bar-background: var(--vscode-sideBar-background, #252526);
+  --obra-vscode-text-link-active-foreground: var(--vscode-textLink-activeForeground, #3794ff);
   --obra-vscode-text-link-foreground: var(--vscode-textLink-foreground, #3794ff);
   --obra-vscode-widget-border: var(--vscode-widget-border, #454545);
 }

@@ -214,6 +214,24 @@
         }
       }
     },
+    "link": {
+      "fontSize": {
+        "$type": "dimension",
+        "$value": "13px"
+      },
+      "foreground": {
+        "$type": "color",
+        "$value": "var(--vscode-textLink-foreground, #3794ff)"
+      },
+      "foregroundActive": {
+        "$type": "color",
+        "$value": "var(--vscode-textLink-activeForeground, #3794ff)"
+      },
+      "radius": {
+        "$type": "dimension",
+        "$value": "2px"
+      }
+    },
     "opacity": {
       "disabled": {
         "$type": "number",
@@ -318,6 +336,36 @@
         "$value": "var(--vscode-list-activeSelectionBackground, #04395e)"
       }
     },
+    "tag": {
+      "background": {
+        "$type": "color",
+        "$value": "var(--vscode-badge-background, #4d4d4d)"
+      },
+      "border": {
+        "$type": "color",
+        "$value": "var(--vscode-button-border, #00000000)"
+      },
+      "fontSize": {
+        "$type": "dimension",
+        "$value": "11px"
+      },
+      "foreground": {
+        "$type": "color",
+        "$value": "var(--vscode-badge-foreground, #ffffff)"
+      },
+      "height": {
+        "$type": "dimension",
+        "$value": "18px"
+      },
+      "paddingX": {
+        "$type": "dimension",
+        "$value": "4px"
+      },
+      "radius": {
+        "$type": "dimension",
+        "$value": "2px"
+      }
+    },
     "text": {
       "danger": {
         "$type": "color",
@@ -326,6 +374,10 @@
       "link": {
         "$type": "color",
         "$value": "var(--vscode-textLink-foreground, #3794ff)"
+      },
+      "linkActive": {
+        "$type": "color",
+        "$value": "var(--vscode-textLink-activeForeground, #3794ff)"
       },
       "onAction": {
         "$type": "color",
@@ -393,6 +445,10 @@
         "background": {
           "$type": "color",
           "$value": "var(--vscode-button-background, #0e639c)"
+        },
+        "border": {
+          "$type": "color",
+          "$value": "var(--vscode-button-border, #00000000)"
         },
         "foreground": {
           "$type": "color",
@@ -506,6 +562,10 @@
         }
       },
       "textLink": {
+        "activeForeground": {
+          "$type": "color",
+          "$value": "var(--vscode-textLink-activeForeground, #3794ff)"
+        },
         "foreground": {
           "$type": "color",
           "$value": "var(--vscode-textLink-foreground, #3794ff)"

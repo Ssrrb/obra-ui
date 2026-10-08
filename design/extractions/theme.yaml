@@ -1,0 +1,46 @@
+component: Theme bridge (all components)
+obra: "@obra/ui foundations/element.ts ensureTokens + design/generated/vscode-fallback.css"
+source:
+  vscode_toolkit: utilities/theme/applyTheme.ts
+  files:
+    - reference/source/applyTheme.ts (archived; the checkout is deleted)
+
+extract:
+  mechanism: >
+    The toolkit watched <body class> with a MutationObserver, read
+    data-vscode-theme-kind, then pushed every --vscode-* value into its FAST
+    design tokens with setValueFor(). Obra does not need the observer: the
+    generated vscode-fallback.css layer already resolves
+    --obra-* -> var(--vscode-*, fallback), so a theme change repaints through the
+    cascade. What we extracted is the *edge-case knowledge*, not the mechanism.
+  high_contrast_rules:
+    - Any *background* token that VS Code leaves empty in a high-contrast theme
+      must resolve to transparent, not to the dark-theme fallback. Otherwise
+      components paint dark surfaces inside a high-contrast theme.
+    - button-icon-hover-background is forced transparent in high contrast (VS Code
+      has no token for it; the toolkit used a '--fake-vscode-token' placeholder).
+    - contrast-active-border is transparent in *non*-high-contrast themes and only
+      has a value in high contrast.
+  high_contrast_light_rules:
+    - button-primary-hover-background: #0F4A85 when VS Code provides no value
+      (matches VS Code core colorRegistry).
+    - button-secondary-hover-background and button-icon-hover-background:
+      transparent.
+  theme_kinds: [vscode-dark, vscode-light, vscode-high-contrast, vscode-high-contrast-light]
+
+mapping:
+  contrastActiveBorder: --vscode-contrastActiveBorder   # default #f38518
+  contrastBorder: --vscode-contrastBorder              # default #6fc3df
+
+do_not_copy:
+  - the MutationObserver + FAST CSSDesignToken.setValueFor plumbing
+  - the '--fake-vscode-token' placeholder technique
+  - hardcoded light-theme hex values inside component styles (they belong in a
+    token layer only — Storybook's preview.css and design/tokens/*)
+
+notes: >
+  Action item carried over from this extraction: design/tokens/vscode.json has no
+  contrastActiveBorder entry yet, and the "empty background token -> transparent"
+  rule is currently handled per-component with @media (forced-colors: active)
+  rather than centrally. Both are fine for Storybook prototyping; revisit before
+  the first high-contrast visual baseline is approved (Principle 9).

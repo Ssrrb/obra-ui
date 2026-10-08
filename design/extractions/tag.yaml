@@ -1,0 +1,53 @@
+component: Tag
+obra: "@obra/ui Tag"
+source:
+  vscode_toolkit: tag
+  files:
+    - reference/source/tag/tag.styles.ts (archived; the checkout is deleted)
+    - reference/component-docs/tag.md
+    - reference/vscode-token-map.md (tag-corner-radius, type-ramp-minus1-*)
+
+extract:
+  semantics: a Tag is a *text label* that names purpose or status. Numbers belong
+    in a Badge (toolkit README do/don't). Tag and Badge are siblings, not aliases.
+  keyboard_behavior: none — a Tag is not interactive and is not focusable.
+  aria_behavior: the toolkit's Tag extends FAST Badge, which announces as a live
+    region (role=status). That is wrong for a static text label, so Obra renders a
+    plain <span> with no role: the text is read in normal document order and never
+    interrupts. Recorded as a deliberate divergence, not an omission.
+  theme_variables: [--vscode-badge-background, --vscode-badge-foreground, --vscode-button-border]
+  sizing: type-ramp-minus1 (11px font / 16px line height), padding 2px vertical x
+    4px horizontal (design-unit 4 * 0.5 / * 1), uppercase text. Obra keeps the
+    4px horizontal padding (space.1) and replaces the 2px vertical padding with an
+    explicit 18px control height, so a Tag lines up with a Badge and no off-scale
+    spacing literal is needed.
+  shape: tag-corner-radius = 2px, i.e. radius.small — deliberately NOT the round
+    pill a Badge uses, and never circular (the toolkit forces `circular = false`).
+  focus_treatment: none (not focusable).
+  disabled_behavior: not defined by the toolkit; a Tag is static, so it inherits
+    the host row's disabled treatment instead of defining its own.
+
+mapping:
+  tag.background: --vscode-badge-background    # default #4d4d4d
+  tag.foreground: --vscode-badge-foreground    # default #ffffff
+  tag.border: --vscode-button-border           # default transparent in normal themes
+  tag.radius: radius.small                     # toolkit tag-corner-radius, 2px
+  tag.fontSize: font.small                     # 11px
+  tag.paddingX: space.1                        # 4px
+  tag.height: 18px                             # replaces the toolkit's 2px vertical padding
+
+obra_tokens:
+  - tag.background, tag.foreground, tag.border, tag.radius, tag.fontSize,
+    tag.paddingX, tag.height
+
+do_not_copy:
+  - FAST Badge subclassing and the `circular` override hack
+  - the deprecated runtime dependency
+  - role=status (see aria_behavior above)
+
+notes: >
+  Tag reuses the Badge color tokens because VS Code paints both from
+  --vscode-badge-*, but it is its own component: square-ish radius, uppercase
+  small type, optional border, text content. Open question for the design
+  reviewer (Principle 9): whether Obra wants a removable/dismissable Tag
+  variant. The toolkit never had one, so none is implemented here.

@@ -12,6 +12,7 @@
     "secondary": { "$type": "color", "$value": "{vscode.descriptionForeground}" },
     "onAction": { "$type": "color", "$value": "{vscode.button.foreground}" },
     "link": { "$type": "color", "$value": "{vscode.textLink.foreground}" },
+    "linkActive": { "$type": "color", "$value": "{vscode.textLink.activeForeground}" },
     "danger": { "$type": "color", "$value": "{vscode.errorForeground}" }
   },
   "border": {

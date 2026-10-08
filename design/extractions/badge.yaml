@@ -1,7 +1,7 @@
 component: Badge
 obra: "@obra/ui Badge"
 source:
-  vscode_toolkit: [badge, tag]
+  vscode_toolkit: [badge]
 extract:
   aria_behavior: role=status for count/status announcements.
   theme_variables: [--vscode-badge-background, --vscode-badge-foreground]
@@ -11,3 +11,6 @@ mapping:
   foreground: --vscode-badge-foreground   # default #ffffff
   radius: radius.round
 do_not_copy: [FAST template, deprecated runtime dependency]
+notes: >
+  Badge carries numbers; the toolkit's sibling `tag` component (a text label that
+  shares these colors) is extracted separately as Tag — see tag.yaml.
