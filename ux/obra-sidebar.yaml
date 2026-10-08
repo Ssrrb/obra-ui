@@ -2,6 +2,8 @@ surface: obra-sidebar
 reference: packages/obra-ui-storybook/stories/workbench-shell.stories.ts
 intent: Match the calm Obra shell treatment in the native activity bar and primary sidebar.
 surface_type: native-workbench
+webview_reason: Not applicable; the surface uses native workbench controls.
+e2e_flow: pnpm --filter @obra/workbench-ui test:host # Startup/lifecycle smoke; full acceptance pending.
 owner: Obra Studio
 package: '@obra/workbench-ui'
 reused:
@@ -31,6 +33,7 @@ acceptance:
   - Generated stylesheet is reproducible and does not depend on the UI checkout at runtime
   - Real Code OSS screenshots and behavior checks accompany review
 review:
-  approved_by: pending
+  approved: false
+  approved_by: # Pending design reviewer; no approval recorded.
   visual_baseline: pending human design review
   automated_visual_regression: unavailable in the existing repository
