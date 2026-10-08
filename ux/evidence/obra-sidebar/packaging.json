@@ -1,0 +1,24 @@
+{
+  "status": "passed",
+  "builtInGlob": "extensions/obra-workbench-ui/package.json",
+  "path": "packageNonNativeLocalExtensionsStream \u2192 fromLocalNormal \u2192 vsce.listFiles",
+  "files": [
+    "extension.cjs",
+    "package.json",
+    "package.nls.en.json",
+    "package.nls.es.json",
+    "package.nls.json",
+    "sample.cjs"
+  ],
+  "vsix": "Local inspection artifact; archive contents recorded below.",
+  "archive": [
+    "extension.vsixmanifest",
+    "[Content_Types].xml",
+    "extension/sample.cjs",
+    "extension/package.nls.json",
+    "extension/package.nls.es.json",
+    "extension/package.nls.en.json",
+    "extension/package.json",
+    "extension/extension.cjs"
+  ]
+}

@@ -1,49 +1,44 @@
-# Native Obra workbench UI
+# @obra/workbench-ui
 
-This package owns the styling source for the native VS Code activity bar and
-primary sidebar. The reference is `Workbench/Shell`; its preview DOM never ships.
-No new components or framework dependencies are introduced.
-
-From the UI repository:
+Native Obra navigation, shipped as an isolated built-in extension. The five
+activity containers and trees use VS Code ThemeIcons, welcome content, commands
+and text editors. VS Code owns all typography, colors, selection and keyboard
+behavior. There is no stylesheet, webview or product icon theme.
 
 ```sh
-pnpm ui:tokens
+cd ui
 pnpm workbench:sync
 pnpm workbench:check
 pnpm --filter @obra/workbench-ui test
 pnpm --filter @obra/workbench-ui test:host
+pnpm --filter @obra/workbench-ui test:package
 ```
 
-For another fork/worktree, run `node scripts/build.mjs --vscode-root /absolute/path`
-from this package. `--check` compares both artifacts without writing. Generated
-`dist/sidebar.css` is build output; the copy under `obraSidebar/browser/media/`
-is committed in the fork so it builds without this repository. Never edit that copy.
+Sync generates `dist/extension` and `vscode/extensions/obra-workbench-ui` from
+`src`. Both copies are self-contained; the product does not import the UI
+checkout at runtime. The normal built-in scanner and local-extension packaging
+glob discover the generated extension. No extension development flag is needed.
 
-The fork adapter registers `obra.sidebar.enabled` (true by default) and applies
-the `obra-sidebar` workbench marker. Disabling it restores the active native
-theme and Modern UI treatment immediately. Theme bindings follow live VS Code
-variables. Obra aliases resolve at build time into native theme bindings, avoiding
-an upstream CSS-variable registry patch. Every selector remains scoped to the marker.
+```sh
+cd vscode
+./scripts/code.sh --user-data-dir /tmp/obra-native-review --new-window
+```
 
-Native hit targets, sidebar widths, virtualized row heights, icons, navigation,
-menus, loading/error/empty content, focus, and drag feedback remain owned by VS Code.
-Obra owns sidebar heading typography and the flat activity selection treatment.
-Top/bottom/hidden activity bars keep their native treatment. Modern UI geometry
-and density remain unchanged, while scoped Obra appearance takes precedence.
+An empty window opens Proyectos once per profile. Production views contain
+explicit empty states. Run **Obra: Mostrar proyecto de ejemplo** for the exact
+Storybook project hierarchy. Every sample document opens through a read-only
+`obra-sample:` content provider without writing files. **Obra: Salir de vista
+previa**, a reload, or disabling `obra.sidebar.enabled` clears the in-memory
+sample state. Re-enabling the setting restores empty views. The one-time
+onboarding marker uses extension-owned global state; it never stores projects.
 
-Upstream dependencies to recheck after syncing: `.part.sidebar`, `.part.activitybar`,
-`.title-label h2`, `.monaco-pane-view .pane-header`, `.monaco-action-bar`,
-`.action-item.checked`, `.active-item-indicator`, and `.action-label.codicon/uri-icon`.
-Generated CSS and the registration import carry patch-ledger sentinels.
+Spanish reference copy is the manifest default; English resources are included.
+The sample project names follow the Spanish Storybook reference in both locales.
+Human visual approval is pending. This experimental UI release includes no
+backend integration, business document editing or project persistence.
 
-UX contract: `../../ux/obra-sidebar.yaml`. Capture real-host screenshots for
-human design review; the existing repository has no approved visual regression runner.
-
-`test:host` uses the existing Storybook Playwright installation and Code OSS
-binary resolver, with Playwright's Electron connection. It opens a temporary fixture workspace/profile, verifies the compiled
-adapter lifecycle and default native startup, and saves evidence under
-`.tmp/captures/obra-sidebar/`. The personal profile is never read or changed.
-
-The automated host check is a smoke check. Live configuration, the theme/layout
-matrix, native interactions, and real auxiliary-window behavior still require
-the manual checklist in `../../ux/obra-sidebar-validation.md`.
+The native test runner launches ordinary `code.sh` against existing build output
+with `VSCODE_SKIP_PRELAUNCH=1` to avoid writing the shared built-in-extension
+control file in the user's home directory. It uses no development-extension
+flag. Results, full host logs and theme screenshots are in
+`ui/.tmp/captures/obra-sidebar/`.

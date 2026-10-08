@@ -1,0 +1,22 @@
+{
+  "enabled": "Show native Obra navigation. Changes apply immediately.",
+  "showSample": "Show sample project",
+  "exitPreview": "Exit preview",
+  "sample": "Sample content",
+  "previewText": "Read-only preview. Sample content; does not represent real data.",
+  "projects": "Projects",
+  "projectsEmpty": "No projects are open.",
+  "inbox": "Inbox",
+  "inboxEmpty": "The inbox is empty.",
+  "cashflow": "Cash flow",
+  "cashflowEmpty": "No cash flow entries.",
+  "accounts": "Accounts",
+  "accountsEmpty": "No accounts are connected.",
+  "explorer": "Obra Explorer",
+  "explorerEmpty": "No project is open. Open a project to see its documents.",
+  "projectsWelcome": "No projects are open.\n[Show sample project](command:obra.showSample)",
+  "inboxWelcome": "The inbox is empty.",
+  "cashflowWelcome": "No cash flow entries.",
+  "accountsWelcome": "No accounts are connected.",
+  "explorerWelcome": "No project is open. Open a project to see its documents.\n[Show sample project](command:obra.showSample)"
+}

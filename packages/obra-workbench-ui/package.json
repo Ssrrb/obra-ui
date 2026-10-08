@@ -3,16 +3,17 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Theme-aware Obra styling for native VS Code workbench regions.",
-  "exports": {
-    "./sidebar.css": "./dist/sidebar.css"
-  },
-  "files": ["dist", "src"],
+  "description": "Native Obra navigation built-in extension.",
+  "files": [
+    "dist",
+    "src"
+  ],
   "scripts": {
     "build": "node scripts/build.mjs",
     "sync": "node scripts/build.mjs --vscode-root ../../../vscode",
     "check": "node scripts/build.mjs --check --vscode-root ../../../vscode",
     "test": "node --test tests/*.test.mjs",
-    "test:host": "node scripts/test-host.mjs"
+    "test:host": "node scripts/test-host.mjs",
+    "test:package": "node scripts/test-package.mjs"
   }
 }
