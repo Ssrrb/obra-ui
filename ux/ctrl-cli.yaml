@@ -1,0 +1,42 @@
+surface: ctrl-cli
+surface_type: native-terminal
+intent: Present the existing guided Ctrl+ workflows using the extracted Codex composer and bottom pane.
+reference: ../../.research/codex/codex-rs/tui/src/bottom_pane/chat_composer.rs
+reference_commit: cf0ed4c600161fcaa18eeac02b5fc715e1076955
+owner: Ctrl+
+searched:
+  - Codex ComposerLayout, single-line TextArea, semantic palette, key hints and inline history
+  - Existing create-ctrl JSONL bridge, prompts, login and operation status
+  - '@obra/ui: DOM components cannot render a Rust terminal Buffer'
+reused:
+  - ratatui 0.30.2 and the pinned Codex crossterm fork
+  - Existing Node workflows and question IDs
+  - Existing Ctrl+ brand resources
+layout:
+  mode: inline
+  history: One welcome; submitted answers; backend-confirmed results.
+  bottom_pane: Question or login view; padded borderless composer; persistent context; final hint row.
+  geometry: Measurement, rendering and cursor use the same rectangles; clamp to physical terminal size.
+  palette: Extract Codex shading and contrast rules from terminal foreground/background, with default-color fallback.
+  theme_exception: Terminal styles derive from the native terminal palette; VS Code CSS tokens are unavailable in this renderer.
+states:
+  loading: Show operation activity and cancel controls; disable editing.
+  empty: Show the current field placeholder or guided menu.
+  error: Explain the failure and preserve the editable field or existing menu recovery.
+  keyboard: Enter confirms; arrows navigate; Space toggles multiselect; Esc and Ctrl+C cancel with exit 130.
+  extreme_content: Grapheme-safe single-line scroll; visible selection; wrapped instructions; complete login URL in history.
+  themes: Light, dark, ANSI256, default colors and NO_COLOR.
+  lifecycle: Resize, EOF, protocol failure and cancellation restore raw mode, bracketed paste and cursor.
+interfaces:
+  existing: question, answer, message, notice, login, status, result, cancel
+  context: company and directory, supplied by Node; no tokens or helper output.
+acceptance:
+  - Composer uses the Codex prefix, shading and padding without a box border.
+  - Buffer styles, cursor coordinates and geometry have deterministic tests.
+  - PTY checks cover 80x24, 40x12, narrow and short terminals, resize and cancellation.
+  - Terminal screenshots and an Electron runtime check accompany review.
+  - Stable npm publication is a separate delivery after visual acceptance and six-target verification.
+review:
+  approved: false
+  approved_by:
+  visual_baseline: Pending independent visual review.
