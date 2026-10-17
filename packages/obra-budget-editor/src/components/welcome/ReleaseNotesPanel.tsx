@@ -1,0 +1,180 @@
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { renderMarkdown, truncateMarkdown, stripReleaseBoilerplate } from './renderMarkdown';
+import './ReleaseNotesPanel.css';
+
+interface Release {
+  tag_name: string;
+  name: string;
+  body: string;
+  published_at: string;
+  html_url: string;
+}
+
+const REPO = 'OpenAEC-Foundation/open-calc-studio';
+const CACHE_KEY = 'ocs-releases-cache-v1';
+const CACHE_TTL_MS = 6 * 60 * 60 * 1000; // 6 hours
+
+// Gebundelde release notes: worden in "Wat is er nieuw" getoond ongeacht GitHub
+// (offline én vóór een GitHub-publicatie), samengevoegd met de opgehaalde
+// releases. Bijwerken bij elke release; titels en bullets staan vertaald in
+// de `releases`-namespace (src/i18n/locales/<taal>/releases.json).
+const BUNDLED_RELEASES: Release[] = [
+  { tag_name: 'v0.13.0', name: 'Oostenrijks ÖNORM A 2063 (.onlv/.onlb) + BC3-rondreis bewezen', body: '', published_at: '2026-09-12T00:00:00Z', html_url: `https://github.com/${REPO}/releases/tag/v0.13.0` },
+  { tag_name: 'v0.12.1', name: 'Getallen en datums in PDF-rapporten in de rapporttaal', body: '', published_at: '2026-09-11T00:00:00Z', html_url: `https://github.com/${REPO}/releases/tag/v0.12.1` },
+  { tag_name: 'v0.12.0', name: 'Rapporten en eenheden in je eigen taal', body: '', published_at: '2026-09-11T00:00:00Z', html_url: `https://github.com/${REPO}/releases/tag/v0.12.0` },
+  { tag_name: 'v0.11.0', name: '39 talen + Spaans FIEBDC-3 (.bc3)', body: '', published_at: '2026-09-10T00:00:00Z', html_url: `https://github.com/${REPO}/releases/tag/v0.11.0` },
+  { tag_name: 'v0.10.3', name: 'Btw hoog én laag — per onderdeel selecteerbaar', body: '', published_at: '2026-09-10T00:00:00Z', html_url: `https://github.com/${REPO}/releases/tag/v0.10.3` },
+  { tag_name: 'v0.10.0', name: 'Logo in de rapportkop + formules in cellen', body: '', published_at: '2026-07-16T00:00:00Z', html_url: `https://github.com/${REPO}/releases/tag/v0.10.0` },
+  { tag_name: 'v0.9.0', name: 'Exacte BasCalc-totalen + besteksopmaak rapporten', body: '', published_at: '2026-07-16T00:00:00Z', html_url: `https://github.com/${REPO}/releases/tag/v0.9.0` },
+  { tag_name: 'v0.8.8', name: 'Excel/CSV-import-fix + via MCP', body: '', published_at: '2026-07-03T00:00:00Z', html_url: `https://github.com/${REPO}/releases/tag/v0.8.8` },
+  { tag_name: 'v0.8.7', name: 'Vier nieuwe importformaten', body: '', published_at: '2026-07-03T00:00:00Z', html_url: `https://github.com/${REPO}/releases/tag/v0.8.7` },
+  { tag_name: 'v0.8.6', name: 'Staartkosten in rapport-samenvatting gecorrigeerd', body: '', published_at: '2026-07-02T00:00:00Z', html_url: `https://github.com/${REPO}/releases/tag/v0.8.6` },
+  { tag_name: 'v0.8.5', name: 'Import fors uitgebreid + wit-scherm-fix', body: '', published_at: '2026-07-01T00:00:00Z', html_url: `https://github.com/${REPO}/releases/tag/v0.8.5` },
+  { tag_name: 'v0.8.4', name: 'Coderingenkiezer + compacte directiebegroting', body: '', published_at: '2026-06-24T00:00:00Z', html_url: `https://github.com/${REPO}/releases/tag/v0.8.4` },
+  { tag_name: 'v0.8.3', name: 'Wijzigingen bijhouden + calculatie-import', body: '', published_at: '2026-06-18T00:00:00Z', html_url: `https://github.com/${REPO}/releases/tag/v0.8.3` },
+  { tag_name: 'v0.8.2', name: 'OpenAEC achter een feature-flag', body: '', published_at: '2026-06-12T00:00:00Z', html_url: `https://github.com/${REPO}/releases/tag/v0.8.2` },
+  { tag_name: 'v0.8.1', name: 'OpenAEC-login + assistent-verbeteringen', body: '', published_at: '2026-06-11T00:00:00Z', html_url: `https://github.com/${REPO}/releases/tag/v0.8.1` },
+  { tag_name: 'v0.8.0', name: 'Assistent past wijzigingen direct toe', body: '', published_at: '2026-06-10T00:00:00Z', html_url: `https://github.com/${REPO}/releases/tag/v0.8.0` },
+  { tag_name: 'v0.7.10', name: 'OpenAEC-account + onderbalk-navigatie', body: '', published_at: '2026-05-28T00:00:00Z', html_url: `https://github.com/${REPO}/releases/tag/v0.7.10` },
+];
+
+/**
+ * Ontdubbel releases op tag: GitHub kan dezelfde versie (bv. v0.7.4) twee keer
+ * teruggeven (her-tag / draft + published). Houd de eerste — dat is de nieuwste —
+ * en filter latere dubbele tags eruit.
+ */
+function dedupeByTag(list: Release[]): Release[] {
+  const seen = new Set<string>();
+  return list.filter((r) => {
+    const tag = (r.tag_name ?? '').trim().toLowerCase();
+    if (seen.has(tag)) return false;
+    seen.add(tag);
+    return true;
+  });
+}
+
+/** Semver-desc: v0.8.5 vóór v0.8.4 vóór v0.7.10. */
+function compareVersionDesc(a: Release, b: Release): number {
+  const parse = (t: string) => (t || '').replace(/^v/i, '').split('.').map((n) => parseInt(n, 10) || 0);
+  const pa = parse(a.tag_name);
+  const pb = parse(b.tag_name);
+  for (let i = 0; i < Math.max(pa.length, pb.length); i++) {
+    const d = (pb[i] ?? 0) - (pa[i] ?? 0);
+    if (d !== 0) return d;
+  }
+  return 0;
+}
+
+/** Opgehaalde releases samenvoegen met de gebundelde (opgehaalde wint per tag),
+ *  zodat ook versies die nog niet op GitHub staan (bv. de nieuwste) verschijnen. */
+function mergeReleases(fetched: Release[]): Release[] {
+  const byTag = new Map<string, Release>();
+  for (const r of BUNDLED_RELEASES) byTag.set(r.tag_name, r);
+  for (const r of fetched) {
+    const tag = (r.tag_name ?? '').trim();
+    if (tag) byTag.set(tag, r);
+  }
+  return [...byTag.values()].sort(compareVersionDesc);
+}
+
+export function ReleaseNotesPanel() {
+  const { t, i18n } = useTranslation();
+  // Titels en opsommingen staan in de `releases`-namespace, zodat "Wat is er
+  // nieuw" in elke taal leesbaar is. Ontbreekt een vertaling, dan valt
+  // i18next terug op Engels; ontbreekt de key helemaal (bv. een release die
+  // alleen van GitHub komt), dan gebruiken we de tekst van GitHub zelf.
+  const { t: tRel } = useTranslation('releases');
+  const releaseName = (tag: string, fallback: string): string => {
+    const key = `names.${tag}`;
+    return tRel(key) === key ? (fallback || tag) : tRel(key);
+  };
+  const releaseHighlights = (tag: string): string[] | null => {
+    const key = `highlights.${tag}`;
+    const value = tRel(key, { returnObjects: true });
+    return Array.isArray(value) ? (value as string[]) : null;
+  };
+  const [releases, setReleases] = useState<Release[] | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let aborted = false;
+    (async () => {
+      // Try cache first
+      try {
+        const cached = localStorage.getItem(CACHE_KEY);
+        if (cached) {
+          const { data, ts } = JSON.parse(cached);
+          if (Date.now() - ts < CACHE_TTL_MS && Array.isArray(data)) {
+            setReleases(mergeReleases(data));
+          }
+        }
+      } catch {}
+
+      // Fetch fresh
+      try {
+        const resp = await fetch(`https://api.github.com/repos/${REPO}/releases?per_page=20`);
+        if (!resp.ok) throw new Error(`GitHub API ${resp.status}`);
+        const data: Release[] = await resp.json();
+        if (aborted) return;
+        setReleases(mergeReleases(data));
+        localStorage.setItem(CACHE_KEY, JSON.stringify({ data, ts: Date.now() }));
+      } catch (e: any) {
+        // Network/CORS failure — fall back to bundled list. Never leave UI empty.
+        console.warn('[ReleaseNotes] GitHub fetch failed, using bundled fallback:', e);
+        if (!aborted && (releases === null || releases.length === 0)) {
+          setReleases(mergeReleases([]));
+          setError(null);
+        }
+      }
+    })();
+    return () => { aborted = true; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return (
+    <aside className="welcome-side-panel">
+      <div className="welcome-brand">
+        <h3>OpenAEC</h3>
+        <a href="https://www.open-aec.com/open-calc-studio/" target="_blank" rel="noopener noreferrer" className="welcome-link">
+          www.open-aec.com/open-calc-studio →
+        </a>
+      </div>
+
+      <div className="welcome-releases">
+        <h3>{t('releaseNotes.title')}</h3>
+        {error && !releases && (
+          <p className="welcome-error">{t('releaseNotes.loadError', { error })}</p>
+        )}
+        {!releases && !error && <p className="welcome-loading">{t('releaseNotes.loading')}</p>}
+        {releases?.length === 0 && <p>{t('releaseNotes.none')}</p>}
+        {dedupeByTag(releases ?? []).map((r) => {
+          const bullets = releaseHighlights(r.tag_name);
+          const notes = bullets ? '' : stripReleaseBoilerplate(r.body);
+          return (
+            <article key={r.tag_name} className="welcome-release">
+              <header>
+                <a href={r.html_url} target="_blank" rel="noopener noreferrer" className="welcome-release-tag">
+                  {r.tag_name}
+                </a>
+                <time className="welcome-release-date">
+                  {new Date(r.published_at).toLocaleDateString(i18n.language, { year: 'numeric', month: 'short', day: 'numeric' })}
+                </time>
+              </header>
+              <h4 className="welcome-release-title">{releaseName(r.tag_name, r.name)}</h4>
+              {bullets ? (
+                <div className="welcome-release-body markdown-body">
+                  <ul className="rn-ul">{bullets.map((b, j) => <li key={j}>{b}</li>)}</ul>
+                </div>
+              ) : notes ? (
+                <div className="welcome-release-body markdown-body">
+                  {renderMarkdown(truncateMarkdown(notes, 420))}
+                </div>
+              ) : null}
+            </article>
+          );
+        })}
+      </div>
+    </aside>
+  );
+}

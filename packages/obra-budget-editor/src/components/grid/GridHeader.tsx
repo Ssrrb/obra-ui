@@ -1,0 +1,141 @@
+import { getHostRoot, toHostCoords } from '@/lib/hostRoot';
+import React, { useCallback, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { ROW_HEIGHT, getColumnsForView, isColumnHidden } from './gridConstants';
+import { useAppStore } from '@/state/appStore';
+import { ColumnHeaderMenu } from './ColumnHeaderMenu';
+import type { GridColumn } from '@/types/costModel';
+
+export const GridHeader: React.FC = () => {
+  // useTranslation zorgt óók voor een herrender bij taalwissel, zodat
+  // getColumnsForView de labels in de nieuwe taal oplost.
+  const { t } = useTranslation('grid');
+  const gridView = useAppStore((s) => s.gridView);
+  const columnWidths = useAppStore((s) =>
+    s.gridView === 'wpcalc' ? s.wpcalcColumnWidths
+    : s.gridView === 'inschrijfstaat' ? s.inschrijfstaatColumnWidths
+    : s.columnWidths
+  );
+  const setColumnWidth = useAppStore((s) => s.setColumnWidth);
+  const showHoeveelheid = useAppStore((s) => s.showHoeveelheid);
+  const hiddenColumns = useAppStore((s) => s.hiddenColumns);
+  const setColumnHidden = useAppStore((s) => s.setColumnHidden);
+  const selectedColumns = useAppStore((s) => s.selectedColumns);
+  const selectColumn = useAppStore((s) => s.selectColumn);
+  const resizing = useRef<{ index: number; startX: number; startWidth: number } | null>(null);
+
+  const branchesEnabled = useAppStore((s) => s.schedule.branchesEnabled ?? false);
+  const columns = getColumnsForView(gridView, branchesEnabled);
+
+  const [menu, setMenu] = useState<{ x: number; y: number; column: GridColumn } | null>(null);
+
+  // A column is collapsed to width 0 when hidden via the menu, or (legacy) the
+  // hoeveelheid toggle is off.
+  const isHidden = useCallback(
+    (col: GridColumn) =>
+      (col.key === 'hoeveelheid' && !showHoeveelheid) || isColumnHidden(hiddenColumns, gridView, col.key),
+    [showHoeveelheid, hiddenColumns, gridView]
+  );
+
+  const handleMouseDown = useCallback(
+    (e: React.MouseEvent, index: number) => {
+      e.preventDefault();
+      const startX = e.clientX;
+      const startWidth = columnWidths[index] ?? columns[index].width;
+      resizing.current = { index, startX, startWidth };
+
+      const handleMouseMove = (me: MouseEvent) => {
+        if (!resizing.current) return;
+        const diff = me.clientX - resizing.current.startX;
+        setColumnWidth(resizing.current.index, resizing.current.startWidth + diff);
+      };
+
+      const handleMouseUp = () => {
+        resizing.current = null;
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
+        getHostRoot().classList.remove('cursor-col-resizing');
+      };
+
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+      getHostRoot().classList.add('cursor-col-resizing');
+    },
+    [columnWidths, setColumnWidth, columns]
+  );
+
+  const zichtbareKeys = columns.filter((c) => !isHidden(c)).map((c) => c.key);
+
+  const handleHeaderClick = useCallback(
+    (e: React.MouseEvent, col: GridColumn) => {
+      const mode = (e.ctrlKey || e.metaKey) ? 'toggle' : e.shiftKey ? 'range' : 'set';
+      selectColumn(col.key, mode, zichtbareKeys);
+    },
+    [selectColumn, zichtbareKeys]
+  );
+
+  const handleContextMenu = useCallback(
+    (e: React.MouseEvent, col: GridColumn) => {
+      e.preventDefault();
+      // Rechtsklik buiten de selectie verplaatst de selectie naar die kolom —
+      // zo werkt het menu altijd op wat je op dat moment ziet oplichten.
+      if (!selectedColumns.includes(col.key)) {
+        selectColumn(col.key, 'set', zichtbareKeys);
+      }
+      setMenu({ ...toHostCoords(e.clientX, e.clientY), column: col });
+    },
+    [selectedColumns, selectColumn, zichtbareKeys]
+  );
+
+  const headerHeight = ROW_HEIGHT * 2;
+  const headerWidth = columns.reduce((s, col, i) => {
+    if (isHidden(col)) return s;
+    return s + (columnWidths[i] ?? col.width);
+  }, 0);
+  return (
+    <div className="grid-header" style={{ height: headerHeight, width: headerWidth, minWidth: headerWidth }}>
+      {columns.map((col, i) => {
+        const hidden = isHidden(col);
+        // Show a thin indicator on the next visible column when the column
+        // immediately before it is hidden, so the user can restore it.
+        const prevCol = i > 0 ? columns[i - 1] : null;
+        const showRestoreLeft = !hidden && prevCol != null && isHidden(prevCol);
+        return (
+          <div
+            key={col.key}
+            className={`grid-header-cell${selectedColumns.includes(col.key) ? ' is-selected' : ''}`}
+            style={{ width: hidden ? 0 : (columnWidths[i] ?? col.width), height: headerHeight, overflow: 'hidden', position: 'relative' }}
+            title={col.tooltip}
+            onClick={(e) => handleHeaderClick(e, col)}
+            onContextMenu={(e) => handleContextMenu(e, col)}
+          >
+            {showRestoreLeft && prevCol && (
+              <div
+                className="grid-header-hidden-indicator"
+                title={t('columnMenu.showHidden', { name: prevCol.label })}
+                onClick={(e) => { e.stopPropagation(); setColumnHidden(gridView, prevCol.key, false); }}
+              />
+            )}
+            <span className="grid-header-label">{col.label}</span>
+            {col.abbr && <span className="grid-header-abbr">({col.abbr})</span>}
+            <div
+              className="grid-header-resize"
+              onMouseDown={(e) => handleMouseDown(e, i)}
+            />
+          </div>
+        );
+      })}
+      {menu && (
+        <ColumnHeaderMenu
+          selectedColumns={selectedColumns}
+          x={menu.x}
+          y={menu.y}
+          column={menu.column}
+          columns={columns}
+          gridView={gridView}
+          onClose={() => setMenu(null)}
+        />
+      )}
+    </div>
+  );
+};

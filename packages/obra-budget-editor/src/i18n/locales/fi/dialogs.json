@@ -1,0 +1,96 @@
+{
+  "columnMapping": {
+    "title": "Yhdistä sarakkeet",
+    "intro": "Yhdistä jokainen tiedoston <b>{{name}}</b> sarake oikeaan kustannusarvion kenttään. Sarakkeet, joiden arvo on ”— ohita —”, jätetään väliin.",
+    "columnN": "Sarake {{n}}",
+    "columnsLinked_one": "{{count}} sarake yhdistetty",
+    "columnsLinked_other": "{{count}} saraketta yhdistetty",
+    "rows": "{{count}} riviä",
+    "linkDescriptionFirst": "yhdistä ensin ”Kuvaus”-sarake",
+    "cancel": "Peruuta",
+    "import": "Tuo"
+  },
+  "quantityPicker": {
+    "title": "Linkitä määrä",
+    "tabSpreadsheet": "Taulukko",
+    "tabPdf": "PDF-mittaus",
+    "tabIfc": "IFC-elementti",
+    "cellNotNumeric": "Solu ei sisällä kelvollista lukua",
+    "noSheets": "Ei vielä taulukoita. Luo ensin taulukko.",
+    "sheet": "Taulukko",
+    "cellReference": "Soluviittaus (esim. A5 tai B12)",
+    "value": "Arvo",
+    "empty": "(tyhjä)",
+    "linkCell": "Linkitä solu",
+    "noPdfMeasurements": "Ei vielä PDF-mittauksia. Avaa ensin PDF PDF-välilehdellä ja tee mittauksia.",
+    "sumLengths": "Σ Kaikki pituudet",
+    "sumAreas": "Σ Kaikki pinta-alat",
+    "individualMeasurements": "Yksittäiset mittaukset:",
+    "noIfcElements": "Ei vielä IFC-elementtejä. Avaa IFC-tiedosto 3D-välilehdellä ja valitse elementti.",
+    "cancel": "Peruuta"
+  },
+  "excelPicker": {
+    "title": "Linkitä Exceliin",
+    "cannotReadFile": "Tiedostoa ei voi lukea",
+    "chooseFile": "Valitse tiedosto...",
+    "noFileSelected": "Tiedostoa ei ole valittu",
+    "loadingFile": "Ladataan tiedostoa...",
+    "cancel": "Peruuta",
+    "select": "Valitse"
+  },
+  "costItemPicker": {
+    "title": "Linkitä kustannusarvion riviin",
+    "searchPlaceholder": "Hae kuvauksella tai koodilla...",
+    "suggestions": "Ehdotukset",
+    "results": "Tulokset ({{count}})",
+    "allLines": "Kaikki rivit",
+    "unlink": "Poista linkitys",
+    "cancel": "Peruuta",
+    "link": "Linkitä"
+  },
+  "resourceTypes": {
+    "arbeid": "Työ",
+    "materieel": "Kalusto",
+    "materiaal": "Materiaali",
+    "onderaannemer": "Aliurakoitsija",
+    "overig": "Muu"
+  },
+  "undo": {
+    "addResource": "Lisää panos",
+    "wizard": "Velho: {{name}}"
+  },
+  "wizard": {
+    "previewTitle": "Esikatselu — {{name}}"
+  },
+  "importWarnings": {
+    "title": "Tuonnin ilmoitukset",
+    "intro_one": "Tiedoston {{source}} tuonti valmistui {{count}} ilmoituksella:",
+    "intro_other": "Tiedoston {{source}} tuonti valmistui {{count}} ilmoituksella:",
+    "copy": "Kopioi",
+    "copied": "Kopioitu",
+    "close": "Sulje",
+    "bc3": {
+      "unknownConceptInDecomposition": "Tuntematon koodi '{{concept}}' nimikkeen '{{parent}}' erittelyssä — ohitettu.",
+      "unknownConceptUnder": "Tuntematon koodi '{{concept}}' kohteen '{{parent}}' alla — ohitettu.",
+      "zeroYieldDecomposition": "Yhdellä tai useammalla nimikkeellä on erittely ilman menekkejä — niille käytettiin ~C-tietueen yksikköhintaa.",
+      "noRootStructure": "Juurirakennetta (##) erittelyineen ei löytynyt — erilliset haarat tuotiin ylimmälle tasolle.",
+      "noProjectStructure": "Projektirakennetta (##/#) ei löytynyt — nimikkeet tuotiin hintakirjastona yhden luvun alle.",
+      "priceMismatch_one": "{{count}} nimikkeen erittelyn summa poikkeaa yli 2 % ~C-tietueen yksikköhinnasta ({{examples}}). Erittelyä käytettiin.",
+      "priceMismatch_other": "{{count}} nimikkeen erittelyn summa poikkeaa yli 2 % ~C-tietueen yksikköhinnasta (esim. {{examples}}). Erittelyä käytettiin.",
+      "noPrices": "Tiedosto ei sisällä hintoja — vain kuvauksia ja määriä (kuten määräkirjasto). Loppusumma on siksi 0,00.",
+      "moreWarnings_one": "… ja {{count}} muu samankaltainen ilmoitus.",
+      "moreWarnings_other": "… ja {{count}} muuta samankaltaista ilmoitusta."
+    },
+    "onlv": {
+      "leistungsbuch": "Tämä on Leistungsbuch (vakiotekstien luettelo) ilman määriä ja hintoja — kaikki positiot tuotiin määrällä 0.",
+      "wahlEventual_one": "{{count}} valinnainen positio (Wahl-/Eventualposition) ei ÖNORMin mukaan kuulu erittelyn loppusummaan. Se tuotiin määrineen ja hintoineen, merkittiin muistiinpanoihin ja asetettiin arvoon N tilityssarakkeessa; tämän ohjelman summa sisältää sen.",
+      "wahlEventual_other": "{{count}} valinnaista positiota (Wahl-/Eventualpositionen) eivät ÖNORMin mukaan kuulu erittelyn loppusummaan. Ne tuotiin määrineen ja hintoineen, merkittiin muistiinpanoihin ja asetettiin arvoon N tilityssarakkeessa; tämän ohjelman summa sisältää ne.",
+      "sumMismatch": "Tiedoston loppusumma ({{file}}) poikkeaa positioiden lasketusta summasta ({{calculated}}).",
+      "unknownUnit_one": "{{count}} yksikkö ilman vastinetta säilytettiin sellaisenaan: {{examples}}.",
+      "unknownUnit_other": "{{count}} yksikköä ilman vastinetta säilytettiin sellaisenaan: {{examples}}.",
+      "noPrices": "Tiedosto ei sisällä hintoja — vain tekstejä ja määriä (esim. Ausschreibungs-LV). Summa pysyy siksi arvossa 0,00.",
+      "luecken_one": "{{count}} positio sisältää täytettäviä kohtia (Ausschreiber-/Bieterlücken); ne näkyvät muistiinpanoissa merkintänä ____.",
+      "luecken_other": "{{count}} positiota sisältää täytettäviä kohtia (Ausschreiber-/Bieterlücken); ne näkyvät muistiinpanoissa merkintänä ____."
+    }
+  }
+}

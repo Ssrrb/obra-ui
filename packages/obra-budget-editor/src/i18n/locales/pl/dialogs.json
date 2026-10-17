@@ -1,0 +1,110 @@
+{
+  "columnMapping": {
+    "title": "Przypisz kolumny",
+    "intro": "Przypisz każdą kolumnę z pliku <b>{{name}}</b> do właściwego pola kosztorysu. Kolumny ustawione na „— pomiń —” są pomijane.",
+    "columnN": "Kolumna {{n}}",
+    "columnsLinked_one": "Przypisano {{count}} kolumnę",
+    "columnsLinked_few": "Przypisano {{count}} kolumny",
+    "columnsLinked_many": "Przypisano {{count}} kolumn",
+    "columnsLinked_other": "Przypisano {{count}} kolumn",
+    "rows": "{{count}} wierszy",
+    "linkDescriptionFirst": "najpierw przypisz kolumnę „Opis”",
+    "cancel": "Anuluj",
+    "import": "Importuj"
+  },
+  "quantityPicker": {
+    "title": "Powiąż ilość",
+    "tabSpreadsheet": "Arkusz",
+    "tabPdf": "Pomiar PDF",
+    "tabIfc": "Element IFC",
+    "cellNotNumeric": "Komórka nie zawiera prawidłowej liczby",
+    "noSheets": "Brak arkuszy. Najpierw utwórz arkusz kalkulacyjny.",
+    "sheet": "Arkusz",
+    "cellReference": "Odwołanie do komórki (np. A5 lub B12)",
+    "value": "Wartość",
+    "empty": "(puste)",
+    "linkCell": "Powiąż komórkę",
+    "noPdfMeasurements": "Brak pomiarów PDF. Otwórz najpierw plik PDF na karcie PDF i wykonaj pomiary.",
+    "sumLengths": "Σ Wszystkie długości",
+    "sumAreas": "Σ Wszystkie powierzchnie",
+    "individualMeasurements": "Pojedyncze pomiary:",
+    "noIfcElements": "Brak elementów IFC. Otwórz plik IFC na karcie 3D i wybierz element.",
+    "cancel": "Anuluj"
+  },
+  "excelPicker": {
+    "title": "Powiąż z Excelem",
+    "cannotReadFile": "Nie można odczytać pliku",
+    "chooseFile": "Wybierz plik...",
+    "noFileSelected": "Nie wybrano pliku",
+    "loadingFile": "Wczytywanie pliku...",
+    "cancel": "Anuluj",
+    "select": "Wybierz"
+  },
+  "costItemPicker": {
+    "title": "Powiąż z wierszem kosztorysu",
+    "searchPlaceholder": "Szukaj po opisie lub kodzie...",
+    "suggestions": "Sugestie",
+    "results": "Wyniki ({{count}})",
+    "allLines": "Wszystkie wiersze",
+    "unlink": "Usuń powiązanie",
+    "cancel": "Anuluj",
+    "link": "Powiąż"
+  },
+  "resourceTypes": {
+    "arbeid": "Robocizna",
+    "materieel": "Sprzęt",
+    "materiaal": "Materiały",
+    "onderaannemer": "Podwykonawca",
+    "overig": "Inne"
+  },
+  "undo": {
+    "addResource": "Dodanie zasobu",
+    "wizard": "Kreator: {{name}}"
+  },
+  "wizard": {
+    "previewTitle": "Podgląd — {{name}}"
+  },
+  "importWarnings": {
+    "title": "Komunikaty importu",
+    "intro_one": "Import {{source}} zakończono z {{count}} komunikatem:",
+    "intro_few": "Import {{source}} zakończono z {{count}} komunikatami:",
+    "intro_many": "Import {{source}} zakończono z {{count}} komunikatami:",
+    "intro_other": "Import {{source}} zakończono z {{count}} komunikatami:",
+    "copy": "Kopiuj",
+    "copied": "Skopiowano",
+    "close": "Zamknij",
+    "bc3": {
+      "unknownConceptInDecomposition": "Nieznana pozycja „{{concept}}” w rozbiciu „{{parent}}” — pominięto.",
+      "unknownConceptUnder": "Nieznana pozycja „{{concept}}” pod „{{parent}}” — pominięto.",
+      "zeroYieldDecomposition": "Co najmniej jedna pozycja ma rozbicie bez ilości nakładów — dla tych pozycji użyto ceny jednostkowej z rekordu ~C.",
+      "noRootStructure": "Nie znaleziono struktury głównej (##) z rozbiciem — poszczególne gałęzie zaimportowano na najwyższym poziomie.",
+      "noProjectStructure": "Nie znaleziono struktury projektu (##/#) — pozycje zaimportowano jako cennik w jednym dziale.",
+      "priceMismatch_one": "Dla {{count}} pozycji suma rozbicia różni się o ponad 2% od ceny jednostkowej w rekordzie ~C ({{examples}}). Użyto rozbicia.",
+      "priceMismatch_few": "Dla {{count}} pozycji suma rozbicia różni się o ponad 2% od ceny jednostkowej w rekordzie ~C (np. {{examples}}). Użyto rozbicia.",
+      "priceMismatch_many": "Dla {{count}} pozycji suma rozbicia różni się o ponad 2% od ceny jednostkowej w rekordzie ~C (np. {{examples}}). Użyto rozbicia.",
+      "priceMismatch_other": "Dla {{count}} pozycji suma rozbicia różni się o ponad 2% od ceny jednostkowej w rekordzie ~C (np. {{examples}}). Użyto rozbicia.",
+      "noPrices": "Ten plik nie zawiera cen — tylko opisy i ilości (jak biblioteka przedmiarów). Suma wynosi więc 0,00.",
+      "moreWarnings_one": "… i jeszcze {{count}} podobny komunikat.",
+      "moreWarnings_few": "… i jeszcze {{count}} podobne komunikaty.",
+      "moreWarnings_many": "… i jeszcze {{count}} podobnych komunikatów.",
+      "moreWarnings_other": "… i jeszcze {{count}} podobnych komunikatów."
+    },
+    "onlv": {
+      "leistungsbuch": "To jest Leistungsbuch (katalog tekstów standardowych) bez ilości i cen — wszystkie pozycje zaimportowano z ilością 0.",
+      "wahlEventual_one": "{{count}} pozycja opcjonalna (Wahl-/Eventualposition) według ÖNORM nie wlicza się do sumy przedmiaru. Zaimportowano ją z ilością i ceną, oznaczono w notatkach i ustawiono na N w kolumnie rozliczenia; suma tutaj ją zawiera.",
+      "wahlEventual_other": "{{count}} pozycji opcjonalnych (Wahl-/Eventualpositionen) według ÖNORM nie wlicza się do sumy przedmiaru. Zaimportowano je z ilością i ceną, oznaczono w notatkach i ustawiono na N w kolumnie rozliczenia; suma tutaj je zawiera.",
+      "wahlEventual_few": "{{count}} pozycje opcjonalne (Wahl-/Eventualpositionen) według ÖNORM nie wliczają się do sumy przedmiaru. Zaimportowano je z ilością i ceną, oznaczono w notatkach i ustawiono na N w kolumnie rozliczenia; suma tutaj je zawiera.",
+      "wahlEventual_many": "{{count}} pozycji opcjonalnych (Wahl-/Eventualpositionen) według ÖNORM nie wlicza się do sumy przedmiaru. Zaimportowano je z ilością i ceną, oznaczono w notatkach i ustawiono na N w kolumnie rozliczenia; suma tutaj je zawiera.",
+      "sumMismatch": "Suma przedmiaru w pliku ({{file}}) różni się od obliczonej sumy pozycji ({{calculated}}).",
+      "unknownUnit_one": "{{count}} jednostkę bez odpowiednika zachowano bez zmian: {{examples}}.",
+      "unknownUnit_other": "{{count}} jednostek bez odpowiednika zachowano bez zmian: {{examples}}.",
+      "unknownUnit_few": "{{count}} jednostki bez odpowiednika zachowano bez zmian: {{examples}}.",
+      "unknownUnit_many": "{{count}} jednostek bez odpowiednika zachowano bez zmian: {{examples}}.",
+      "noPrices": "Ten plik nie zawiera cen — tylko teksty i ilości (np. Ausschreibungs-LV). Suma pozostaje więc 0,00.",
+      "luecken_one": "{{count}} pozycja zawiera luki do wypełnienia (Ausschreiber-/Bieterlücken); w notatkach widnieją jako ____.",
+      "luecken_other": "{{count}} pozycji zawiera luki do wypełnienia (Ausschreiber-/Bieterlücken); w notatkach widnieją jako ____.",
+      "luecken_few": "{{count}} pozycje zawierają luki do wypełnienia (Ausschreiber-/Bieterlücken); w notatkach widnieją jako ____.",
+      "luecken_many": "{{count}} pozycji zawiera luki do wypełnienia (Ausschreiber-/Bieterlücken); w notatkach widnieją jako ____."
+    }
+  }
+}

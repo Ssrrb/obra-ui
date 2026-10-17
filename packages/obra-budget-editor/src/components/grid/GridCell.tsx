@@ -1,0 +1,415 @@
+import React from 'react';
+import { useTranslation } from 'react-i18next';
+import type { CostItem } from '@/types/costModel';
+import type { GridColumn } from '@/types/costModel';
+import { isContainerRowType } from '@/types/costModel';
+import { formatNumber, formatCurrency } from '@/utils/formatting';
+import { isCellEditable } from './gridConstants';
+import { useAppStore } from '@/state/appStore';
+import { formatUnit } from '@/i18n/formatUnit';
+
+interface Props {
+  item: CostItem;
+  column: GridColumn;
+  colWidth: number;
+  rowIndex: number;
+  isActive: boolean;
+  isCellSelected?: boolean;
+  hideTotal: boolean;
+  /** Heeft deze rij onderliggende rijen? Bepaalt of de chevron klikbaar is. */
+  hasChildren?: boolean;
+  isChapterFooter?: boolean;
+  resourceTotals?: Record<string, number>;
+  /** Cel-niveau wijzigingsmarkering: deze cel is gewijzigd sinds bijhouden aan staat. */
+  isChangedCell?: boolean;
+  onToggleCollapse?: () => void;
+}
+
+export const GridCell: React.FC<Props> = React.memo(({ item, column, colWidth, rowIndex, isActive, isCellSelected, hideTotal, hasChildren, isChapterFooter, resourceTotals, isChangedCell, onToggleCollapse }) => {
+  const { t } = useTranslation('grid');
+  const gridView = useAppStore((s) => s.gridView);
+  const items = useAppStore((s) => s.items);
+
+  const getRowTypeAbbr = (): string => {
+    switch (item.rowType) {
+      case 'chapter':
+      case 'begrotingspost':
+      case 'bewakingspost':
+      case 'regel':
+      case 'tekstregel':
+      case 'witregel':
+      case 'staart_ukk':
+      case 'staart_ak':
+      case 'staart_wr':
+      case 'staart_afronding':
+        return t(`rowTypeAbbr.${item.rowType}`);
+      default: return '';
+    }
+  };
+
+  const rt = item.rowType;
+  const isRegel = rt === 'regel';
+  const isBgr = rt === 'begrotingspost';
+  const isBwk = rt === 'bewakingspost';
+
+  // In UI-2 (wpcalc), chapter rows show NO values in any numeric column
+  const isChapterInWpcalc = rt === 'chapter' && gridView === 'wpcalc';
+
+  const getValue = (): string => {
+    // Chapter footer rows: show aggregated totals
+    if (isChapterFooter) {
+      if (column.key === 'description') return '+';
+      if (!resourceTotals) return '';
+      // Show resource breakdown columns
+      switch (column.key) {
+        case 'hoeveelheid': {
+          // Sum uren from the chapter's children
+          const chapterId = item.id.replace('footer:', '');
+          let uren = 0;
+          for (const it of items) {
+            if (it.rowType !== 'regel') continue;
+            // Check if item belongs to this chapter
+            let parentId = it.parentId;
+            let belongs = false;
+            while (parentId) {
+              if (parentId === chapterId) { belongs = true; break; }
+              const p = items.find(x => x.id === parentId);
+              if (!p) break;
+              parentId = p.parentId;
+            }
+            if (!belongs) continue;
+            const qty = it.quantity ?? 0;
+            const norm = it.normQuantity ?? 0;
+            const cap = it.normFactor ?? 1;
+            uren += qty * norm / (cap || 1);
+          }
+          return uren ? formatNumber(uren) : '';
+        }
+        case 'arbeidTotal':
+        case 'materiaalTotal':
+        case 'materieelTotal':
+        case 'stelpostTotal':
+        case 'onderaannemingTotal': {
+          const val = resourceTotals[column.key];
+          return val ? formatCurrency(val) : '';
+        }
+        case 'unitPrice': {
+          // Subtotaal = sum of all resource columns
+          const sum = (resourceTotals.arbeidTotal || 0) + (resourceTotals.materiaalTotal || 0) +
+            (resourceTotals.materieelTotal || 0) + (resourceTotals.stelpostTotal || 0) +
+            (resourceTotals.onderaannemingTotal || 0);
+          return sum ? formatCurrency(sum) : '';
+        }
+        case 'total': {
+          // Look up chapter's total
+          const chapterId = item.id.replace('footer:', '');
+          const chapter = items.find(it => it.id === chapterId);
+          return chapter ? formatCurrency(chapter.total) : '';
+        }
+        default: return '';
+      }
+    }
+
+    // Chapters in UI-2: only show description (and chapterCode/paragraphCode).
+    // De uren-som staat NIET op de hoofdstukrij maar alleen op de footerrij
+    // (de blauwe "+"-optelling onderaan) — daar is hij ook bewerkbaar.
+    if (isChapterInWpcalc && column.key !== 'description' && column.key !== 'chapterCode'
+      && column.key !== 'paragraphCode' && column.key !== 'rowNumber') {
+      return '';
+    }
+
+    switch (column.key) {
+      case 'sortIndex':
+        return String(rowIndex + 1);
+      case 'rowType':
+        return getRowTypeAbbr();
+      case 'branch': {
+        const state = useAppStore.getState();
+        const branches = state.schedule.branches ?? [];
+        const branchId = item.branchId ?? 'main';
+        const branch = branches.find(b => b.id === branchId);
+        return branch?.name ?? 'main';
+      }
+      case 'rowNumber':
+        return item.nr ?? '';
+      case 'quantity':
+        if (rt.startsWith('staart_')) return item.quantity != null ? `${item.quantity}%` : '';
+        return (isRegel || isBgr || isBwk) ? formatNumber(item.quantity) : '';
+      case 'productienorm':
+        return isRegel ? formatNumber(item.normQuantity) : '';
+      case 'productiecapaciteit':
+        return isRegel ? formatNumber(item.normFactor) : '';
+      case 'hoeveelheid': {
+        if (isRegel) {
+          // Berekend: Aantal × Productienorm / Productiecapaciteit
+          const qty = item.quantity ?? 0;
+          const norm = item.normQuantity ?? 0;
+          const cap = item.normFactor ?? 1;
+          if (qty === 0 || norm === 0) return '';
+          return formatNumber(qty * norm / (cap || 1));
+        }
+        // Op begrotingspost/bewakingspost/tekstregel: toon quantity als hoeveelheid
+        if (isBgr || isBwk || rt === 'tekstregel') return formatNumber(item.quantity);
+        return '';
+      }
+      case 'unit':
+        // Opslag blijft de code ('uur', 'st', …); alleen de weergave is vertaald.
+        return (isBgr || isBwk || isRegel || rt === 'tekstregel') ? formatUnit(item.unit, t) : '';
+      case 'verrekenbaar':
+        return rt === 'chapter' ? (item.verrekenbaar ?? '') : '';
+      case 'normUnitPrice': {
+        if (isRegel) return formatCurrency(item.normUnitPrice);
+        if (isBgr || isBwk) {
+          // Eigen prijs van een (bewakings)post: prijs/middel, plus een
+          // eventueel geïmporteerd materiaal-/loonbedrag (BasCalc pint de
+          // postprijs daar) — anders is er wél een totaal maar geen
+          // zichtbare eenheidsprijs.
+          const eigen = (item.normUnitPrice ?? 0) + (item.materialPrice ?? 0) + (item.laborPrice ?? 0);
+          return eigen !== 0 ? formatCurrency(eigen) : '';
+        }
+        return '';
+      }
+      case 'unitPrice':
+        // Eenheidsprijs: op regel, bewakingspost, begrotingspost
+        return (isRegel || isBwk || isBgr) ? formatCurrency(item.unitPrice) : '';
+      case 'total':
+        // Totaal column: only for chapters and begrotingsposten, not for regels/bewakingsposten
+        if (isRegel || rt === 'tekstregel' || rt === 'witregel') return '';
+        return hideTotal ? '' : formatCurrency(item.total);
+      case 'chapterCode': {
+        // Walk up to find top-level chapter
+        let current: CostItem | undefined = item;
+        while (current) {
+          if (current.rowType === 'chapter' && !current.parentId) return current.code || '';
+          current = items.find((i) => i.id === current!.parentId);
+        }
+        return '';
+      }
+      case 'paragraphCode': {
+        // Walk up to find depth-1 chapter (paragraaf)
+        let current: CostItem | undefined = item;
+        while (current) {
+          if (current.rowType === 'chapter' && current.depth === 1) return current.code || '';
+          current = items.find((i) => i.id === current!.parentId);
+        }
+        return '';
+      }
+      case 'tarief': {
+        if (isRegel) return item.tariefGroep ?? '';
+        return '';
+      }
+      case 'kostenEd': {
+        // Kosten per eenheid: kosteneh = normUnitPrice + laborPrice
+        if (isRegel) {
+          const nup = item.normUnitPrice ?? 0;
+          const lab = item.laborPrice ?? 0;
+          const kostenEh = nup + lab;
+          return kostenEh ? formatCurrency(kostenEh) : '';
+        }
+        if (isBgr || isBwk) {
+          // For containers: unitPrice / quantity (per-unit derived)
+          const qty = item.quantity ?? 0;
+          if (qty > 0) return formatCurrency(item.total / qty);
+          return item.unitPrice ? formatCurrency(item.unitPrice) : '';
+        }
+        return '';
+      }
+      case 'materiaalTotal':
+      case 'arbeidTotal':
+      case 'materieelTotal':
+      case 'onderaannemingTotal':
+      case 'stelpostTotal': {
+        if (!resourceTotals) return '';
+        const val = resourceTotals[column.key];
+        return val ? formatCurrency(val) : '';
+      }
+      default:
+        return String(item[column.key as keyof CostItem] ?? '');
+    }
+  };
+
+  // Generate cell-specific formula tooltip
+  const getCellTooltip = (): string => {
+    const fmtN = (v: number | null) => v != null ? formatNumber(v) : '?';
+    const fmtC = (v: number | null) => v != null ? formatCurrency(v) : '?';
+    const isWpc = gridView === 'wpcalc';
+
+    if (isChapterFooter) return '';
+
+    switch (column.key) {
+      case 'hoeveelheid':
+        if (isRegel) {
+          const q = item.quantity ?? 0;
+          const n = item.normQuantity ?? 0;
+          const c = item.normFactor ?? 1;
+          const hv = q * n / (c || 1);
+          if (isWpc) return t('common:tooltip.hoursFormula', { qty: fmtN(item.quantity), norm: fmtN(item.normQuantity), result: formatNumber(hv) });
+          return t('common:tooltip.quantityFormula', { qty: fmtN(item.quantity), norm: fmtN(item.normQuantity), cap: fmtN(item.normFactor), result: formatNumber(hv) });
+        }
+        if (isBgr || isBwk) return t('common:tooltip.quantityDirect', { qty: fmtN(item.quantity) });
+        return '';
+      case 'normUnitPrice':
+        if (isRegel && isWpc) return t('common:tooltip.materialPricePerUnit', { price: fmtC(item.normUnitPrice) });
+        return isRegel ? t('common:tooltip.resourcePrice', { price: fmtC(item.normUnitPrice) }) : '';
+      case 'arbeidTotal': {
+        if (!isRegel || !resourceTotals) return '';
+        const lab = item.laborPrice ?? 0;
+        const qty = item.quantity ?? 0;
+        return t('common:tooltip.laborFormula', { laborPrice: fmtC(lab), qty: fmtN(qty), result: fmtC(resourceTotals.arbeidTotal || 0) });
+      }
+      case 'materiaalTotal': {
+        if (!isRegel || !resourceTotals) return '';
+        const nup = item.normUnitPrice ?? 0;
+        const qty = item.quantity ?? 0;
+        return t('common:tooltip.materialFormula', { price: fmtC(nup), qty: fmtN(qty), result: fmtC(resourceTotals.materiaalTotal || 0) });
+      }
+      case 'materieelTotal':
+      case 'stelpostTotal':
+      case 'onderaannemingTotal': {
+        if (!isRegel || !resourceTotals) return '';
+        const val = resourceTotals[column.key] || 0;
+        const label = t(`resourceNames.${column.key}`);
+        return t('common:tooltip.resourceCostFormula', { label, result: fmtC(val) });
+      }
+      case 'kostenEd': {
+        if (isRegel) {
+          const nup = item.normUnitPrice ?? 0;
+          const lab = item.laborPrice ?? 0;
+          return t('common:tooltip.costPerUnitFormula', { price: fmtC(nup), labor: fmtC(lab), result: fmtC(nup + lab) });
+        }
+        return '';
+      }
+      case 'unitPrice':
+        if (isRegel) {
+          if (isWpc) {
+            const qty = item.quantity ?? 0;
+            const nup = item.normUnitPrice ?? 0;
+            const lab = item.laborPrice ?? 0;
+            return t('common:tooltip.subtotalFormula', { qty: fmtN(qty), costPerUnit: fmtC(nup + lab), result: fmtC(item.unitPrice) });
+          }
+          const q = item.quantity ?? 0;
+          const n = item.normQuantity ?? 0;
+          const c = item.normFactor ?? 1;
+          const hv = q * n / (c || 1);
+          return t('common:tooltip.unitPriceFormula', { qty: formatNumber(hv), resourcePrice: fmtC(item.normUnitPrice), result: fmtC(item.unitPrice) });
+        }
+        if (isBwk) return t('common:tooltip.unitPriceSumRules', { result: fmtC(item.unitPrice) });
+        if (isBgr) return t('common:tooltip.unitPriceDivFormula', { total: fmtC(item.total), qty: fmtN(item.quantity), result: fmtC(item.unitPrice) });
+        return '';
+      case 'total':
+        if (isRegel) {
+          if (isWpc) return t('common:tooltip.totalWpcalc', { result: fmtC(item.total) });
+          return t('common:tooltip.totalFromUnitPrice', { result: fmtC(item.unitPrice) });
+        }
+        if (isBwk) return t('common:tooltip.totalSumRules', { result: fmtC(item.total) });
+        if (isBgr) return t('common:tooltip.totalSumMonitorPosts', { result: fmtC(item.total) });
+        if (rt === 'chapter') return t('common:tooltip.totalSumChildren', { result: fmtC(item.total) });
+        return '';
+      default:
+        return column.tooltip ?? '';
+    }
+  };
+
+  const editable = isCellEditable(column.key, rt, gridView);
+  const alignClass = column.align === 'right' ? ' align-right' : column.align === 'center' ? ' align-center' : '';
+  const isChapterBold = item.rowType === 'chapter';
+  const canCollapse = isContainerRowType(item.rowType);
+
+  const isWitregel = item.rowType === 'witregel';
+  const isDescCol = column.key === 'description';
+  const isHoeveelheidCol = column.key === 'hoeveelheid' || column.key === 'quantity';
+  const showExcelIcon = isHoeveelheidCol && !!item.excelLink;
+  const showQuantityLinkIcon = isHoeveelheidCol && !!item.quantityLink;
+  const cellTooltip = getCellTooltip();
+
+  // Sommen op posten zijn afgeleide waarden (optelling van onderliggende
+  // regels) — cursief + eigen kleur, zodat ze niet als dubbele invoer lezen.
+  const isDerivedSum = (isBgr || isBwk) && column.type === 'computed' && !isChapterFooter;
+
+  return (
+    <div
+      className={`grid-cell${isActive ? ' active' : ''}${isCellSelected ? ' cell-selected' : ''}${alignClass}${isChapterBold ? ' bold' : ''}${column.key === 'rowType' ? ' type-cell' : ''}${isWitregel && isDescCol ? ' witregel-desc' : ''}${editable ? ' editable-value' : ''}${isDescCol ? ' col-description' : ''}${isDerivedSum ? ' derived-sum' : ''}${isChangedCell ? ' changed-cell' : ''}`}
+      title={cellTooltip || undefined}
+      style={{
+        width: colWidth,
+        minHeight: 24,
+        paddingLeft: isDescCol ? (gridView === 'wpcalc'
+          ? (item.rowType === 'chapter' && item.depth === 0 ? 4 : 4 + item.depth * 16) // UI-2: top chapters flush, rest indented by depth
+          : item.depth * 16 + 4
+        ) : undefined,
+      }}
+    >
+      {/* Containerrijen houden de plek van de chevron altijd vrij, ook als er
+          niets onder hangt — anders verspringt de omschrijving per rij. Alleen
+          rijen die echt iets bevatten krijgen een klikbare knop. */}
+      {isDescCol && canCollapse && (
+        hasChildren ? (
+          <button
+            className={`grid-collapse-btn${item.isCollapsed ? ' is-collapsed' : ''}`}
+            onClick={(e) => {
+              e.stopPropagation();
+              onToggleCollapse?.();
+            }}
+            title={item.isCollapsed ? t('expand') : t('collapse')}
+            aria-label={item.isCollapsed ? t('expand') : t('collapse')}
+            aria-expanded={!item.isCollapsed}
+          >
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <polyline points="2,3 5,7 8,3" />
+            </svg>
+          </button>
+        ) : (
+          <span className="grid-collapse-spacer" aria-hidden="true" />
+        )
+      )}
+      {showExcelIcon && (
+        <svg className="grid-excel-link-icon" width="10" height="10" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M4.715 6.542 3.343 7.914a3 3 0 1 0 4.243 4.243l1.828-1.829A3 3 0 0 0 8.586 5.5L8 6.086a1.002 1.002 0 0 0-.154.199 2 2 0 0 1 .861 3.337L6.88 11.45a2 2 0 1 1-2.83-2.83l.793-.792a4.018 4.018 0 0 1-.128-1.287z"/>
+          <path d="M11.286 9.458 12.657 8.086a3 3 0 0 0-4.243-4.243L6.586 5.672A3 3 0 0 0 7.414 10.5l.586-.586a1.002 1.002 0 0 0 .154-.199 2 2 0 0 1-.861-3.337L9.12 4.55a2 2 0 1 1 2.83 2.83l-.793.792c.112.42.155.855.128 1.287z"/>
+        </svg>
+      )}
+      {showQuantityLinkIcon && (
+        <span title={`🔗 ${item.quantityLink!.source}`} style={{ fontSize: 9, marginRight: 2, color: '#3b82f6' }}>🔗</span>
+      )}
+      {(isWitregel || item.rowType === 'tekstregel') && isDescCol ? (
+        // Wit- en tekstregels: terugloop — de rij groeit mee (getRowHeight).
+        // Opmaak geldt voor de hele regel (zie tabblad Tekstopmaak).
+        <span style={{
+          whiteSpace: 'pre-wrap',
+          overflow: 'hidden',
+          wordBreak: 'break-word',
+          lineHeight: '13px',
+          flex: 1,
+          fontWeight: item.textBold ? 700 : undefined,
+          fontStyle: item.textItalic ? 'italic' : undefined,
+          textDecoration: item.textUnderline ? 'underline' : undefined,
+          textAlign: item.textAlign && item.textAlign !== 'left' ? item.textAlign : undefined,
+          fontSize: item.textSize ? `${item.textSize}px` : undefined,
+        }}>{getValue()}</span>
+      ) : (
+        <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{getValue()}</span>
+      )}
+      {/* Btw-tarief-markering: klein label achter de omschrijving zodat
+          zichtbaar is welke onderdelen laag/hoog belast zijn (rechtermuisknop
+          → Btw-tarief). Kinderen zonder eigen markering erven van hun ouder. */}
+      {isDescCol && item.btwTarief && (
+        <span
+          title={item.btwTarief === 'laag'
+            ? t('vat.lowBadgeTitle')
+            : t('vat.highBadgeTitle')}
+          style={{
+            marginLeft: 6, flexShrink: 0, fontSize: 9, lineHeight: '12px',
+            padding: '0 4px', borderRadius: 6,
+            background: item.btwTarief === 'laag' ? 'rgba(16,185,129,0.15)' : 'rgba(217,119,6,0.15)',
+            color: item.btwTarief === 'laag' ? '#059669' : '#B45309',
+            border: `1px solid ${item.btwTarief === 'laag' ? 'rgba(5,150,105,0.4)' : 'rgba(180,83,9,0.4)'}`,
+          }}
+        >
+          {item.btwTarief === 'laag' ? t('vat.lowBadge') : t('vat.highBadge')}
+        </span>
+      )}
+    </div>
+  );
+});
+
+GridCell.displayName = 'GridCell';

@@ -1,0 +1,286 @@
+import React, { useRef, useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
+import { COST_UNITS, getColumnsForView, isCellEditable } from './gridConstants';
+import { formatUnit } from '@/i18n/formatUnit';
+import { formatNumberForEdit } from '@/utils/formatting';
+import { useAppStore } from '@/state/appStore';
+import { isContainerRowType } from '@/types/costModel';
+import type { CostItem } from '@/types/costModel';
+
+interface Props {
+  item: CostItem;
+  colIndex: number;
+  style: React.CSSProperties;
+  onCommit: (item: CostItem, colIndex: number, value: string) => void;
+}
+
+export const GridCellEditor: React.FC<Props> = ({ item, colIndex, style, onCommit }) => {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const selectRef = useRef<HTMLSelectElement>(null);
+  const { t } = useTranslation('grid');
+  const { editValue, selectOnFocus, stopEditing, startEditing, setActiveCell, activeRow, gridView, schedule } = useAppStore();
+  // Mét branchesEnabled: kolomindices moeten gelijk lopen met het gerenderde grid.
+  const columns = getColumnsForView(gridView, !!schedule.branchesEnabled);
+  const col = columns[colIndex];
+
+  // Only consider columns that are actually editable for THIS item's rowType
+  const editableCols = columns.map((c, i) => ({ ...c, index: i })).filter(c => isCellEditable(c.key, item.rowType, gridView));
+
+  const isWitregelDesc = item.rowType === 'witregel' && col.key === 'description';
+  // Tekstregels bewerken met terugloop (textarea): een enkelregel-input
+  // toont van een lange toelichting alleen het staartje.
+  const isTekstregelDesc = item.rowType === 'tekstregel' && col.key === 'description';
+  const isTextareaDesc = isWitregelDesc || isTekstregelDesc;
+
+  const isSelect = col.type === 'unit-select' || col.type === 'vn-select' || col.type === 'tarief-select';
+
+  useEffect(() => {
+    if (isSelect) {
+      const el = selectRef.current;
+      if (el) {
+        el.focus();
+        // Auto-open dropdown
+        try { el.showPicker(); } catch { /* not supported in all browsers */ }
+      }
+    } else if (isTextareaDesc) {
+      const ta = textareaRef.current;
+      if (ta) {
+        ta.focus();
+        if (selectOnFocus) ta.select();
+        else ta.setSelectionRange(ta.value.length, ta.value.length);
+      }
+    } else {
+      const input = inputRef.current;
+      if (input) {
+        input.focus();
+        if (selectOnFocus) {
+          input.select();
+        } else {
+          input.setSelectionRange(input.value.length, input.value.length);
+        }
+      }
+    }
+  }, [col.type, selectOnFocus, isTextareaDesc, isSelect]);
+
+  const initialValue = (() => {
+    if (editValue) return editValue;
+    const keyMap: Record<string, string> = { productienorm: 'normQuantity', productiecapaciteit: 'normFactor', hoeveelheid: 'quantity' };
+    const fieldKey = keyMap[col.key] ?? col.key;
+    const raw = item[fieldKey as keyof CostItem];
+    // Post-prijs: als de eigen prijs in materiaal/loon zit (BasCalc-import),
+    // start de editor met die effectieve prijs zodat je hem kunt aanpassen.
+    if (col.key === 'normUnitPrice'
+      && (item.rowType === 'begrotingspost' || item.rowType === 'bewakingspost')
+      && (raw === null || raw === undefined)) {
+      const eigen = (item.materialPrice ?? 0) + (item.laborPrice ?? 0);
+      if (eigen !== 0) return formatNumberForEdit(eigen);
+    }
+    if (raw === null || raw === undefined) return '';
+    if (col.type === 'currency' || col.type === 'number' || col.type === 'computed') {
+      // NL-notatie (komma), zodat een ongewijzigde commit exact round-tript;
+      // "6.66" zou door de NL-parser als 666 gelezen worden.
+      return formatNumberForEdit(raw as number);
+    }
+    return String(raw);
+  })();
+
+  // Zelfde inspringing als GridCell (padding per diepte + chevron op
+  // containerrijen), zodat de tekst tijdens het bewerken op zijn plek
+  // blijft staan in plaats van naar de linkerrand te springen.
+  const descPaddingLeft = (() => {
+    if (col.key !== 'description') return undefined;
+    const base = gridView === 'wpcalc'
+      ? (item.rowType === 'chapter' && item.depth === 0 ? 4 : 4 + item.depth * 16)
+      : item.depth * 16 + 4;
+    return base + (isContainerRowType(item.rowType) ? 16 : 0);
+  })();
+  const editorStyle = descPaddingLeft !== undefined ? { ...style, paddingLeft: descPaddingLeft } : style;
+
+  // Alleen committen als de tekst echt gewijzigd is: klik-in/klik-uit of
+  // Tab-en door cellen mag waarden nooit herschrijven (en vult de
+  // geschiedenis niet met lege bewerkingen).
+  const commitIfChanged = useCallback((value: string) => {
+    if (value !== initialValue) onCommit(item, colIndex, value);
+  }, [initialValue, onCommit, item, colIndex]);
+
+  const moveToNextCell = useCallback((shift: boolean) => {
+    const currentEditIdx = editableCols.findIndex(c => c.index === colIndex);
+    if (shift) {
+      if (currentEditIdx > 0) {
+        setActiveCell(activeRow, editableCols[currentEditIdx - 1].index, item.id);
+      } else if (activeRow > 0) {
+        // Moving to previous row — we don't know that item's ID, keep current
+        setActiveCell(activeRow - 1, editableCols[editableCols.length - 1].index);
+      }
+    } else {
+      if (currentEditIdx < editableCols.length - 1) {
+        setActiveCell(activeRow, editableCols[currentEditIdx + 1].index, item.id);
+      } else {
+        // Moving to next row — we don't know that item's ID, keep current
+        setActiveCell(activeRow + 1, editableCols[0].index);
+      }
+    }
+  }, [colIndex, activeRow, editableCols, setActiveCell, item.id]);
+
+  /**
+   * Pijl omhoog/omlaag verspringt altijd naar de vorige/volgende rij — ongeacht
+   * het rijtype en ongeacht welke editor er openstaat.
+   *
+   * Eerder gold dat alleen voor de gewone invoervelden: in een keuzelijst
+   * (eenheid, S, tarief) liep de pijl door de opties en in de tekstregel-editor
+   * door de tekstregels, waardoor je in zo'n cel niet verder kwam. Waarden kies
+   * je in een keuzelijst nog steeds door de letter te typen.
+   */
+  const gaNaarRij = useCallback((delta: -1 | 1, waarde?: string) => {
+    const doel = activeRow + delta;
+    if (doel < 0) return;
+    if (waarde !== undefined) commitIfChanged(waarde);
+    stopEditing();
+    setActiveCell(doel, colIndex);
+    requestAnimationFrame(() => startEditing());
+  }, [activeRow, colIndex, commitIfChanged, stopEditing, setActiveCell, startEditing]);
+
+  // Block editing for cells not editable on this rowType
+  if (!isCellEditable(col.key, item.rowType, gridView)) {
+    stopEditing();
+    return null;
+  }
+
+  if (isSelect) {
+    const isUnit = col.type === 'unit-select';
+    const options: string[] = col.type === 'tarief-select' ? ['A', 'B', 'C'] : col.type === 'vn-select' ? ['V', 'A', 'N', 'F'] : [...COST_UNITS];
+    const defaultVal = col.type === 'tarief-select' ? (item.tariefGroep ?? 'A') : col.type === 'vn-select' ? (item.verrekenbaar ?? 'V') : String(item.unit);
+    // Een afwijkende eenheid (bv. uit een oudere import) als optie behouden,
+    // anders toont de keuzelijst ongemerkt de eerste eenheid.
+    if (isUnit && defaultVal && !options.includes(defaultVal)) options.push(defaultVal);
+    return (
+      <select
+        ref={selectRef}
+        defaultValue={defaultVal}
+        style={style}
+        className="grid-cell-editor"
+        onChange={(e) => {
+          onCommit(item, colIndex, e.target.value);
+          stopEditing();
+          moveToNextCell(false);
+        }}
+        onBlur={() => stopEditing()}
+        onKeyDown={(e) => {
+          if (e.key === 'Escape') {
+            e.preventDefault();
+            stopEditing();
+          } else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+            // Rij verspringen gaat vóór het doorlopen van de keuzelijst.
+            e.preventDefault();
+            const val = (e.target as HTMLSelectElement).value;
+            if (val !== defaultVal) onCommit(item, colIndex, val);
+            gaNaarRij(e.key === 'ArrowDown' ? 1 : -1);
+          } else if (e.key === 'Tab') {
+            e.preventDefault();
+            const val = (e.target as HTMLSelectElement).value;
+            if (val !== defaultVal) onCommit(item, colIndex, val);
+            stopEditing();
+            moveToNextCell(e.shiftKey);
+            requestAnimationFrame(() => startEditing());
+          } else if (col.type === 'vn-select' || col.type === 'tarief-select') {
+            // Direct keyboard selection for V/A/N/F or A/B/C
+            const key = e.key.toUpperCase();
+            if (options.includes(key)) {
+              e.preventDefault();
+              onCommit(item, colIndex, key);
+              stopEditing();
+              moveToNextCell(false);
+            }
+          }
+        }}
+      >
+        {/* Eenheden: vertaald label, maar de CODE is de waarde die opgeslagen wordt. */}
+        {options.map((u) => (
+          <option key={u} value={u}>{isUnit ? formatUnit(u, t) : u}</option>
+        ))}
+      </select>
+    );
+  }
+
+  // Wit- en tekstregels bewerken in een textarea met terugloop
+  if (isTextareaDesc) {
+    const lineCount = Math.max(3, (initialValue.match(/\n/g) || []).length + 2);
+    // Tekstregel: minimaal de (meegegroeide) rijhoogte, zodat de hele
+    // toelichting tijdens het bewerken zichtbaar blijft.
+    const rowH = typeof style.height === 'number' ? style.height : 24;
+    const taHeight = isTekstregelDesc ? Math.max(rowH + 2, 64) : lineCount * 24;
+    return (
+      <textarea
+        ref={textareaRef}
+        defaultValue={initialValue}
+        style={{ ...editorStyle, height: taHeight, resize: 'vertical', whiteSpace: 'pre-wrap', lineHeight: '13px' }}
+        className="grid-cell-editor grid-cell-editor-textarea"
+        onBlur={(e) => {
+          commitIfChanged(e.target.value);
+          stopEditing();
+        }}
+        onKeyDown={(e) => {
+          if (e.key === 'Escape') {
+            e.preventDefault();
+            stopEditing();
+          } else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+            // Ook hier gaat rij verspringen vóór; binnen de tekst navigeer je
+            // met Home/End of de muis.
+            e.preventDefault();
+            gaNaarRij(e.key === 'ArrowDown' ? 1 : -1, (e.target as HTMLTextAreaElement).value);
+          } else if (e.key === 'Tab') {
+            e.preventDefault();
+            commitIfChanged((e.target as HTMLTextAreaElement).value);
+            stopEditing();
+            moveToNextCell(e.shiftKey);
+            requestAnimationFrame(() => startEditing());
+          } else if (isTekstregelDesc && e.key === 'Enter' && !e.shiftKey) {
+            // Tekstregel: Enter = bevestigen (Shift+Enter voor een nieuwe regel)
+            e.preventDefault();
+            commitIfChanged((e.target as HTMLTextAreaElement).value);
+            stopEditing();
+            setActiveCell(activeRow + 1, colIndex);
+          }
+          // Witregel: Enter voegt een nieuwe regel toe (textarea-default)
+        }}
+      />
+    );
+  }
+
+  return (
+    <input
+      ref={inputRef}
+      defaultValue={initialValue}
+      style={editorStyle}
+      className="grid-cell-editor"
+      onBlur={(e) => {
+        commitIfChanged(e.target.value);
+        stopEditing();
+      }}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          commitIfChanged((e.target as HTMLInputElement).value);
+          stopEditing();
+          setActiveCell(activeRow + 1, colIndex);
+        } else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+          // Doorlopen van een kolom: bevestigen en meteen de volgende cel
+          // bewerken, zonder tussendoor te hoeven klikken of Enter te drukken.
+          e.preventDefault();
+          gaNaarRij(e.key === 'ArrowDown' ? 1 : -1, (e.target as HTMLInputElement).value);
+        } else if (e.key === 'Escape') {
+          e.preventDefault();
+          stopEditing();
+        } else if (e.key === 'Tab') {
+          e.preventDefault();
+          commitIfChanged((e.target as HTMLInputElement).value);
+          stopEditing();
+          moveToNextCell(e.shiftKey);
+          // Re-enter edit mode in the next cell
+          requestAnimationFrame(() => startEditing());
+        }
+      }}
+    />
+  );
+};

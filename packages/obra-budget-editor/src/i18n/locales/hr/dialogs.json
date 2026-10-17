@@ -1,0 +1,103 @@
+{
+  "columnMapping": {
+    "title": "Poveži stupce",
+    "intro": "Povežite svaki stupac iz <b>{{name}}</b> s odgovarajućim poljem troškovnika. Stupci postavljeni na „— zanemari —” preskaču se.",
+    "columnN": "Stupac {{n}}",
+    "columnsLinked_one": "{{count}} stupac povezan",
+    "columnsLinked_few": "{{count}} stupca povezana",
+    "columnsLinked_other": "{{count}} stupaca povezano",
+    "rows": "{{count}} redaka",
+    "linkDescriptionFirst": "najprije povežite stupac „Opis”",
+    "cancel": "Odustani",
+    "import": "Uvezi"
+  },
+  "quantityPicker": {
+    "title": "Poveži količinu",
+    "tabSpreadsheet": "Proračunska tablica",
+    "tabPdf": "PDF mjerenje",
+    "tabIfc": "IFC element",
+    "cellNotNumeric": "Ćelija ne sadrži valjani broj",
+    "noSheets": "Još nema listova. Najprije izradite proračunsku tablicu.",
+    "sheet": "List",
+    "cellReference": "Referenca ćelije (npr. A5 ili B12)",
+    "value": "Vrijednost",
+    "empty": "(prazno)",
+    "linkCell": "Poveži ćeliju",
+    "noPdfMeasurements": "Još nema PDF mjerenja. Najprije otvorite PDF na kartici PDF i izradite mjerenja.",
+    "sumLengths": "Σ Sve duljine",
+    "sumAreas": "Σ Sve površine",
+    "individualMeasurements": "Pojedinačna mjerenja:",
+    "noIfcElements": "Još nema IFC elemenata. Otvorite IFC datoteku na kartici 3D i odaberite element.",
+    "cancel": "Odustani"
+  },
+  "excelPicker": {
+    "title": "Poveži s Excelom",
+    "cannotReadFile": "Nije moguće pročitati datoteku",
+    "chooseFile": "Odaberi datoteku...",
+    "noFileSelected": "Nije odabrana datoteka",
+    "loadingFile": "Učitavanje datoteke...",
+    "cancel": "Odustani",
+    "select": "Odaberi"
+  },
+  "costItemPicker": {
+    "title": "Poveži s retkom troškovnika",
+    "searchPlaceholder": "Traži po opisu ili šifri...",
+    "suggestions": "Prijedlozi",
+    "results": "Rezultati ({{count}})",
+    "allLines": "Svi redci",
+    "unlink": "Ukloni poveznicu",
+    "cancel": "Odustani",
+    "link": "Poveži"
+  },
+  "resourceTypes": {
+    "arbeid": "Rad",
+    "materieel": "Oprema",
+    "materiaal": "Materijal",
+    "onderaannemer": "Podizvođač",
+    "overig": "Ostalo"
+  },
+  "undo": {
+    "addResource": "Dodavanje resursa",
+    "wizard": "Čarobnjak: {{name}}"
+  },
+  "wizard": {
+    "previewTitle": "Pregled — {{name}}"
+  },
+  "importWarnings": {
+    "title": "Obavijesti o uvozu",
+    "intro_one": "Uvoz {{source}} završen je s {{count}} obaviješću:",
+    "intro_few": "Uvoz {{source}} završen je s {{count}} obavijesti:",
+    "intro_other": "Uvoz {{source}} završen je s {{count}} obavijesti:",
+    "copy": "Kopiraj",
+    "copied": "Kopirano",
+    "close": "Zatvori",
+    "bc3": {
+      "unknownConceptInDecomposition": "Nepoznata stavka „{{concept}}” u raščlambi „{{parent}}” — preskočeno.",
+      "unknownConceptUnder": "Nepoznata stavka „{{concept}}” pod „{{parent}}” — preskočeno.",
+      "zeroYieldDecomposition": "Jedna ili više stavki ima raščlambu bez količina — za njih je upotrijebljena jedinična cijena iz zapisa ~C.",
+      "noRootStructure": "Nije pronađena korijenska struktura (##) s raščlambom — pojedine grane uvezene su na najvišu razinu.",
+      "noProjectStructure": "Nije pronađena struktura projekta (##/#) — stavke su uvezene kao cjenik u jedno poglavlje.",
+      "priceMismatch_one": "Za {{count}} stavku zbroj raščlambe razlikuje se za više od 2 % od jedinične cijene u zapisu ~C ({{examples}}). Upotrijebljena je raščlamba.",
+      "priceMismatch_few": "Za {{count}} stavke zbroj raščlambe razlikuje se za više od 2 % od jedinične cijene u zapisu ~C (npr. {{examples}}). Upotrijebljena je raščlamba.",
+      "priceMismatch_other": "Za {{count}} stavki zbroj raščlambe razlikuje se za više od 2 % od jedinične cijene u zapisu ~C (npr. {{examples}}). Upotrijebljena je raščlamba.",
+      "noPrices": "Ova datoteka ne sadrži cijene — samo opise i količine (poput knjižnice izmjera). Ukupni iznos stoga ostaje 0,00.",
+      "moreWarnings_one": "… i još {{count}} slična obavijest.",
+      "moreWarnings_few": "… i još {{count}} slične obavijesti.",
+      "moreWarnings_other": "… i još {{count}} sličnih obavijesti."
+    },
+    "onlv": {
+      "leistungsbuch": "Ovo je Leistungsbuch (katalog standardnih tekstova) bez količina i cijena — sve su stavke uvezene s količinom 0.",
+      "wahlEventual_one": "{{count}} izborna stavka (Wahl-/Eventualposition) prema ÖNORM-u ne ulazi u ukupni iznos troškovnika. Uvezena je s količinom i cijenom, označena u bilješkama i postavljena na N u stupcu obračuna; ovdašnji ukupni iznos je uključuje.",
+      "wahlEventual_other": "{{count}} izbornih stavki (Wahl-/Eventualpositionen) prema ÖNORM-u ne ulazi u ukupni iznos troškovnika. Uvezene su s količinom i cijenom, označene u bilješkama i postavljene na N u stupcu obračuna; ovdašnji ukupni iznos ih uključuje.",
+      "wahlEventual_few": "{{count}} izborne stavke (Wahl-/Eventualpositionen) prema ÖNORM-u ne ulaze u ukupni iznos troškovnika. Uvezene su s količinom i cijenom, označene u bilješkama i postavljene na N u stupcu obračuna; ovdašnji ukupni iznos ih uključuje.",
+      "sumMismatch": "Ukupni iznos troškovnika u datoteci ({{file}}) razlikuje se od izračunatog zbroja stavki ({{calculated}}).",
+      "unknownUnit_one": "{{count}} jedinica bez odgovarajuće jedinice zadržana je nepromijenjena: {{examples}}.",
+      "unknownUnit_other": "{{count}} jedinica bez odgovarajuće jedinice zadržano je nepromijenjeno: {{examples}}.",
+      "unknownUnit_few": "{{count}} jedinice bez odgovarajuće jedinice zadržane su nepromijenjene: {{examples}}.",
+      "noPrices": "Ova datoteka ne sadrži cijene — samo tekstove i količine (npr. Ausschreibungs-LV). Ukupni iznos stoga ostaje 0,00.",
+      "luecken_one": "{{count}} stavka sadrži praznine za popunjavanje (Ausschreiber-/Bieterlücken); u bilješkama su prikazane kao ____.",
+      "luecken_other": "{{count}} stavki sadrži praznine za popunjavanje (Ausschreiber-/Bieterlücken); u bilješkama su prikazane kao ____.",
+      "luecken_few": "{{count}} stavke sadrže praznine za popunjavanje (Ausschreiber-/Bieterlücken); u bilješkama su prikazane kao ____."
+    }
+  }
+}

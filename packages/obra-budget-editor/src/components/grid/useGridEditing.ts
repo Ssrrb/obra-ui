@@ -1,0 +1,100 @@
+import { useCallback } from 'react';
+import i18next from 'i18next';
+import { useAppStore } from '@/state/appStore';
+import { getColumnsForView } from './gridConstants';
+import { parseNumericInput } from '@/utils/numericInput';
+import type { CostItem, CostUnit } from '@/types/costModel';
+
+export function useGridEditing() {
+  const { updateItem, pushHistory, items, gridView, prorateUrenForChapter, schedule } = useAppStore();
+
+  // Mét branchesEnabled: anders schuiven alle kolomindices één op zodra de
+  // branch-kolom zichtbaar is en schrijft een commit naar het verkeerde veld.
+  const columns = getColumnsForView(gridView, !!schedule.branchesEnabled);
+
+  const commitEdit = useCallback(
+    (item: CostItem, colIndex: number, value: string) => {
+      const col = columns[colIndex];
+      if (!col || !col.editable) return;
+
+      // WPCalc: de uren-som op de hoofdstuk-FOOTERRIJ bewerken herrekent alle
+      // regel-normen in dat hoofdstuk naar rato.
+      if (item.id.startsWith('footer:') && col.key === 'hoeveelheid') {
+        const newTotal = parseNumericInput(value);
+        if (newTotal != null && !isNaN(newTotal)) {
+          pushHistory(items, i18next.t('grid:undo.chapterHoursProrate'));
+          prorateUrenForChapter(item.id.replace('footer:', ''), newTotal);
+        }
+        return;
+      }
+      // Synthetische footerrijen verder nooit als item updaten
+      if (item.id.startsWith('footer:')) return;
+
+      // Afronding-staartregel: het ingevulde bedrag wordt een vaste
+      // sluitpost; leegmaken schakelt terug naar automatisch afronden.
+      if (item.rowType === 'staart_afronding' && col.key === 'total') {
+        const parsed = parseNumericInput(value);
+        if (parsed === null && value.trim() !== '') return;
+        pushHistory(items, i18next.t('grid:undo.fillRounding'));
+        updateItem(item.id, 'staartDoelbedrag', null);
+        updateItem(item.id, 'staartVastBedrag', parsed);
+        return;
+      }
+
+      pushHistory(items, i18next.t('grid:undo.editCell', { column: col.key }));
+
+      // Map grid column keys to CostItem field names
+      const keyMap: Record<string, string> = {
+        productienorm: 'normQuantity',
+        productiecapaciteit: 'normFactor',
+        hoeveelheid: 'quantity',
+        // UI-2 'Hst'-kolom: hoofdstuknummer leeft op CostItem.code — zonder
+        // deze mapping schrijft de edit naar een niet-bestaand veld en
+        // "gebeurt er niks" bij het wijzigen van een hoofdstuknummer.
+        chapterCode: 'code',
+      };
+      const fieldKey = keyMap[col.key] ?? col.key;
+
+      switch (col.type) {
+        case 'text':
+          updateItem(item.id, fieldKey, value);
+          break;
+        case 'number':
+        case 'currency': {
+          // Accepteert ook formules: "=12,2*2,22" of "12.2*2.2"
+          const ruw = parseNumericInput(value);
+          // Ongeldige (niet-lege) invoer wist de waarde niet
+          if (ruw === null && value.trim() !== '') break;
+          // Bedragen krijgen hoogstens twee decimalen — ook als er een
+          // formule is ingevuld die meer oplevert (=10/3). Aantallen en
+          // normen houden hun precisie; daar is meer nauwkeurigheid zinvol.
+          const parsed = (col.type === 'currency' && ruw !== null)
+            ? Math.round(ruw * 100) / 100
+            : ruw;
+          // Post-prijs: de Prijs-kolom is dé eigen prijs van een
+          // (bewakings)post. Een geïmporteerd materiaal-/loonbedrag wissen
+          // we mee, anders telt de oude prijs dubbel op bij de nieuwe.
+          if (fieldKey === 'normUnitPrice'
+            && (item.rowType === 'begrotingspost' || item.rowType === 'bewakingspost')) {
+            if (item.materialPrice != null) updateItem(item.id, 'materialPrice', null);
+            if (item.laborPrice != null) updateItem(item.id, 'laborPrice', null);
+          }
+          updateItem(item.id, fieldKey, parsed);
+          break;
+        }
+        case 'unit-select':
+          updateItem(item.id, fieldKey, value as CostUnit);
+          break;
+        case 'vn-select':
+          updateItem(item.id, fieldKey, value);
+          break;
+        case 'tarief-select':
+          updateItem(item.id, 'tariefGroep', value);
+          break;
+      }
+    },
+    [columns, updateItem, pushHistory, items, gridView, prorateUrenForChapter]
+  );
+
+  return { commitEdit };
+}

@@ -1,0 +1,96 @@
+{
+  "columnMapping": {
+    "title": "Spalten zuordnen",
+    "intro": "Ordnen Sie jede Spalte aus <b>{{name}}</b> dem richtigen Kalkulationsfeld zu. Spalten mit „— ignorieren —“ werden übersprungen.",
+    "columnN": "Spalte {{n}}",
+    "columnsLinked_one": "{{count}} Spalte zugeordnet",
+    "columnsLinked_other": "{{count}} Spalten zugeordnet",
+    "rows": "{{count}} Zeilen",
+    "linkDescriptionFirst": "zuerst eine Spalte „Beschreibung“ zuordnen",
+    "cancel": "Abbrechen",
+    "import": "Importieren"
+  },
+  "quantityPicker": {
+    "title": "Menge verknüpfen",
+    "tabSpreadsheet": "Tabelle",
+    "tabPdf": "PDF-Messung",
+    "tabIfc": "IFC-Element",
+    "cellNotNumeric": "Die Zelle enthält keine gültige Zahl",
+    "noSheets": "Noch keine Blätter. Erstellen Sie zuerst eine Tabelle.",
+    "sheet": "Blatt",
+    "cellReference": "Zellbezug (z. B. A5 oder B12)",
+    "value": "Wert",
+    "empty": "(leer)",
+    "linkCell": "Zelle verknüpfen",
+    "noPdfMeasurements": "Noch keine PDF-Messungen. Öffnen Sie zuerst ein PDF im PDF-Register und erstellen Sie Messungen.",
+    "sumLengths": "Σ Alle Längen",
+    "sumAreas": "Σ Alle Flächen",
+    "individualMeasurements": "Einzelne Messungen:",
+    "noIfcElements": "Noch keine IFC-Elemente. Öffnen Sie eine IFC-Datei im 3D-Register und wählen Sie ein Element aus.",
+    "cancel": "Abbrechen"
+  },
+  "excelPicker": {
+    "title": "Mit Excel verknüpfen",
+    "cannotReadFile": "Datei kann nicht gelesen werden",
+    "chooseFile": "Datei wählen …",
+    "noFileSelected": "Keine Datei ausgewählt",
+    "loadingFile": "Datei wird geladen …",
+    "cancel": "Abbrechen",
+    "select": "Auswählen"
+  },
+  "costItemPicker": {
+    "title": "Mit Kalkulationszeile verknüpfen",
+    "searchPlaceholder": "Nach Beschreibung oder Code suchen …",
+    "suggestions": "Vorschläge",
+    "results": "Ergebnisse ({{count}})",
+    "allLines": "Alle Zeilen",
+    "unlink": "Verknüpfung aufheben",
+    "cancel": "Abbrechen",
+    "link": "Verknüpfen"
+  },
+  "resourceTypes": {
+    "arbeid": "Lohn",
+    "materieel": "Gerät",
+    "materiaal": "Material",
+    "onderaannemer": "Nachunternehmer",
+    "overig": "Sonstiges"
+  },
+  "undo": {
+    "addResource": "Betriebsmittel hinzufügen",
+    "wizard": "Assistent: {{name}}"
+  },
+  "wizard": {
+    "previewTitle": "Vorschau — {{name}}"
+  },
+  "importWarnings": {
+    "title": "Importhinweise",
+    "intro_one": "Der Import von {{source}} wurde mit {{count}} Hinweis abgeschlossen:",
+    "intro_other": "Der Import von {{source}} wurde mit {{count}} Hinweisen abgeschlossen:",
+    "copy": "Kopieren",
+    "copied": "Kopiert",
+    "close": "Schließen",
+    "bc3": {
+      "unknownConceptInDecomposition": "Unbekannter Code „{{concept}}“ in der Zerlegung von „{{parent}}“ — übersprungen.",
+      "unknownConceptUnder": "Unbekannter Code „{{concept}}“ unter „{{parent}}“ — übersprungen.",
+      "zeroYieldDecomposition": "Eine oder mehrere Positionen haben eine Zerlegung ohne Mengenansätze — für diese wurde der Einheitspreis aus dem ~C-Datensatz verwendet.",
+      "noRootStructure": "Keine Stammstruktur (##) mit Zerlegung gefunden — einzelne Zweige wurden auf oberster Ebene importiert.",
+      "noProjectStructure": "Keine Projektstruktur (##/#) gefunden — die Einträge wurden als Preisdatenbank unter einem einzigen Titel importiert.",
+      "priceMismatch_one": "Bei {{count}} Position weicht die Summe der Zerlegung um mehr als 2 % vom Einheitspreis im ~C-Datensatz ab ({{examples}}). Die Zerlegung wurde verwendet.",
+      "priceMismatch_other": "Bei {{count}} Positionen weicht die Summe der Zerlegung um mehr als 2 % vom Einheitspreis im ~C-Datensatz ab (z. B. {{examples}}). Die Zerlegung wurde verwendet.",
+      "noPrices": "Diese Datei enthält keine Preise — nur Beschreibungen und Mengen (wie eine Aufmaßbibliothek). Die Summe bleibt daher 0,00.",
+      "moreWarnings_one": "… und {{count}} weiterer ähnlicher Hinweis.",
+      "moreWarnings_other": "… und {{count}} weitere ähnliche Hinweise."
+    },
+    "onlv": {
+      "leistungsbuch": "Dies ist ein Leistungsbuch (Katalog standardisierter Texte) ohne Mengen und Preise — alle Positionen wurden mit Menge 0 importiert.",
+      "wahlEventual_one": "{{count}} Wahl-/Eventualposition zählt in der ÖNORM nicht zur LV-Summe. Sie wurde mit Menge und Preis importiert, in den Notizen markiert und in der Spalte Verrechenbar auf N gesetzt; die Summe hier enthält sie jedoch.",
+      "wahlEventual_other": "{{count}} Wahl-/Eventualpositionen zählen in der ÖNORM nicht zur LV-Summe. Sie wurden mit Menge und Preis importiert, in den Notizen markiert und in der Spalte Verrechenbar auf N gesetzt; die Summe hier enthält sie jedoch.",
+      "sumMismatch": "Die LV-Summe in der Datei ({{file}}) weicht von der berechneten Summe der Positionen ({{calculated}}) ab.",
+      "unknownUnit_one": "{{count}} Einheit ohne Entsprechung wurde unverändert übernommen: {{examples}}.",
+      "unknownUnit_other": "{{count}} Einheiten ohne Entsprechung wurden unverändert übernommen: {{examples}}.",
+      "noPrices": "Diese Datei enthält keine Preise — nur Texte und Mengen (z. B. ein Ausschreibungs-LV). Die Summe bleibt daher 0,00.",
+      "luecken_one": "{{count}} Position enthält auszufüllende Lücken (Ausschreiber-/Bieterlücken); sie erscheinen als ____ in den Notizen.",
+      "luecken_other": "{{count}} Positionen enthalten auszufüllende Lücken (Ausschreiber-/Bieterlücken); sie erscheinen als ____ in den Notizen."
+    }
+  }
+}

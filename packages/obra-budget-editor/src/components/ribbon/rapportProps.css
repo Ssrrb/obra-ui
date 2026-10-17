@@ -1,0 +1,65 @@
+/* Rapport-eigenschappen dialoog (Rapportage-lint → Eigenschappen) */
+.rapport-props-dialog {
+  width: min(420px, 92vw);
+}
+
+.rapport-props {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 16px;
+}
+
+.rapport-props-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  cursor: default;
+}
+
+.rapport-props-row input[type='checkbox'] {
+  margin-top: 2px;
+  accent-color: var(--theme-accent, #d97706);
+}
+
+.rapport-props-row span {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.rapport-props-row strong {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--theme-text);
+}
+
+.rapport-props-row em {
+  font-style: normal;
+  font-size: 11px;
+  color: var(--theme-text-secondary);
+  line-height: 1.4;
+}
+
+/* Prijzen-% dialoog */
+.price-scale-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 16px 16px;
+}
+.price-scale-input {
+  width: 90px;
+  padding: 6px 8px;
+  font-size: 13px;
+  font-family: inherit;
+  border: 1px solid var(--theme-border);
+  border-radius: 4px;
+  background: #ffffff;
+  color: #1a1a1a;
+}
+.price-scale-pct {
+  font-size: 13px;
+  color: var(--theme-text-secondary);
+  margin-right: 8px;
+}

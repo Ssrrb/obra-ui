@@ -1,0 +1,96 @@
+{
+  "columnMapping": {
+    "title": "Associer les colonnes",
+    "intro": "Associez chaque colonne de <b>{{name}}</b> au champ de devis correspondant. Les colonnes réglées sur « — ignorer — » sont ignorées.",
+    "columnN": "Colonne {{n}}",
+    "columnsLinked_one": "{{count}} colonne associée",
+    "columnsLinked_other": "{{count}} colonnes associées",
+    "rows": "{{count}} lignes",
+    "linkDescriptionFirst": "associez d'abord une colonne « Désignation »",
+    "cancel": "Annuler",
+    "import": "Importer"
+  },
+  "quantityPicker": {
+    "title": "Lier la quantité",
+    "tabSpreadsheet": "Feuille de calcul",
+    "tabPdf": "Métré PDF",
+    "tabIfc": "Élément IFC",
+    "cellNotNumeric": "La cellule ne contient pas de nombre valide",
+    "noSheets": "Aucune feuille pour le moment. Créez d'abord une feuille de calcul.",
+    "sheet": "Feuille",
+    "cellReference": "Référence de cellule (p. ex. A5 ou B12)",
+    "value": "Valeur",
+    "empty": "(vide)",
+    "linkCell": "Lier la cellule",
+    "noPdfMeasurements": "Aucune mesure PDF pour le moment. Ouvrez d'abord un PDF dans l'onglet PDF et créez des mesures.",
+    "sumLengths": "Σ Toutes les longueurs",
+    "sumAreas": "Σ Toutes les surfaces",
+    "individualMeasurements": "Mesures individuelles :",
+    "noIfcElements": "Aucun élément IFC pour le moment. Ouvrez un fichier IFC dans l'onglet 3D et sélectionnez un élément.",
+    "cancel": "Annuler"
+  },
+  "excelPicker": {
+    "title": "Lier à Excel",
+    "cannotReadFile": "Impossible de lire le fichier",
+    "chooseFile": "Choisir un fichier…",
+    "noFileSelected": "Aucun fichier sélectionné",
+    "loadingFile": "Chargement du fichier…",
+    "cancel": "Annuler",
+    "select": "Sélectionner"
+  },
+  "costItemPicker": {
+    "title": "Lier à une ligne du devis",
+    "searchPlaceholder": "Rechercher par désignation ou code…",
+    "suggestions": "Suggestions",
+    "results": "Résultats ({{count}})",
+    "allLines": "Toutes les lignes",
+    "unlink": "Dissocier",
+    "cancel": "Annuler",
+    "link": "Lier"
+  },
+  "resourceTypes": {
+    "arbeid": "Main-d'œuvre",
+    "materieel": "Matériel",
+    "materiaal": "Matériaux",
+    "onderaannemer": "Sous-traitant",
+    "overig": "Autre"
+  },
+  "undo": {
+    "addResource": "Ajouter une ressource",
+    "wizard": "Assistant : {{name}}"
+  },
+  "wizard": {
+    "previewTitle": "Aperçu — {{name}}"
+  },
+  "importWarnings": {
+    "title": "Avertissements d'importation",
+    "intro_one": "L'importation de {{source}} s'est terminée avec {{count}} avertissement :",
+    "intro_other": "L'importation de {{source}} s'est terminée avec {{count}} avertissements :",
+    "copy": "Copier",
+    "copied": "Copié",
+    "close": "Fermer",
+    "bc3": {
+      "unknownConceptInDecomposition": "Concept inconnu « {{concept}} » dans la décomposition de « {{parent}} » — ignoré.",
+      "unknownConceptUnder": "Concept inconnu « {{concept}} » sous « {{parent}} » — ignoré.",
+      "zeroYieldDecomposition": "Un ou plusieurs ouvrages ont une décomposition sans rendements — le prix unitaire de l'enregistrement ~C a été utilisé pour ceux-ci.",
+      "noRootStructure": "Aucune structure racine (##) avec décomposition trouvée — les branches isolées ont été importées au niveau supérieur.",
+      "noProjectStructure": "Aucune structure de projet (##/#) trouvée — les concepts ont été importés comme bibliothèque de prix dans un seul lot.",
+      "priceMismatch_one": "Pour {{count}} ouvrage, la somme de la décomposition diffère de plus de 2 % du prix unitaire de l'enregistrement ~C ({{examples}}). La décomposition a été utilisée.",
+      "priceMismatch_other": "Pour {{count}} ouvrages, la somme de la décomposition diffère de plus de 2 % du prix unitaire de l'enregistrement ~C (p. ex. {{examples}}). La décomposition a été utilisée.",
+      "noPrices": "Ce fichier ne contient aucun prix — uniquement des désignations et des quantités (comme une bibliothèque de métrés). Le total reste donc à 0,00.",
+      "moreWarnings_one": "… et {{count}} autre avertissement similaire.",
+      "moreWarnings_other": "… et {{count}} autres avertissements similaires."
+    },
+    "onlv": {
+      "leistungsbuch": "Ceci est un Leistungsbuch (catalogue de textes types) sans quantités ni prix — toutes les positions ont été importées avec la quantité 0.",
+      "wahlEventual_one": "{{count}} position optionnelle (Wahl-/Eventualposition) ne compte pas dans le total du devis selon l'ÖNORM. Elle a été importée avec quantité et prix, signalée dans les notes et mise à N dans la colonne de décompte ; le total ici l'inclut.",
+      "wahlEventual_other": "{{count}} positions optionnelles (Wahl-/Eventualpositionen) ne comptent pas dans le total du devis selon l'ÖNORM. Elles ont été importées avec quantité et prix, signalées dans les notes et mises à N dans la colonne de décompte ; le total ici les inclut.",
+      "sumMismatch": "Le total du devis dans le fichier ({{file}}) diffère de la somme calculée des positions ({{calculated}}).",
+      "unknownUnit_one": "{{count}} unité sans équivalent a été conservée telle quelle : {{examples}}.",
+      "unknownUnit_other": "{{count}} unités sans équivalent ont été conservées telles quelles : {{examples}}.",
+      "noPrices": "Ce fichier ne contient aucun prix — uniquement des textes et des quantités (p. ex. un Ausschreibungs-LV). Le total reste donc 0,00.",
+      "luecken_one": "{{count}} position contient des champs à compléter (Ausschreiber-/Bieterlücken) ; ils apparaissent comme ____ dans les notes.",
+      "luecken_other": "{{count}} positions contiennent des champs à compléter (Ausschreiber-/Bieterlücken) ; ils apparaissent comme ____ dans les notes."
+    }
+  }
+}

@@ -1,0 +1,103 @@
+{
+  "columnMapping": {
+    "title": "Asociere coloane",
+    "intro": "Asociați fiecare coloană din <b>{{name}}</b> cu câmpul corect din deviz. Coloanele setate pe „— ignoră —” sunt omise.",
+    "columnN": "Coloana {{n}}",
+    "columnsLinked_one": "{{count}} coloană asociată",
+    "columnsLinked_few": "{{count}} coloane asociate",
+    "columnsLinked_other": "{{count}} de coloane asociate",
+    "rows": "{{count}} rânduri",
+    "linkDescriptionFirst": "asociați mai întâi o coloană „Denumire”",
+    "cancel": "Anulare",
+    "import": "Import"
+  },
+  "quantityPicker": {
+    "title": "Legare cantitate",
+    "tabSpreadsheet": "Foaie de calcul",
+    "tabPdf": "Măsurătoare PDF",
+    "tabIfc": "Element IFC",
+    "cellNotNumeric": "Celula nu conține un număr valid",
+    "noSheets": "Încă nu există foi. Creați mai întâi o foaie de calcul.",
+    "sheet": "Foaie",
+    "cellReference": "Referință de celulă (ex. A5 sau B12)",
+    "value": "Valoare",
+    "empty": "(gol)",
+    "linkCell": "Legare celulă",
+    "noPdfMeasurements": "Încă nu există măsurători PDF. Deschideți mai întâi un PDF în fila PDF și creați măsurători.",
+    "sumLengths": "Σ Toate lungimile",
+    "sumAreas": "Σ Toate suprafețele",
+    "individualMeasurements": "Măsurători individuale:",
+    "noIfcElements": "Încă nu există elemente IFC. Deschideți un fișier IFC în fila 3D și selectați un element.",
+    "cancel": "Anulare"
+  },
+  "excelPicker": {
+    "title": "Legare la Excel",
+    "cannotReadFile": "Fișierul nu poate fi citit",
+    "chooseFile": "Alegere fișier...",
+    "noFileSelected": "Niciun fișier selectat",
+    "loadingFile": "Se încarcă fișierul...",
+    "cancel": "Anulare",
+    "select": "Selectare"
+  },
+  "costItemPicker": {
+    "title": "Legare la o linie din deviz",
+    "searchPlaceholder": "Căutare după denumire sau cod...",
+    "suggestions": "Sugestii",
+    "results": "Rezultate ({{count}})",
+    "allLines": "Toate liniile",
+    "unlink": "Desfacere legătură",
+    "cancel": "Anulare",
+    "link": "Legare"
+  },
+  "resourceTypes": {
+    "arbeid": "Manoperă",
+    "materieel": "Utilaje",
+    "materiaal": "Materiale",
+    "onderaannemer": "Subantreprenor",
+    "overig": "Altele"
+  },
+  "undo": {
+    "addResource": "Adăugare resursă",
+    "wizard": "Asistent: {{name}}"
+  },
+  "wizard": {
+    "previewTitle": "Previzualizare — {{name}}"
+  },
+  "importWarnings": {
+    "title": "Mesaje de import",
+    "intro_one": "Importul {{source}} s-a încheiat cu {{count}} mesaj:",
+    "intro_few": "Importul {{source}} s-a încheiat cu {{count}} mesaje:",
+    "intro_other": "Importul {{source}} s-a încheiat cu {{count}} de mesaje:",
+    "copy": "Copiere",
+    "copied": "Copiat",
+    "close": "Închidere",
+    "bc3": {
+      "unknownConceptInDecomposition": "Element necunoscut „{{concept}}” în descompunerea lui „{{parent}}” — omis.",
+      "unknownConceptUnder": "Element necunoscut „{{concept}}” sub „{{parent}}” — omis.",
+      "zeroYieldDecomposition": "Unul sau mai multe articole au o descompunere fără consumuri specifice — pentru acestea s-a folosit prețul unitar din înregistrarea ~C.",
+      "noRootStructure": "Nu a fost găsită o structură rădăcină (##) cu descompunere — ramurile separate au fost importate la nivelul superior.",
+      "noProjectStructure": "Nu a fost găsită o structură de proiect (##/#) — elementele au fost importate ca un catalog de prețuri sub un singur capitol.",
+      "priceMismatch_one": "La {{count}} articol, suma descompunerii diferă cu peste 2% de prețul unitar din înregistrarea ~C ({{examples}}). S-a folosit descompunerea.",
+      "priceMismatch_few": "La {{count}} articole, suma descompunerii diferă cu peste 2% de prețul unitar din înregistrarea ~C (de ex. {{examples}}). S-a folosit descompunerea.",
+      "priceMismatch_other": "La {{count}} de articole, suma descompunerii diferă cu peste 2% de prețul unitar din înregistrarea ~C (de ex. {{examples}}). S-a folosit descompunerea.",
+      "noPrices": "Acest fișier nu conține prețuri — doar denumiri și cantități (ca o bibliotecă de antemăsurători). Prin urmare, totalul rămâne 0,00.",
+      "moreWarnings_one": "… și încă {{count}} mesaj similar.",
+      "moreWarnings_few": "… și încă {{count}} mesaje similare.",
+      "moreWarnings_other": "… și încă {{count}} de mesaje similare."
+    },
+    "onlv": {
+      "leistungsbuch": "Acesta este un Leistungsbuch (catalog de texte standard) fără cantități și prețuri — toate pozițiile au fost importate cu cantitatea 0.",
+      "wahlEventual_one": "{{count}} poziție opțională (Wahl-/Eventualposition) nu se include în totalul caietului conform ÖNORM. A fost importată cu cantitate și preț, marcată în note și setată pe N în coloana de decontare; totalul de aici o include.",
+      "wahlEventual_other": "{{count}} de poziții opționale (Wahl-/Eventualpositionen) nu se includ în totalul caietului conform ÖNORM. Au fost importate cu cantitate și preț, marcate în note și setate pe N în coloana de decontare; totalul de aici le include.",
+      "wahlEventual_few": "{{count}} poziții opționale (Wahl-/Eventualpositionen) nu se includ în totalul caietului conform ÖNORM. Au fost importate cu cantitate și preț, marcate în note și setate pe N în coloana de decontare; totalul de aici le include.",
+      "sumMismatch": "Totalul caietului din fișier ({{file}}) diferă de suma calculată a pozițiilor ({{calculated}}).",
+      "unknownUnit_one": "{{count}} unitate fără echivalent a fost păstrată neschimbată: {{examples}}.",
+      "unknownUnit_other": "{{count}} de unități fără echivalent au fost păstrate neschimbate: {{examples}}.",
+      "unknownUnit_few": "{{count}} unități fără echivalent au fost păstrate neschimbate: {{examples}}.",
+      "noPrices": "Acest fișier nu conține prețuri — doar texte și cantități (de ex. un Ausschreibungs-LV). Totalul rămâne așadar 0,00.",
+      "luecken_one": "{{count}} poziție conține spații de completat (Ausschreiber-/Bieterlücken); apar ca ____ în note.",
+      "luecken_other": "{{count}} de poziții conțin spații de completat (Ausschreiber-/Bieterlücken); apar ca ____ în note.",
+      "luecken_few": "{{count}} poziții conțin spații de completat (Ausschreiber-/Bieterlücken); apar ca ____ în note."
+    }
+  }
+}

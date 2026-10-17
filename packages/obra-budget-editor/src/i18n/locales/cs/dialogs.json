@@ -1,0 +1,110 @@
+{
+  "columnMapping": {
+    "title": "Propojit sloupce",
+    "intro": "Propojte každý sloupec ze souboru <b>{{name}}</b> se správným polem rozpočtu. Sloupce nastavené na „— ignorovat —“ se přeskočí.",
+    "columnN": "Sloupec {{n}}",
+    "columnsLinked_one": "{{count}} sloupec propojen",
+    "columnsLinked_few": "{{count}} sloupce propojeny",
+    "columnsLinked_many": "{{count}} sloupce propojeno",
+    "columnsLinked_other": "{{count}} sloupců propojeno",
+    "rows": "{{count}} řádků",
+    "linkDescriptionFirst": "nejprve propojte sloupec „Popis“",
+    "cancel": "Zrušit",
+    "import": "Importovat"
+  },
+  "quantityPicker": {
+    "title": "Propojit množství",
+    "tabSpreadsheet": "Tabulka",
+    "tabPdf": "Měření v PDF",
+    "tabIfc": "Prvek IFC",
+    "cellNotNumeric": "Buňka neobsahuje platné číslo",
+    "noSheets": "Zatím žádné listy. Nejprve vytvořte tabulku.",
+    "sheet": "List",
+    "cellReference": "Odkaz na buňku (např. A5 nebo B12)",
+    "value": "Hodnota",
+    "empty": "(prázdné)",
+    "linkCell": "Propojit buňku",
+    "noPdfMeasurements": "Zatím žádná měření v PDF. Nejprve otevřete PDF na kartě PDF a vytvořte měření.",
+    "sumLengths": "Σ Všechny délky",
+    "sumAreas": "Σ Všechny plochy",
+    "individualMeasurements": "Jednotlivá měření:",
+    "noIfcElements": "Zatím žádné prvky IFC. Otevřete soubor IFC na kartě 3D a vyberte prvek.",
+    "cancel": "Zrušit"
+  },
+  "excelPicker": {
+    "title": "Propojit s Excelem",
+    "cannotReadFile": "Soubor nelze přečíst",
+    "chooseFile": "Vybrat soubor...",
+    "noFileSelected": "Není vybrán žádný soubor",
+    "loadingFile": "Načítání souboru...",
+    "cancel": "Zrušit",
+    "select": "Vybrat"
+  },
+  "costItemPicker": {
+    "title": "Propojit s řádkem rozpočtu",
+    "searchPlaceholder": "Hledat podle popisu nebo kódu...",
+    "suggestions": "Návrhy",
+    "results": "Výsledky ({{count}})",
+    "allLines": "Všechny řádky",
+    "unlink": "Zrušit vazbu",
+    "cancel": "Zrušit",
+    "link": "Propojit"
+  },
+  "resourceTypes": {
+    "arbeid": "Mzdy",
+    "materieel": "Stroje",
+    "materiaal": "Materiál",
+    "onderaannemer": "Subdodavatel",
+    "overig": "Ostatní"
+  },
+  "undo": {
+    "addResource": "Přidání zdroje",
+    "wizard": "Průvodce: {{name}}"
+  },
+  "wizard": {
+    "previewTitle": "Náhled — {{name}}"
+  },
+  "importWarnings": {
+    "title": "Upozornění importu",
+    "intro_one": "Import {{source}} skončil s {{count}} upozorněním:",
+    "intro_few": "Import {{source}} skončil s {{count}} upozorněními:",
+    "intro_many": "Import {{source}} skončil s {{count}} upozorněními:",
+    "intro_other": "Import {{source}} skončil s {{count}} upozorněními:",
+    "copy": "Kopírovat",
+    "copied": "Zkopírováno",
+    "close": "Zavřít",
+    "bc3": {
+      "unknownConceptInDecomposition": "Neznámá položka „{{concept}}“ v rozpadu „{{parent}}“ — přeskočeno.",
+      "unknownConceptUnder": "Neznámá položka „{{concept}}“ pod „{{parent}}“ — přeskočeno.",
+      "zeroYieldDecomposition": "Jedna nebo více položek má rozpad bez množství — pro ně byla použita jednotková cena ze záznamu ~C.",
+      "noRootStructure": "Nebyla nalezena kořenová struktura (##) s rozpadem — jednotlivé větve byly importovány na nejvyšší úroveň.",
+      "noProjectStructure": "Nebyla nalezena struktura projektu (##/#) — položky byly importovány jako ceník do jedné kapitoly.",
+      "priceMismatch_one": "U {{count}} položky se součet rozpadu liší o více než 2 % od jednotkové ceny v záznamu ~C ({{examples}}). Byl použit rozpad.",
+      "priceMismatch_few": "U {{count}} položek se součet rozpadu liší o více než 2 % od jednotkové ceny v záznamu ~C (např. {{examples}}). Byl použit rozpad.",
+      "priceMismatch_many": "U {{count}} položky se součet rozpadu liší o více než 2 % od jednotkové ceny v záznamu ~C (např. {{examples}}). Byl použit rozpad.",
+      "priceMismatch_other": "U {{count}} položek se součet rozpadu liší o více než 2 % od jednotkové ceny v záznamu ~C (např. {{examples}}). Byl použit rozpad.",
+      "noPrices": "Tento soubor neobsahuje žádné ceny — pouze popisy a množství (jako knihovna výměr). Celková částka proto zůstává 0,00.",
+      "moreWarnings_one": "… a ještě {{count}} podobné upozornění.",
+      "moreWarnings_few": "… a ještě {{count}} podobná upozornění.",
+      "moreWarnings_many": "… a ještě {{count}} podobného upozornění.",
+      "moreWarnings_other": "… a ještě {{count}} podobných upozornění."
+    },
+    "onlv": {
+      "leistungsbuch": "Toto je Leistungsbuch (katalog standardních textů) bez množství a cen — všechny položky byly importovány s množstvím 0.",
+      "wahlEventual_one": "{{count}} volitelná položka (Wahl-/Eventualposition) se podle ÖNORM nezapočítává do součtu výkazu. Byla importována s množstvím a cenou, označena v poznámkách a nastavena na N ve sloupci zúčtování; zdejší součet ji zahrnuje.",
+      "wahlEventual_other": "{{count}} volitelných položek (Wahl-/Eventualpositionen) se podle ÖNORM nezapočítává do součtu výkazu. Byly importovány s množstvím a cenou, označeny v poznámkách a nastaveny na N ve sloupci zúčtování; zdejší součet je zahrnuje.",
+      "wahlEventual_few": "{{count}} volitelné položky (Wahl-/Eventualpositionen) se podle ÖNORM nezapočítávají do součtu výkazu. Byly importovány s množstvím a cenou, označeny v poznámkách a nastaveny na N ve sloupci zúčtování; zdejší součet je zahrnuje.",
+      "wahlEventual_many": "{{count}} volitelných položek (Wahl-/Eventualpositionen) se podle ÖNORM nezapočítává do součtu výkazu. Byly importovány s množstvím a cenou, označeny v poznámkách a nastaveny na N ve sloupci zúčtování; zdejší součet je zahrnuje.",
+      "sumMismatch": "Součet výkazu v souboru ({{file}}) se liší od vypočteného součtu položek ({{calculated}}).",
+      "unknownUnit_one": "{{count}} jednotka bez protějšku byla ponechána beze změny: {{examples}}.",
+      "unknownUnit_other": "{{count}} jednotek bez protějšku bylo ponecháno beze změny: {{examples}}.",
+      "unknownUnit_few": "{{count}} jednotky bez protějšku byly ponechány beze změny: {{examples}}.",
+      "unknownUnit_many": "{{count}} jednotek bez protějšku bylo ponecháno beze změny: {{examples}}.",
+      "noPrices": "Tento soubor neobsahuje žádné ceny — pouze texty a množství (např. Ausschreibungs-LV). Součet proto zůstává 0,00.",
+      "luecken_one": "{{count}} položka obsahuje mezery k vyplnění (Ausschreiber-/Bieterlücken); v poznámkách jsou uvedeny jako ____.",
+      "luecken_other": "{{count}} položek obsahuje mezery k vyplnění (Ausschreiber-/Bieterlücken); v poznámkách jsou uvedeny jako ____.",
+      "luecken_few": "{{count}} položky obsahují mezery k vyplnění (Ausschreiber-/Bieterlücken); v poznámkách jsou uvedeny jako ____.",
+      "luecken_many": "{{count}} položek obsahuje mezery k vyplnění (Ausschreiber-/Bieterlücken); v poznámkách jsou uvedeny jako ____."
+    }
+  }
+}

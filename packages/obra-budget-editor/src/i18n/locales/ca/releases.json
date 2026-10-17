@@ -1,0 +1,117 @@
+{
+  "names": {
+    "v0.13.0": "ÖNORM A 2063 austríac (.onlv/.onlb) + anada i tornada BC3 demostrada",
+    "v0.12.1": "Nombres i dates dels informes PDF en l’idioma dels informes",
+    "v0.12.0": "Informes i unitats en el vostre idioma",
+    "v0.11.0": "39 idiomes + FIEBDC-3 (.bc3)",
+    "v0.10.3": "IVA general i reduït — seleccionable per element",
+    "v0.10.0": "Logotip a la capçalera de l'informe + fórmules a les cel·les",
+    "v0.9.0": "Totals BasCalc exactes + informes en format de plec",
+    "v0.8.8": "Correcció de la importació Excel/CSV + via MCP",
+    "v0.8.7": "Quatre formats d'importació nous",
+    "v0.8.6": "Recàrrecs corregits al resum de l'informe",
+    "v0.8.5": "Importació molt ampliada + correcció de la pantalla en blanc",
+    "v0.8.4": "Selector de codis + pressupost compacte per al client",
+    "v0.8.3": "Seguiment de canvis + importació de pressupostos",
+    "v0.8.2": "OpenAEC darrere d'un indicador de funcionalitat",
+    "v0.8.1": "Inici de sessió OpenAEC + millores de l'assistent",
+    "v0.8.0": "L'assistent aplica els canvis directament",
+    "v0.7.10": "Compte OpenAEC + navegació a la barra inferior"
+  },
+  "highlights": {
+    "v0.13.0": [
+      "ÖNORM A 2063, el format d’intercanvi austríac: importació d’amidaments (.onlv) com a pressupost i de llibres de serveis estàndard (.onlb, com ara LB-Hochbau i LB-Haustechnik del BMWET) com a catàleg; exportació com a .onlv, vàlida contra els esquemes XML oficials",
+      "FIEBDC-3 (.bc3): l’anada i tornada amb 22 fitxers ara és idèntica camp per camp en 21; cada diferència amb els fitxers d’origen s’explica a l’informe, amb captures de pantalla com a prova",
+      "Les descripcions curtes buides als fitxers .bc3 prenen la primera línia del text llarg; l’exportació escriu els nombres sense soroll de coma flotant",
+      "Una partida o partida de control sense capítol a sobre ara també rep un preu unitari derivat",
+      "Noves captures de pantalla en anglès, neerlandès i alemany"
+    ],
+    "v0.12.1": [
+      "Els informes PDF escriuen imports, amidaments, percentatges i dates amb la notació de l’idioma dels informes — per exemple 1.234,56 € i DD/MM/AAAA en castellà, 1 234,56 € en francès",
+      "Un tipus d’IVA com ara 5,5 % s’arrodonia a 6 % a l’informe — corregit",
+      "Anada i tornada FIEBDC-3 (.bc3) verificada amb 21 fitxers reals: després d’importar → exportar → tornar a importar, tots els imports, descripcions, amidaments i textos tornen sense canvis; l’exportador ara escriu els nombres sense arrodonir, conserva els salts de línia dels textos, comparteix els recursos idèntics com un sol concepte i ja no compta diners per als recursos amb rendiment 0",
+      "REST API: les exportacions a PDF i IFC (/api/v1/export/…) informaven d’èxit però no escrivien cap fitxer; ara el fitxer s’escriu en l’idioma dels informes i qui fa la crida rep el camí, o bé un missatge d’error real"
+    ],
+    "v0.12.0": [
+      "Els informes impresos i en PDF apareixen en el vostre idioma, amb una opció pròpia «Idioma dels informes» (Preferències → General) que per defecte segueix l’idioma de la interfície",
+      "Les unitats es mostren traduïdes, per exemple «h» en lloc de «uur» — els fitxers desats no canvien",
+      "Els missatges d’importació ara apareixen a la pantalla; els de FIEBDC-3 (.bc3), en el vostre idioma",
+      "L’anglès és l’idioma per defecte de les instal·lacions noves i de la demo en línia, amb un pressupost d’exemple en anglès",
+      "Els noms llargs dels botons de la cinta ara es parteixen per una síl·laba en lloc de pel mig d’una paraula"
+    ],
+    "v0.11.0": [
+      "La interfície està disponible en 39 idiomes — trieu el vostre a Preferències → General, o deixeu que l’aplicació segueixi l’idioma del sistema",
+      "Compatibilitat de dreta a esquerra per a àrab, farsi, hebreu i urdú: tota la disposició es reflecteix",
+      "L’anglès es quedava a mitges en neerlandès: l’idioma estava fixat internament i més de 500 textos eren al codi — tots dos corregits",
+      "Importació i exportació de FIEBDC-3 (.bc3): l’estàndard espanyol de pressupostos i bancs de preus (Presto, Arquímedes, Menfis, TCQ)",
+      "macOS: resolt l’avís de «malmès» i reparada la compilació; «Novetats» apareix ara en el vostre idioma"
+    ],
+    "v0.10.3": [
+      "Nova línia de recàrrec «IVA reduït» (9 %) al costat d'«IVA general»: els pressupostos existents la reben automàticament",
+      "Marqueu capítols, partides o línies com a tipus reduït amb el clic dret; els elements fills hereten el tipus i la taula mostra una etiqueta d'IVA",
+      "Base imposable calculada a prorrata a partir del marcatge (recàrrecs inclosos) o introduïda a mà al tauler de recàrrecs",
+      "El repartiment de l'IVA s'aplica a tots els informes (IBIS mostra per separat la base general i la reduïda) i al servidor MCP",
+      "Correccions: l'IVA es comptava dues vegades al resum de Bouw 1 i un import amb IVA apareixia sota l'etiqueta «Pressupost de contracta sense IVA»"
+    ],
+    "v0.10.0": [
+      "Logotip de l'empresa a dalt a la dreta de la capçalera de l'informe (transparent i a escala); alçada de la capçalera i color de la línia ajustables",
+      "Fórmules a les cel·les numèriques (=12.2*2.22 o 12,2*2,2), i corregit l'error que descartava decimals",
+      "Recàrrecs: introduïu l'import final sense IVA i l'arrodoniment passa a ser automàticament la diferència; l'IVA es calcula sobre l'import arrodonit",
+      "Contracta principal: sumeu línies amb «+», columna A opcional (abonable heretat del capítol) i vistes de només subtotals",
+      "Treballeu més de pressa: preus ±%, cerca i reemplaçament amb Ctrl+F, reducció per nivell, desfés de diversos passos, línies de text amb ajust de línia"
+    ],
+    "v0.9.0": [
+      "Importació BasCalc: el preu de cost i el pressupost de contracta coincideixen al cèntim amb l'Excel (recàrrecs plans + partida d'arrodoniment fixa)",
+      "Memòria de treballs i contracta principal en format de plec: sense vores de cel·la, apartats sagnats i subtotal per apartat",
+      "El botó + del costat de la línia afegeix una línia de càlcul; amidaments sí/no directament a la barra d'eines de l'informe",
+      "Anomena i desa fa servir ara .ifcCalc per defecte i protegeix el fitxer original",
+      "Logotip verd nou; correccions de navegació i de diàlegs (full de càlcul ↔ pressupost)"
+    ],
+    "v0.8.8": [
+      "Importació Excel/CSV: de vegades els imports acabaven a 0 € — corregit",
+      "La importació Excel/CSV també està disponible via el servidor MCP (eina import_excel_csv)"
+    ],
+    "v0.8.7": [
+      "Importació Excel/CSV amb assignació de columnes: llegiu disposicions lliures d'Excel/CSV i enllaceu vosaltres mateixos les columnes",
+      "Formats nous: STABU SUFX (plec XML) i RAW antic (.rsu)",
+      "Catàleg de preus (BMEcat/DICO) → directe a la biblioteca de recursos"
+    ],
+    "v0.8.6": [
+      "El resum de l'informe mostra els percentatges de recàrrec correctes i respecta els tipus personalitzats (abans «Despeses generals» podia mostrar 0 %)",
+      "Model de recàrrecs depurat internament; ara tots els informes calculen des de la mateixa font"
+    ],
+    "v0.8.5": [
+      "Molts més formats d'importació: .cuf, .dnc, .xtb (amb línies de detall), .rsx, .s01 i .ifcx",
+      "Corregida la pantalla en blanc al Windows (el WebView passa a renderització per programari)",
+      "Motor d'importació reconstruït de zero; els totals coincideixen exactament amb els fitxers d'origen"
+    ],
+    "v0.8.4": [
+      "Camp de codi: trieu codis STABU/NL-SfB amb doble clic (i afegiu-ne de propis)",
+      "Importació de pressupostos (.dnc): ara s'obre directament com a informe compacte per al client",
+      "Projecte, logotips i variants traslladats a la cinta; propietats depurades"
+    ],
+    "v0.8.3": [
+      "Seguiment de canvis: trieu si es ressalta la línia sencera o només la cel·la modificada",
+      "Els canvis també es veuen al PDF de l'informe",
+      "Importació de pressupostos: els pressupostos per al client (.dnc) s'importen directament i s'obren amb Fitxer → Obre",
+      "Opció d'informe de pressupost per al client; historial de canvis per línia (qui/quan/què)"
+    ],
+    "v0.8.2": [
+      "Assistent de pressupostos: historial de xat per pressupost, diverses preguntes alhora",
+      "Funcions d'OpenAEC (inici de sessió, emmagatzematge al núvol) darrere d'un paràmetre"
+    ],
+    "v0.8.1": [
+      "Inici de sessió d'OpenAEC i millores de l'assistent",
+      "Missatges d'error d'IA clars; el text de l'assistent es pot seleccionar i copiar"
+    ],
+    "v0.8.0": [
+      "L'assistent de pressupostos aplica els canvis directament al document obert",
+      "Obriu fitxers .calc/.mdb amb JSON com a projecte natiu d'OCS"
+    ],
+    "v0.7.10": [
+      "Compte OpenAEC i navegació a la barra inferior",
+      "Amagueu/mostreu columnes amb el clic dret a la capçalera de columna",
+      "Pestanyes d'Hores i Recàrrecs unificades; informe d'estil IBIS (Bouw 2)"
+    ]
+  }
+}

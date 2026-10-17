@@ -1,0 +1,96 @@
+{
+  "columnMapping": {
+    "title": "Associa le colonne",
+    "intro": "Associa ogni colonna di <b>{{name}}</b> al campo corretto del computo. Le colonne impostate su «— ignora —» vengono saltate.",
+    "columnN": "Colonna {{n}}",
+    "columnsLinked_one": "{{count}} colonna associata",
+    "columnsLinked_other": "{{count}} colonne associate",
+    "rows": "{{count}} righe",
+    "linkDescriptionFirst": "associa prima una colonna «Descrizione»",
+    "cancel": "Annulla",
+    "import": "Importa"
+  },
+  "quantityPicker": {
+    "title": "Collega la quantità",
+    "tabSpreadsheet": "Foglio di calcolo",
+    "tabPdf": "Misurazione PDF",
+    "tabIfc": "Elemento IFC",
+    "cellNotNumeric": "La cella non contiene un numero valido",
+    "noSheets": "Nessun foglio disponibile. Crea prima un foglio di calcolo.",
+    "sheet": "Foglio",
+    "cellReference": "Riferimento di cella (es. A5 o B12)",
+    "value": "Valore",
+    "empty": "(vuoto)",
+    "linkCell": "Collega la cella",
+    "noPdfMeasurements": "Nessuna misurazione PDF. Apri prima un PDF nella scheda PDF e crea delle misurazioni.",
+    "sumLengths": "Σ Tutte le lunghezze",
+    "sumAreas": "Σ Tutte le aree",
+    "individualMeasurements": "Misurazioni singole:",
+    "noIfcElements": "Nessun elemento IFC. Apri un file IFC nella scheda 3D e seleziona un elemento.",
+    "cancel": "Annulla"
+  },
+  "excelPicker": {
+    "title": "Collega a Excel",
+    "cannotReadFile": "Impossibile leggere il file",
+    "chooseFile": "Scegli un file…",
+    "noFileSelected": "Nessun file selezionato",
+    "loadingFile": "Caricamento del file…",
+    "cancel": "Annulla",
+    "select": "Seleziona"
+  },
+  "costItemPicker": {
+    "title": "Collega a una riga del computo",
+    "searchPlaceholder": "Cerca per descrizione o codice…",
+    "suggestions": "Suggerimenti",
+    "results": "Risultati ({{count}})",
+    "allLines": "Tutte le righe",
+    "unlink": "Scollega",
+    "cancel": "Annulla",
+    "link": "Collega"
+  },
+  "resourceTypes": {
+    "arbeid": "Manodopera",
+    "materieel": "Noli e attrezzature",
+    "materiaal": "Materiali",
+    "onderaannemer": "Subappaltatore",
+    "overig": "Altro"
+  },
+  "undo": {
+    "addResource": "Aggiungi una risorsa",
+    "wizard": "Procedura guidata: {{name}}"
+  },
+  "wizard": {
+    "previewTitle": "Anteprima — {{name}}"
+  },
+  "importWarnings": {
+    "title": "Avvisi di importazione",
+    "intro_one": "L'importazione di {{source}} si è conclusa con {{count}} avviso:",
+    "intro_other": "L'importazione di {{source}} si è conclusa con {{count}} avvisi:",
+    "copy": "Copia",
+    "copied": "Copiato",
+    "close": "Chiudi",
+    "bc3": {
+      "unknownConceptInDecomposition": "Concetto sconosciuto «{{concept}}» nella scomposizione di «{{parent}}» — ignorato.",
+      "unknownConceptUnder": "Concetto sconosciuto «{{concept}}» sotto «{{parent}}» — ignorato.",
+      "zeroYieldDecomposition": "Una o più voci hanno una scomposizione senza rendimenti — per queste è stato usato il prezzo unitario del record ~C.",
+      "noRootStructure": "Nessuna struttura radice (##) con scomposizione trovata — i rami separati sono stati importati al livello superiore.",
+      "noProjectStructure": "Nessuna struttura di progetto (##/#) trovata — i concetti sono stati importati come prezzario in un unico capitolo.",
+      "priceMismatch_one": "Per {{count}} voce la somma della scomposizione differisce di oltre il 2% dal prezzo unitario del record ~C ({{examples}}). È stata usata la scomposizione.",
+      "priceMismatch_other": "Per {{count}} voci la somma della scomposizione differisce di oltre il 2% dal prezzo unitario del record ~C (ad es. {{examples}}). È stata usata la scomposizione.",
+      "noPrices": "Questo file non contiene prezzi — solo descrizioni e quantità (come una libreria di misurazioni). Il totale resta quindi 0,00.",
+      "moreWarnings_one": "… e ancora {{count}} avviso simile.",
+      "moreWarnings_other": "… e altri {{count}} avvisi simili."
+    },
+    "onlv": {
+      "leistungsbuch": "Questo è un Leistungsbuch (catalogo di testi standard) senza quantità né prezzi — tutte le posizioni sono state importate con quantità 0.",
+      "wahlEventual_one": "{{count}} posizione opzionale (Wahl-/Eventualposition) non conta nel totale del capitolato secondo ÖNORM. È stata importata con quantità e prezzo, segnalata nelle note e impostata su N nella colonna di contabilizzazione; il totale qui la include.",
+      "wahlEventual_other": "{{count}} posizioni opzionali (Wahl-/Eventualpositionen) non contano nel totale del capitolato secondo ÖNORM. Sono state importate con quantità e prezzo, segnalate nelle note e impostate su N nella colonna di contabilizzazione; il totale qui le include.",
+      "sumMismatch": "Il totale del capitolato nel file ({{file}}) differisce dalla somma calcolata delle posizioni ({{calculated}}).",
+      "unknownUnit_one": "{{count}} unità senza equivalente è stata mantenuta invariata: {{examples}}.",
+      "unknownUnit_other": "{{count}} unità senza equivalente sono state mantenute invariate: {{examples}}.",
+      "noPrices": "Questo file non contiene prezzi — solo testi e quantità (ad es. un Ausschreibungs-LV). Il totale resta quindi 0,00.",
+      "luecken_one": "{{count}} posizione contiene campi da compilare (Ausschreiber-/Bieterlücken); compaiono come ____ nelle note.",
+      "luecken_other": "{{count}} posizioni contengono campi da compilare (Ausschreiber-/Bieterlücken); compaiono come ____ nelle note."
+    }
+  }
+}

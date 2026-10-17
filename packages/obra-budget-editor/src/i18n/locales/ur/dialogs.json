@@ -1,0 +1,96 @@
+{
+  "columnMapping": {
+    "title": "کالم منسلک کریں",
+    "intro": "<b>{{name}}</b> کے ہر کالم کو تخمینے کے درست خانے سے منسلک کریں۔ ”— نظر انداز —“ پر مقرر کالم چھوڑ دیے جاتے ہیں۔",
+    "columnN": "کالم {{n}}",
+    "columnsLinked_one": "{{count}} کالم منسلک ہوا",
+    "columnsLinked_other": "{{count}} کالم منسلک ہوئے",
+    "rows": "{{count}} سطریں",
+    "linkDescriptionFirst": "پہلے کوئی ”تفصیل“ کالم منسلک کریں",
+    "cancel": "منسوخ",
+    "import": "درآمد"
+  },
+  "quantityPicker": {
+    "title": "مقدار منسلک کریں",
+    "tabSpreadsheet": "اسپریڈ شیٹ",
+    "tabPdf": "PDF پیمائش",
+    "tabIfc": "IFC عنصر",
+    "cellNotNumeric": "خانے میں درست عدد موجود نہیں",
+    "noSheets": "ابھی کوئی شیٹ نہیں۔ پہلے اسپریڈ شیٹ بنائیں۔",
+    "sheet": "شیٹ",
+    "cellReference": "خانے کا حوالہ (مثلاً A5 یا B12)",
+    "value": "قدر",
+    "empty": "(خالی)",
+    "linkCell": "خانہ منسلک کریں",
+    "noPdfMeasurements": "ابھی کوئی PDF پیمائش نہیں۔ پہلے PDF ٹیب میں فائل کھول کر پیمائشیں بنائیں۔",
+    "sumLengths": "Σ تمام لمبائیاں",
+    "sumAreas": "Σ تمام رقبے",
+    "individualMeasurements": "انفرادی پیمائشیں:",
+    "noIfcElements": "ابھی کوئی IFC عنصر نہیں۔ تھری ڈی ٹیب میں IFC فائل کھولیں اور کوئی عنصر منتخب کریں۔",
+    "cancel": "منسوخ"
+  },
+  "excelPicker": {
+    "title": "Excel سے منسلک کریں",
+    "cannotReadFile": "فائل پڑھی نہیں جا سکی",
+    "chooseFile": "فائل منتخب کریں...",
+    "noFileSelected": "کوئی فائل منتخب نہیں",
+    "loadingFile": "فائل لوڈ ہو رہی ہے...",
+    "cancel": "منسوخ",
+    "select": "منتخب کریں"
+  },
+  "costItemPicker": {
+    "title": "تخمینے کی سطر سے منسلک کریں",
+    "searchPlaceholder": "تفصیل یا کوڈ سے تلاش کریں...",
+    "suggestions": "تجاویز",
+    "results": "نتائج ({{count}})",
+    "allLines": "تمام سطریں",
+    "unlink": "لنک ہٹائیں",
+    "cancel": "منسوخ",
+    "link": "منسلک کریں"
+  },
+  "resourceTypes": {
+    "arbeid": "مزدوری",
+    "materieel": "مشینری",
+    "materiaal": "سامان",
+    "onderaannemer": "ذیلی ٹھیکیدار",
+    "overig": "دیگر"
+  },
+  "undo": {
+    "addResource": "وسیلہ شامل کریں",
+    "wizard": "وزرڈ: {{name}}"
+  },
+  "wizard": {
+    "previewTitle": "پیش منظر — {{name}}"
+  },
+  "importWarnings": {
+    "title": "درآمدی اطلاعات",
+    "intro_one": "{{source}} کی درآمد {{count}} اطلاع کے ساتھ مکمل ہوئی:",
+    "intro_other": "{{source}} کی درآمد {{count}} اطلاعات کے ساتھ مکمل ہوئی:",
+    "copy": "نقل",
+    "copied": "نقل ہو گیا",
+    "close": "بند کریں",
+    "bc3": {
+      "unknownConceptInDecomposition": "”{{parent}}“ کی تقسیم میں نامعلوم اندراج ”{{concept}}“ — چھوڑ دیا گیا۔",
+      "unknownConceptUnder": "”{{parent}}“ کے تحت نامعلوم اندراج ”{{concept}}“ — چھوڑ دیا گیا۔",
+      "zeroYieldDecomposition": "ایک یا زیادہ مدات کی تقسیم میں مقداریں درج نہیں — ان کے لیے ‎~C‎ ریکارڈ سے فی اکائی نرخ استعمال کیا گیا۔",
+      "noRootStructure": "تقسیم کے ساتھ کوئی جڑ ڈھانچہ (##) نہیں ملا — الگ شاخیں سب سے اوپر کی سطح پر درآمد کی گئیں۔",
+      "noProjectStructure": "کوئی منصوبہ ڈھانچہ (‎##/#‎) نہیں ملا — اندراجات ایک ہی باب کے تحت نرخ نامے کے طور پر درآمد کیے گئے۔",
+      "priceMismatch_one": "{{count}} مد کے لیے تقسیم کا میزان ‎~C‎ ریکارڈ کے فی اکائی نرخ سے 2% سے زیادہ مختلف ہے ({{examples}})۔ تقسیم استعمال کی گئی۔",
+      "priceMismatch_other": "{{count}} مدات کے لیے تقسیم کا میزان ‎~C‎ ریکارڈ کے فی اکائی نرخ سے 2% سے زیادہ مختلف ہے (مثلاً {{examples}})۔ تقسیم استعمال کی گئی۔",
+      "noPrices": "اس فائل میں کوئی قیمتیں نہیں — صرف تفصیلات اور مقداریں (پیمائشی لائبریری کی طرح)۔ اس لیے کل 0.00 رہتا ہے۔",
+      "moreWarnings_one": "… اور {{count}} ملتی جلتی اطلاع۔",
+      "moreWarnings_other": "… اور {{count}} ملتی جلتی اطلاعات۔"
+    },
+    "onlv": {
+      "leistungsbuch": "یہ ایک Leistungsbuch (معیاری متون کا کیٹلاگ) ہے جس میں مقداریں اور قیمتیں نہیں — تمام آئٹمز مقدار 0 کے ساتھ درآمد کیے گئے۔",
+      "wahlEventual_one": "{{count}} اختیاری آئٹم (Wahl-/Eventualposition) ÖNORM کے مطابق کل میں شامل نہیں ہوتا۔ اسے مقدار اور قیمت کے ساتھ درآمد کیا گیا، نوٹس میں نشان زد اور تصفیہ کالم میں N پر رکھا گیا؛ یہاں کا کل اسے شامل کرتا ہے۔",
+      "wahlEventual_other": "{{count}} اختیاری آئٹمز (Wahl-/Eventualpositionen) ÖNORM کے مطابق کل میں شامل نہیں ہوتے۔ انہیں مقدار اور قیمت کے ساتھ درآمد کیا گیا، نوٹس میں نشان زد اور تصفیہ کالم میں N پر رکھا گیا؛ یہاں کا کل انہیں شامل کرتا ہے۔",
+      "sumMismatch": "فائل میں کل ({{file}}) آئٹمز کے حساب شدہ مجموعے ({{calculated}}) سے مختلف ہے۔",
+      "unknownUnit_one": "{{count}} اکائی جس کا کوئی متبادل نہیں، بغیر تبدیلی رکھی گئی: {{examples}}۔",
+      "unknownUnit_other": "{{count}} اکائیاں جن کا کوئی متبادل نہیں، بغیر تبدیلی رکھی گئیں: {{examples}}۔",
+      "noPrices": "اس فائل میں کوئی قیمتیں نہیں — صرف متن اور مقداریں (مثلاً ایک Ausschreibungs-LV)۔ اس لیے کل 0.00 رہتا ہے۔",
+      "luecken_one": "{{count}} آئٹم میں پُر کرنے کے خالی خانے ہیں (Ausschreiber-/Bieterlücken)؛ نوٹس میں یہ ____ کے طور پر نظر آتے ہیں۔",
+      "luecken_other": "{{count}} آئٹمز میں پُر کرنے کے خالی خانے ہیں (Ausschreiber-/Bieterlücken)؛ نوٹس میں یہ ____ کے طور پر نظر آتے ہیں۔"
+    }
+  }
+}

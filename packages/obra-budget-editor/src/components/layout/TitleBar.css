@@ -1,0 +1,260 @@
+/* TitleBar — OpenAEC Style Book */
+.titlebar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 32px;
+  background-color: var(--theme-titlebar-bg);
+  border-bottom: 1px solid var(--theme-titlebar-border);
+  user-select: none;
+  -webkit-user-select: none;
+  flex-shrink: 0;
+  z-index: 9999;
+  font-family: 'Inter', system-ui, sans-serif;
+  position: relative;
+}
+
+/* OpenAEC brand accent strip — amber gradient below titlebar */
+.titlebar::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -2px;
+  height: 2px;
+  background: linear-gradient(90deg, #D97706 0%, #F59E0B 40%, #EA580C 100%);
+  pointer-events: none;
+}
+
+.titlebar-drag {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 0;
+}
+
+.titlebar-left {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding-left: 8px;
+  gap: 4px;
+  z-index: 1;
+}
+
+.titlebar-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.titlebar-icon svg { width: 16px; height: 16px; }
+
+.titlebar-title {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 13px;
+  font-weight: 500;
+  font-family: 'Space Grotesk', 'Inter', system-ui, sans-serif;
+  letter-spacing: -0.01em;
+  color: var(--theme-titlebar-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 32px;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.titlebar-version {
+  opacity: 0.5;
+  font-size: 10px;
+  font-weight: 400;
+}
+
+.titlebar-controls {
+  display: flex;
+  height: 100%;
+  flex-shrink: 0;
+  z-index: 1;
+}
+
+.titlebar-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 100%;
+  border: none;
+  background: transparent;
+  color: var(--theme-titlebar-btn-color);
+  cursor: default;
+  padding: 0;
+  margin: 0;
+  outline: none;
+  box-shadow: none;
+  border-radius: 0;
+  transition: background-color 0.15s ease;
+}
+
+.titlebar-button:hover { background-color: var(--theme-titlebar-btn-hover); }
+.titlebar-button:active { background-color: var(--theme-titlebar-btn-active); }
+.titlebar-close:hover { background-color: var(--theme-danger-color); color: #ffffff; }
+.titlebar-close:active { background-color: var(--theme-danger-hover); color: white; }
+
+.titlebar-quick-access {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  gap: 1px;
+  margin-left: 2px;
+  padding: 0 4px;
+  border-left: 1px solid var(--theme-titlebar-quick-border);
+}
+
+.titlebar-quick-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 24px;
+  border: none;
+  background: transparent;
+  color: var(--theme-titlebar-quick-color);
+  cursor: default;
+  padding: 0;
+  margin: 0;
+  outline: none;
+  border-radius: 4px;
+  transition: background-color 0.15s ease;
+}
+
+.titlebar-quick-btn:hover {
+  background-color: var(--theme-titlebar-quick-hover-bg);
+  color: var(--theme-titlebar-quick-hover-color);
+}
+
+.titlebar-quick-btn:active { background-color: var(--theme-titlebar-btn-active); }
+
+.titlebar-quick-btn:disabled,
+.titlebar-quick-btn.disabled {
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.send-feedback-btn {
+  background: none;
+  border: none;
+  font-size: 11px;
+  color: var(--theme-titlebar-quick-color);
+  cursor: default;
+  padding: 0 8px;
+  margin-right: 4px;
+  font-family: inherit;
+  height: 100%;
+  transition: color 0.15s ease;
+  outline: none;
+}
+.send-feedback-btn:hover {
+  color: var(--theme-accent);
+}
+
+/* macOS: space for traffic light buttons on the left */
+.titlebar-macos {
+  padding-left: 76px;
+}
+
+.titlebar-macos .titlebar-left {
+  padding-left: 0;
+}
+
+/* ── OpenAEC-account in de titelbalk ── */
+.openaec-signin-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 22px;
+  margin-right: 8px;
+  padding: 0 10px;
+  border: 1px solid var(--theme-accent);
+  border-radius: 11px;
+  background: transparent;
+  color: var(--theme-accent);
+  font-size: 11px;
+  font-weight: 600;
+  font-family: 'Inter', system-ui, sans-serif;
+  cursor: default;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+  align-self: center;
+}
+.openaec-signin-btn:hover { background: var(--theme-accent); color: var(--theme-accent-text, #fff); }
+.openaec-signin-btn:disabled { opacity: 0.5; pointer-events: none; }
+
+.openaec-account { position: relative; display: flex; align-items: center; margin-right: 8px; }
+.openaec-avatar-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 24px;
+  padding: 0 8px 0 2px;
+  border: none;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--theme-titlebar-text);
+  font-size: 11px;
+  font-family: 'Inter', system-ui, sans-serif;
+  cursor: default;
+  transition: background 0.15s ease;
+  align-self: center;
+}
+.openaec-avatar-btn:hover { background: var(--theme-titlebar-btn-hover); }
+.openaec-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #D97706 0%, #F59E0B 60%, #EA580C 100%);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+.openaec-account-name { max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.openaec-account-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  min-width: 200px;
+  background: var(--theme-surface, var(--theme-bg));
+  border: 1px solid var(--theme-border);
+  border-radius: 8px;
+  box-shadow: var(--theme-popover-shadow, 0 8px 24px rgba(0,0,0,0.15));
+  padding: 6px;
+  z-index: 10000;
+}
+.openaec-account-menu-header { padding: 6px 8px 8px; border-bottom: 1px solid var(--theme-border); margin-bottom: 4px; }
+.openaec-account-menu-name { font-size: 12px; font-weight: 600; color: var(--theme-text); }
+.openaec-account-menu-email { font-size: 11px; color: var(--theme-text-secondary); }
+.openaec-account-menu-item {
+  display: block;
+  width: 100%;
+  padding: 6px 8px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--theme-text);
+  font-size: 12px;
+  text-align: left;
+  cursor: default;
+  transition: background 0.1s ease;
+}
+.openaec-account-menu-item:hover { background: var(--theme-hover); }

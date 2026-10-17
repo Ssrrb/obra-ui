@@ -1,0 +1,96 @@
+{
+  "columnMapping": {
+    "title": "Koble kolonner",
+    "intro": "Koble hver kolonne fra <b>{{name}}</b> til riktig kalkylefelt. Kolonner som er satt til «— ignorer —», hoppes over.",
+    "columnN": "Kolonne {{n}}",
+    "columnsLinked_one": "{{count}} kolonne koblet",
+    "columnsLinked_other": "{{count}} kolonner koblet",
+    "rows": "{{count}} linjer",
+    "linkDescriptionFirst": "koble først en «Beskrivelse»-kolonne",
+    "cancel": "Avbryt",
+    "import": "Importer"
+  },
+  "quantityPicker": {
+    "title": "Koble mengde",
+    "tabSpreadsheet": "Regneark",
+    "tabPdf": "PDF-måling",
+    "tabIfc": "IFC-element",
+    "cellNotNumeric": "Cellen inneholder ikke et gyldig tall",
+    "noSheets": "Ingen ark ennå. Opprett et regneark først.",
+    "sheet": "Ark",
+    "cellReference": "Cellereferanse (f.eks. A5 eller B12)",
+    "value": "Verdi",
+    "empty": "(tom)",
+    "linkCell": "Koble celle",
+    "noPdfMeasurements": "Ingen PDF-målinger ennå. Åpne først en PDF i PDF-fanen, og lag målinger.",
+    "sumLengths": "Σ Alle lengder",
+    "sumAreas": "Σ Alle arealer",
+    "individualMeasurements": "Enkeltmålinger:",
+    "noIfcElements": "Ingen IFC-elementer ennå. Åpne en IFC-fil i 3D-fanen, og velg et element.",
+    "cancel": "Avbryt"
+  },
+  "excelPicker": {
+    "title": "Koble til Excel",
+    "cannotReadFile": "Kan ikke lese filen",
+    "chooseFile": "Velg fil …",
+    "noFileSelected": "Ingen fil er valgt",
+    "loadingFile": "Laster filen …",
+    "cancel": "Avbryt",
+    "select": "Velg"
+  },
+  "costItemPicker": {
+    "title": "Koble til kalkylelinje",
+    "searchPlaceholder": "Søk på beskrivelse eller kode …",
+    "suggestions": "Forslag",
+    "results": "Treff ({{count}})",
+    "allLines": "Alle linjer",
+    "unlink": "Fjern kobling",
+    "cancel": "Avbryt",
+    "link": "Koble"
+  },
+  "resourceTypes": {
+    "arbeid": "Arbeidslønn",
+    "materieel": "Maskiner",
+    "materiaal": "Materialer",
+    "onderaannemer": "Underentreprenør",
+    "overig": "Annet"
+  },
+  "undo": {
+    "addResource": "Legg til ressurs",
+    "wizard": "Veiviser: {{name}}"
+  },
+  "wizard": {
+    "previewTitle": "Forhåndsvisning — {{name}}"
+  },
+  "importWarnings": {
+    "title": "Importmeldinger",
+    "intro_one": "Importen av {{source}} ble fullført med {{count}} melding:",
+    "intro_other": "Importen av {{source}} ble fullført med {{count}} meldinger:",
+    "copy": "Kopier",
+    "copied": "Kopiert",
+    "close": "Lukk",
+    "bc3": {
+      "unknownConceptInDecomposition": "Ukjent kode '{{concept}}' i oppdelingen av '{{parent}}' — hoppet over.",
+      "unknownConceptUnder": "Ukjent kode '{{concept}}' under '{{parent}}' — hoppet over.",
+      "zeroYieldDecomposition": "Én eller flere poster har en oppdeling uten mengder — for disse ble enhetsprisen fra ~C-linjen brukt.",
+      "noRootStructure": "Ingen rotstruktur (##) med oppdeling funnet — separate grener ble importert på øverste nivå.",
+      "noProjectStructure": "Ingen prosjektstruktur (##/#) funnet — elementene ble importert som prisbok under ett enkelt kapittel.",
+      "priceMismatch_one": "For {{count}} post avviker summen av oppdelingen med mer enn 2 % fra enhetsprisen i ~C-linjen ({{examples}}). Oppdelingen ble brukt.",
+      "priceMismatch_other": "For {{count}} poster avviker summen av oppdelingen med mer enn 2 % fra enhetsprisen i ~C-linjen (f.eks. {{examples}}). Oppdelingen ble brukt.",
+      "noPrices": "Denne filen inneholder ingen priser — bare beskrivelser og mengder (som et mengdebibliotek). Totalen blir derfor 0,00.",
+      "moreWarnings_one": "… og {{count}} lignende melding til.",
+      "moreWarnings_other": "… og {{count}} lignende meldinger til."
+    },
+    "onlv": {
+      "leistungsbuch": "Dette er et Leistungsbuch (katalog over standardtekster) uten mengder og priser — alle posisjoner er importert med mengde 0.",
+      "wahlEventual_one": "{{count}} valgfri posisjon (Wahl-/Eventualposition) teller ifølge ÖNORM ikke med i totalsummen. Den er importert med mengde og pris, merket i notatene og satt til N i avregningskolonnen; totalen her inkluderer den.",
+      "wahlEventual_other": "{{count}} valgfrie posisjoner (Wahl-/Eventualpositionen) teller ifølge ÖNORM ikke med i totalsummen. De er importert med mengde og pris, merket i notatene og satt til N i avregningskolonnen; totalen her inkluderer dem.",
+      "sumMismatch": "Totalsummen i filen ({{file}}) avviker fra den beregnede summen av posisjonene ({{calculated}}).",
+      "unknownUnit_one": "{{count}} enhet uten motstykke er beholdt uendret: {{examples}}.",
+      "unknownUnit_other": "{{count}} enheter uten motstykke er beholdt uendret: {{examples}}.",
+      "noPrices": "Denne filen inneholder ingen priser — bare tekster og mengder (f.eks. et Ausschreibungs-LV). Totalen forblir derfor 0,00.",
+      "luecken_one": "{{count}} posisjon inneholder felt som skal fylles ut (Ausschreiber-/Bieterlücken); de vises som ____ i notatene.",
+      "luecken_other": "{{count}} posisjoner inneholder felt som skal fylles ut (Ausschreiber-/Bieterlücken); de vises som ____ i notatene."
+    }
+  }
+}

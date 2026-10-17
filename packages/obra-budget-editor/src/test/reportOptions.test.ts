@@ -1,0 +1,78 @@
+import { describe, it, expect, beforeAll } from 'vitest';
+import { itemsForReport, generatePrintHtml } from '@/services/print/printService';
+import { createDefaultSchedule } from '@/data/defaultBudget';
+import { makeCostItem } from '@/services/importers/core';
+import type { CompanyInfo } from '@/types/costModel';
+import { useAppStore } from '@/state/appStore';
+
+// Deze tests controleren de Nederlandse rapportteksten: zet de rapporttaal
+// expliciet op Nederlands (de testomgeving detecteert anders Engels).
+beforeAll(() => {
+  const { settings, setSettings } = useAppStore.getState();
+  setSettings({ ...settings, reportLocale: 'nl' });
+});
+
+// i18next is hier niet geïnitialiseerd; geef de naamvelden expliciet mee.
+function mkSchedule(extra: Record<string, unknown> = {}) {
+  return { ...createDefaultSchedule(), name: 'Testbegroting', projectName: 'Testproject', ...extra };
+}
+
+function sample() {
+  const ch = makeCostItem({ parentId: null, sortOrder: 0, depth: 0, rowType: 'chapter', code: '01', description: 'Grondwerk' });
+  const post = makeCostItem({ parentId: ch.id, sortOrder: 0, depth: 1, rowType: 'begrotingspost', code: '01.01', description: 'Ontgraven', unit: 'm³', quantity: 10 });
+  const regel = makeCostItem({ parentId: post.id, sortOrder: 0, depth: 2, rowType: 'regel', code: '01.01.01', description: 'Graafmachine', unit: 'uur', quantity: 8, normUnitPrice: 80 });
+  const staart = makeCostItem({ parentId: null, sortOrder: 99, depth: 0, rowType: 'staart_afronding', description: 'Afronding' });
+  return [ch, post, regel, staart];
+}
+
+describe('itemsForReport — alleen subtotaal per hoofdstuk', () => {
+  it('zonder vinkje: alles blijft', () => {
+    const schedule = mkSchedule();
+    const items = sample();
+    expect(itemsForReport(schedule, items)).toHaveLength(4);
+  });
+
+  it('met vinkje: alleen hoofdstukken en staart', () => {
+    const schedule = mkSchedule({ reportChapterTotalsOnly: true });
+    const result = itemsForReport(schedule, sample());
+    expect(result.map(i => i.rowType)).toEqual(['chapter', 'staart_afronding']);
+  });
+});
+
+describe('rapportkop-logo in de HTML-print', () => {
+  const logo = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUg==';
+
+  it('logoRight rendert als vaste koptekst-afbeelding rechtsboven', async () => {
+    const schedule = mkSchedule();
+    const companyInfo = { name: 'Test BV', logoRight: logo } as CompanyInfo;
+    const html = await generatePrintHtml(schedule, sample(), 'hoofdaanneming', true, companyInfo);
+    expect(html).toContain('<img class="report-logo-right"');
+    expect(html).toContain(logo);
+  });
+
+  it('zonder logo geen logo-element', async () => {
+    const schedule = mkSchedule();
+    const html = await generatePrintHtml(schedule, sample(), 'hoofdaanneming', true, { name: 'Test BV', logoRight: '' } as CompanyInfo);
+    expect(html).not.toContain('<img class="report-logo-right"');
+  });
+
+  it('vinkje filtert posten en regels uit de print', async () => {
+    const schedule = mkSchedule({ reportChapterTotalsOnly: true });
+    const html = await generatePrintHtml(schedule, sample(), 'hoofdaanneming', true);
+    expect(html).toContain('Grondwerk');
+    expect(html).not.toContain('Graafmachine');
+  });
+
+  it('alleen subtotaal-bedragen: regelbedragen leeg, hoeveelheden zichtbaar', async () => {
+    const items = sample();
+    const regel = items.find(i => i.rowType === 'regel')!;
+    regel.total = 640; regel.unitPrice = 640;
+    const post = items.find(i => i.rowType === 'begrotingspost')!;
+    post.total = 640;
+    const zonder = await generatePrintHtml(mkSchedule(), items, 'hoofdaanneming', true);
+    expect(zonder).toContain('640,00'); // regelbedrag zichtbaar zonder vinkje
+    const met = await generatePrintHtml(mkSchedule({ reportAmountsSubtotalsOnly: true }), items, 'hoofdaanneming', true);
+    expect(met).not.toContain('640,00'); // regelbedrag verborgen
+    expect(met).toContain('10,00'); // hoeveelheid (op de post) blijft staan
+  });
+});

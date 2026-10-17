@@ -1,0 +1,96 @@
+{
+  "columnMapping": {
+    "title": "Oszlopok párosítása",
+    "intro": "Párosítsa a(z) <b>{{name}}</b> minden oszlopát a megfelelő költségvetési mezővel. A „— kihagyás —” értékre állított oszlopok kimaradnak.",
+    "columnN": "{{n}}. oszlop",
+    "columnsLinked_one": "{{count}} oszlop párosítva",
+    "columnsLinked_other": "{{count}} oszlop párosítva",
+    "rows": "{{count}} sor",
+    "linkDescriptionFirst": "előbb párosítson egy „Megnevezés” oszlopot",
+    "cancel": "Mégse",
+    "import": "Importálás"
+  },
+  "quantityPicker": {
+    "title": "Mennyiség összekapcsolása",
+    "tabSpreadsheet": "Táblázat",
+    "tabPdf": "PDF-mérés",
+    "tabIfc": "IFC-elem",
+    "cellNotNumeric": "A cella nem tartalmaz érvényes számot",
+    "noSheets": "Még nincs munkalap. Hozzon létre előbb egy táblázatot.",
+    "sheet": "Munkalap",
+    "cellReference": "Cellahivatkozás (pl. A5 vagy B12)",
+    "value": "Érték",
+    "empty": "(üres)",
+    "linkCell": "Cella összekapcsolása",
+    "noPdfMeasurements": "Még nincs PDF-mérés. Nyisson meg előbb egy PDF-et a PDF lapon, és készítsen méréseket.",
+    "sumLengths": "Σ Összes hossz",
+    "sumAreas": "Σ Összes terület",
+    "individualMeasurements": "Egyedi mérések:",
+    "noIfcElements": "Még nincs IFC-elem. Nyisson meg egy IFC-fájlt a 3D lapon, és válasszon ki egy elemet.",
+    "cancel": "Mégse"
+  },
+  "excelPicker": {
+    "title": "Összekapcsolás Excellel",
+    "cannotReadFile": "A fájl nem olvasható",
+    "chooseFile": "Fájl választása...",
+    "noFileSelected": "Nincs kiválasztott fájl",
+    "loadingFile": "Fájl betöltése...",
+    "cancel": "Mégse",
+    "select": "Kiválasztás"
+  },
+  "costItemPicker": {
+    "title": "Összekapcsolás költségvetési sorral",
+    "searchPlaceholder": "Keresés megnevezés vagy kód alapján...",
+    "suggestions": "Javaslatok",
+    "results": "Találatok ({{count}})",
+    "allLines": "Minden sor",
+    "unlink": "Kapcsolat bontása",
+    "cancel": "Mégse",
+    "link": "Összekapcsolás"
+  },
+  "resourceTypes": {
+    "arbeid": "Munkadíj",
+    "materieel": "Gép",
+    "materiaal": "Anyag",
+    "onderaannemer": "Alvállalkozó",
+    "overig": "Egyéb"
+  },
+  "undo": {
+    "addResource": "Erőforrás hozzáadása",
+    "wizard": "Varázsló: {{name}}"
+  },
+  "wizard": {
+    "previewTitle": "Előnézet — {{name}}"
+  },
+  "importWarnings": {
+    "title": "Importálási üzenetek",
+    "intro_one": "A(z) {{source}} importálása {{count}} üzenettel zárult:",
+    "intro_other": "A(z) {{source}} importálása {{count}} üzenettel zárult:",
+    "copy": "Másolás",
+    "copied": "Másolva",
+    "close": "Bezárás",
+    "bc3": {
+      "unknownConceptInDecomposition": "Ismeretlen elem („{{concept}}”) a(z) „{{parent}}” bontásában — kihagyva.",
+      "unknownConceptUnder": "Ismeretlen elem („{{concept}}”) a(z) „{{parent}}” alatt — kihagyva.",
+      "zeroYieldDecomposition": "Egy vagy több tétel bontása nem tartalmaz mennyiségi szorzókat — ezeknél a ~C rekord egységárát használtuk.",
+      "noRootStructure": "Nem található bontással rendelkező gyökérstruktúra (##) — a különálló ágak a legfelső szintre kerültek.",
+      "noProjectStructure": "Nem található projektstruktúra (##/#) — az elemek árjegyzékként, egyetlen fejezet alá kerültek.",
+      "priceMismatch_one": "{{count}} tételnél a bontás összege több mint 2%-kal eltér a ~C rekord egységárától ({{examples}}). A bontást használtuk.",
+      "priceMismatch_other": "{{count}} tételnél a bontás összege több mint 2%-kal eltér a ~C rekord egységárától (pl. {{examples}}). A bontást használtuk.",
+      "noPrices": "Ez a fájl nem tartalmaz árakat — csak megnevezéseket és mennyiségeket (mint egy felmérési könyvtár). Ezért a végösszeg 0,00 marad.",
+      "moreWarnings_one": "… és még {{count}} hasonló üzenet.",
+      "moreWarnings_other": "… és még {{count}} hasonló üzenet."
+    },
+    "onlv": {
+      "leistungsbuch": "Ez egy Leistungsbuch (szabványszövegek katalógusa) mennyiségek és árak nélkül — minden tétel 0 mennyiséggel lett importálva.",
+      "wahlEventual_one": "{{count}} választható tétel (Wahl-/Eventualposition) az ÖNORM szerint nem számít bele a kiírás összegébe. Mennyiséggel és árral lett importálva, a jegyzetekben megjelölve és az elszámolás oszlopban N-re állítva; az itteni összeg tartalmazza.",
+      "wahlEventual_other": "{{count}} választható tétel (Wahl-/Eventualpositionen) az ÖNORM szerint nem számít bele a kiírás összegébe. Mennyiséggel és árral lettek importálva, a jegyzetekben megjelölve és az elszámolás oszlopban N-re állítva; az itteni összeg tartalmazza őket.",
+      "sumMismatch": "A fájlban szereplő kiírási összeg ({{file}}) eltér a tételek számított összegétől ({{calculated}}).",
+      "unknownUnit_one": "{{count}} megfelelő nélküli egység változatlanul átvéve: {{examples}}.",
+      "unknownUnit_other": "{{count}} megfelelő nélküli egység változatlanul átvéve: {{examples}}.",
+      "noPrices": "Ez a fájl nem tartalmaz árakat — csak szövegeket és mennyiségeket (pl. Ausschreibungs-LV). Az összeg ezért 0,00 marad.",
+      "luecken_one": "{{count}} tétel kitöltendő hézagokat tartalmaz (Ausschreiber-/Bieterlücken); a jegyzetekben ____ jelöli őket.",
+      "luecken_other": "{{count}} tétel kitöltendő hézagokat tartalmaz (Ausschreiber-/Bieterlücken); a jegyzetekben ____ jelöli őket."
+    }
+  }
+}

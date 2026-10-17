@@ -1,0 +1,96 @@
+{
+  "columnMapping": {
+    "title": "پیوند ستون‌ها",
+    "intro": "هر ستون از <b>{{name}}</b> را به فیلد درست برآورد پیوند دهید. ستون‌هایی که روی «— نادیده بگیر —» تنظیم شوند رد می‌شوند.",
+    "columnN": "ستون {{n}}",
+    "columnsLinked_one": "{{count}} ستون پیوند خورد",
+    "columnsLinked_other": "{{count}} ستون پیوند خورد",
+    "rows": "{{count}} سطر",
+    "linkDescriptionFirst": "ابتدا یک ستون «شرح» را پیوند دهید",
+    "cancel": "انصراف",
+    "import": "ورود"
+  },
+  "quantityPicker": {
+    "title": "پیوند مقدار",
+    "tabSpreadsheet": "صفحه‌گسترده",
+    "tabPdf": "اندازه‌گیری PDF",
+    "tabIfc": "عنصر IFC",
+    "cellNotNumeric": "سلول عدد معتبری ندارد",
+    "noSheets": "هنوز برگه‌ای وجود ندارد. ابتدا یک صفحه‌گسترده بسازید.",
+    "sheet": "برگه",
+    "cellReference": "مرجع سلول (مثلاً A5 یا B12)",
+    "value": "مقدار",
+    "empty": "(خالی)",
+    "linkCell": "پیوند سلول",
+    "noPdfMeasurements": "هنوز اندازه‌گیری PDF‎ وجود ندارد. ابتدا در زبانه PDF یک فایل باز کنید و اندازه‌گیری بسازید.",
+    "sumLengths": "Σ همه طول‌ها",
+    "sumAreas": "Σ همه مساحت‌ها",
+    "individualMeasurements": "اندازه‌گیری‌های منفرد:",
+    "noIfcElements": "هنوز عنصر IFC‎ وجود ندارد. در زبانه سه‌بعدی یک فایل IFC باز کنید و عنصری را انتخاب کنید.",
+    "cancel": "انصراف"
+  },
+  "excelPicker": {
+    "title": "پیوند به Excel",
+    "cannotReadFile": "خواندن فایل ممکن نشد",
+    "chooseFile": "انتخاب فایل...",
+    "noFileSelected": "فایلی انتخاب نشده است",
+    "loadingFile": "در حال بارگذاری فایل...",
+    "cancel": "انصراف",
+    "select": "انتخاب"
+  },
+  "costItemPicker": {
+    "title": "پیوند به سطر برآورد",
+    "searchPlaceholder": "جستجو بر اساس شرح یا کد...",
+    "suggestions": "پیشنهادها",
+    "results": "نتایج ({{count}})",
+    "allLines": "همه سطرها",
+    "unlink": "حذف پیوند",
+    "cancel": "انصراف",
+    "link": "پیوند"
+  },
+  "resourceTypes": {
+    "arbeid": "دستمزد",
+    "materieel": "ماشین‌آلات",
+    "materiaal": "مصالح",
+    "onderaannemer": "پیمانکار جزء",
+    "overig": "سایر"
+  },
+  "undo": {
+    "addResource": "افزودن منبع",
+    "wizard": "دستیار: {{name}}"
+  },
+  "wizard": {
+    "previewTitle": "پیش‌نمایش — {{name}}"
+  },
+  "importWarnings": {
+    "title": "پیام‌های ورود",
+    "intro_one": "ورود {{source}} با {{count}} پیام به پایان رسید:",
+    "intro_other": "ورود {{source}} با {{count}} پیام به پایان رسید:",
+    "copy": "کپی",
+    "copied": "کپی شد",
+    "close": "بستن",
+    "bc3": {
+      "unknownConceptInDecomposition": "مورد ناشناخته «{{concept}}» در تفکیک «{{parent}}» — نادیده گرفته شد.",
+      "unknownConceptUnder": "مورد ناشناخته «{{concept}}» زیر «{{parent}}» — نادیده گرفته شد.",
+      "zeroYieldDecomposition": "یک یا چند ردیف تفکیکی بدون ضریب مصرف دارند — برای آن‌ها بهای واحد از رکورد ‎~C‎ به کار رفت.",
+      "noRootStructure": "ساختار ریشه (##) دارای تفکیک یافت نشد — شاخه‌های جداگانه در بالاترین سطح وارد شدند.",
+      "noProjectStructure": "ساختار پروژه (‎##/#‎) یافت نشد — موارد به‌صورت فهرست‌بها زیر یک فصل وارد شدند.",
+      "priceMismatch_one": "برای {{count}} ردیف، جمع تفکیک بیش از ۲٪ با بهای واحد در رکورد ‎~C‎ ({{examples}}) اختلاف دارد. تفکیک به کار رفت.",
+      "priceMismatch_other": "برای {{count}} ردیف، جمع تفکیک بیش از ۲٪ با بهای واحد در رکورد ‎~C‎ (مثلاً {{examples}}) اختلاف دارد. تفکیک به کار رفت.",
+      "noPrices": "این فایل هیچ قیمتی ندارد — فقط شرح و مقدار (مانند یک کتابخانه متره). بنابراین جمع کل صفر باقی می‌ماند.",
+      "moreWarnings_one": "… و {{count}} پیام مشابه دیگر.",
+      "moreWarnings_other": "… و {{count}} پیام مشابه دیگر."
+    },
+    "onlv": {
+      "leistungsbuch": "این یک Leistungsbuch (فهرست متون استاندارد) بدون مقدار و قیمت است — همهٔ آیتم‌ها با مقدار ۰ وارد شدند.",
+      "wahlEventual_one": "{{count}} آیتم اختیاری (Wahl-/Eventualposition) طبق ÖNORM در جمع کل منظور نمی‌شود. با مقدار و قیمت وارد شد، در یادداشت‌ها علامت‌گذاری و در ستون تسویه روی N تنظیم شد؛ جمع کل در اینجا آن را شامل می‌شود.",
+      "wahlEventual_other": "{{count}} آیتم اختیاری (Wahl-/Eventualpositionen) طبق ÖNORM در جمع کل منظور نمی‌شوند. با مقدار و قیمت وارد شدند، در یادداشت‌ها علامت‌گذاری و در ستون تسویه روی N تنظیم شدند؛ جمع کل در اینجا آن‌ها را شامل می‌شود.",
+      "sumMismatch": "جمع کل در فایل ({{file}}) با جمع محاسبه‌شدهٔ آیتم‌ها ({{calculated}}) تفاوت دارد.",
+      "unknownUnit_one": "{{count}} واحد بدون معادل بدون تغییر نگه داشته شد: {{examples}}.",
+      "unknownUnit_other": "{{count}} واحد بدون معادل بدون تغییر نگه داشته شدند: {{examples}}.",
+      "noPrices": "این فایل قیمتی ندارد — فقط متن و مقدار (مثلاً یک Ausschreibungs-LV). بنابراین جمع کل ۰٫۰۰ می‌ماند.",
+      "luecken_one": "{{count}} آیتم دارای جاهای خالی برای تکمیل است (Ausschreiber-/Bieterlücken)؛ در یادداشت‌ها به صورت ____ نمایش داده می‌شوند.",
+      "luecken_other": "{{count}} آیتم دارای جاهای خالی برای تکمیل هستند (Ausschreiber-/Bieterlücken)؛ در یادداشت‌ها به صورت ____ نمایش داده می‌شوند."
+    }
+  }
+}

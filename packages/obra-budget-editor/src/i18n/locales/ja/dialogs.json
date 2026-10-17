@@ -1,0 +1,96 @@
+{
+  "columnMapping": {
+    "title": "列の対応付け",
+    "intro": "<b>{{name}}</b> の各列を積算の項目に対応付けてください。「— 無視 —」に設定した列はスキップされます。",
+    "columnN": "列 {{n}}",
+    "columnsLinked_one": "{{count}} 列を対応付け済み",
+    "columnsLinked_other": "{{count}} 列を対応付け済み",
+    "rows": "{{count}} 行",
+    "linkDescriptionFirst": "先に「名称」列を対応付けてください",
+    "cancel": "キャンセル",
+    "import": "インポート"
+  },
+  "quantityPicker": {
+    "title": "数量をリンク",
+    "tabSpreadsheet": "スプレッドシート",
+    "tabPdf": "PDF 計測",
+    "tabIfc": "IFC 要素",
+    "cellNotNumeric": "セルに有効な数値が入っていません",
+    "noSheets": "シートがありません。先にスプレッドシートを作成してください。",
+    "sheet": "シート",
+    "cellReference": "セル参照（例：A5 または B12）",
+    "value": "値",
+    "empty": "（空）",
+    "linkCell": "セルをリンク",
+    "noPdfMeasurements": "PDF の計測結果がありません。先に PDF タブで PDF を開いて計測してください。",
+    "sumLengths": "Σ すべての長さ",
+    "sumAreas": "Σ すべての面積",
+    "individualMeasurements": "個別の計測結果：",
+    "noIfcElements": "IFC 要素がありません。3D タブで IFC ファイルを開いて要素を選択してください。",
+    "cancel": "キャンセル"
+  },
+  "excelPicker": {
+    "title": "Excel にリンク",
+    "cannotReadFile": "ファイルを読み込めません",
+    "chooseFile": "ファイルを選択…",
+    "noFileSelected": "ファイルが選択されていません",
+    "loadingFile": "ファイルを読み込んでいます…",
+    "cancel": "キャンセル",
+    "select": "選択"
+  },
+  "costItemPicker": {
+    "title": "積算の行にリンク",
+    "searchPlaceholder": "名称またはコードで検索…",
+    "suggestions": "候補",
+    "results": "検索結果（{{count}}）",
+    "allLines": "すべての行",
+    "unlink": "リンクを解除",
+    "cancel": "キャンセル",
+    "link": "リンク"
+  },
+  "resourceTypes": {
+    "arbeid": "労務",
+    "materieel": "機械",
+    "materiaal": "材料",
+    "onderaannemer": "下請業者",
+    "overig": "その他"
+  },
+  "undo": {
+    "addResource": "資源の追加",
+    "wizard": "ウィザード：{{name}}"
+  },
+  "wizard": {
+    "previewTitle": "プレビュー — {{name}}"
+  },
+  "importWarnings": {
+    "title": "インポートの通知",
+    "intro_one": "{{source}} のインポートが完了しました（通知 {{count}} 件）：",
+    "intro_other": "{{source}} のインポートが完了しました（通知 {{count}} 件）：",
+    "copy": "コピー",
+    "copied": "コピーしました",
+    "close": "閉じる",
+    "bc3": {
+      "unknownConceptInDecomposition": "「{{parent}}」の構成明細に不明な項目「{{concept}}」があります — スキップしました。",
+      "unknownConceptUnder": "「{{parent}}」の下に不明な項目「{{concept}}」があります — スキップしました。",
+      "zeroYieldDecomposition": "1 件以上の内訳項目の構成明細に数量（歩掛）がありません — それらには ~C レコードの単価を使用しました。",
+      "noRootStructure": "構成明細を持つルート構造（##）が見つかりません — 個々の分岐を最上位にインポートしました。",
+      "noProjectStructure": "工事構造（##/#）が見つかりません — 項目を単価表として 1 つの章の下にインポートしました。",
+      "priceMismatch_one": "{{count}} 件の内訳項目で、構成明細の合計が ~C レコードの単価と 2% を超えて異なります（{{examples}}）。構成明細を採用しました。",
+      "priceMismatch_other": "{{count}} 件の内訳項目で、構成明細の合計が ~C レコードの単価と 2% を超えて異なります（例：{{examples}}）。構成明細を採用しました。",
+      "noPrices": "このファイルには価格が含まれていません — 名称と数量のみです（数量ライブラリなど）。そのため合計は 0.00 のままです。",
+      "moreWarnings_one": "…ほかに同様の通知が {{count}} 件あります。",
+      "moreWarnings_other": "…ほかに同様の通知が {{count}} 件あります。"
+    },
+    "onlv": {
+      "leistungsbuch": "これは数量と価格を持たない Leistungsbuch（標準文カタログ）です — すべての項目を数量 0 で取り込みました。",
+      "wahlEventual_one": "{{count}} 件の任意項目（Wahl-/Eventualposition）は ÖNORM では合計に含まれません。数量と価格付きで取り込み、メモに印を付け、精算列を N にしました。ここでの合計には含まれています。",
+      "wahlEventual_other": "{{count}} 件の任意項目（Wahl-/Eventualpositionen）は ÖNORM では合計に含まれません。数量と価格付きで取り込み、メモに印を付け、精算列を N にしました。ここでの合計には含まれています。",
+      "sumMismatch": "ファイル内の合計（{{file}}）が項目の計算合計（{{calculated}}）と異なります。",
+      "unknownUnit_one": "対応する単位のない {{count}} 件の単位をそのまま保持しました: {{examples}}。",
+      "unknownUnit_other": "対応する単位のない {{count}} 件の単位をそのまま保持しました: {{examples}}。",
+      "noPrices": "このファイルには価格が含まれていません — テキストと数量のみです（例: Ausschreibungs-LV）。そのため合計は 0.00 のままです。",
+      "luecken_one": "{{count}} 件の項目に記入すべき空欄（Ausschreiber-/Bieterlücken）があります。メモでは ____ と表示されます。",
+      "luecken_other": "{{count}} 件の項目に記入すべき空欄（Ausschreiber-/Bieterlücken）があります。メモでは ____ と表示されます。"
+    }
+  }
+}

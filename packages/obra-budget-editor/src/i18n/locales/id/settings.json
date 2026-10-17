@@ -1,0 +1,69 @@
+{
+  "title": "Pengaturan",
+  "resetToDefaults": "Kembalikan ke bawaan",
+  "resetConfirm": "Yakin ingin mengembalikan semua pengaturan ke bawaan?",
+  "tabs": {
+    "general": "Umum",
+    "appearance": "Tampilan",
+    "grid": "Tabel",
+    "files": "Berkas",
+    "shortcuts": "Pintasan",
+    "plugins": "Plugin",
+    "about": "Tentang"
+  },
+  "general": {
+    "application": "Aplikasi",
+    "language": "Bahasa",
+    "reportLanguage": "Bahasa laporan",
+    "reportLanguageAuto": "Sama dengan antarmuka",
+    "reportLanguageHelp": "Bahasa untuk hasil cetak dan laporan PDF. Berguna jika bahasa antarmuka berbeda dengan bahasa pemberi tugas Anda.",
+    "startup": "Saat mulai",
+    "restoreSession": "Pulihkan sesi saat aplikasi dijalankan",
+    "checkUpdates": "Periksa pembaruan",
+    "author": "Penyusun",
+    "authorName": "Nama"
+  },
+  "appearance": {
+    "theme": "Tema",
+    "system": "Sistem",
+    "default": "Bawaan",
+    "dark": "Gelap",
+    "light": "Terang",
+    "blue": "Biru",
+    "amberNavy": "Ambar Biru Tua",
+    "warmEmber": "Bara Hangat",
+    "highContrast": "Kontras tinggi",
+    "font": "Font",
+    "uiFontSize": "Ukuran font antarmuka"
+  },
+  "grid": {
+    "general": "Tabel",
+    "showRowNumbers": "Tampilkan nomor baris",
+    "alternateRowColors": "Warna baris berselang-seling"
+  },
+  "files": {
+    "autoSave": "Simpan otomatis",
+    "autoSaveOption": "Simpan otomatis",
+    "off": "Nonaktif",
+    "afterDelay": "Setelah jeda",
+    "onFocusChange": "Saat fokus berpindah",
+    "onWindowChange": "Saat jendela berpindah",
+    "encoding": "Pengodean",
+    "defaultEncoding": "Pengodean bawaan",
+    "backup": "Cadangan",
+    "autoBackup": "Cadangan otomatis"
+  },
+  "shortcuts": {
+    "placeholder": "Pintasan akan diatur di sini"
+  },
+  "plugins": {
+    "placeholder": "Plugin akan dikelola di sini"
+  },
+  "about": {
+    "appName": "Open Calc Studio",
+    "version": "Versi",
+    "framework": "Kerangka kerja",
+    "license": "Lisensi",
+    "description": "Perangkat lunak anggaran biaya sumber terbuka untuk industri konstruksi Belanda. Penyimpanan dalam format IFC."
+  }
+}

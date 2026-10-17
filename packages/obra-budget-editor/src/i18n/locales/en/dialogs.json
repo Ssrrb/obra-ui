@@ -1,0 +1,96 @@
+{
+  "columnMapping": {
+    "title": "Link columns",
+    "intro": "Link each column from <b>{{name}}</b> to the correct estimate field. Columns set to “— ignore —” are skipped.",
+    "columnN": "Column {{n}}",
+    "columnsLinked_one": "{{count}} column linked",
+    "columnsLinked_other": "{{count}} columns linked",
+    "rows": "{{count}} rows",
+    "linkDescriptionFirst": "link a “Description” column first",
+    "cancel": "Cancel",
+    "import": "Import"
+  },
+  "quantityPicker": {
+    "title": "Link quantity",
+    "tabSpreadsheet": "Spreadsheet",
+    "tabPdf": "PDF measurement",
+    "tabIfc": "IFC element",
+    "cellNotNumeric": "Cell does not contain a valid number",
+    "noSheets": "No sheets yet. Create a spreadsheet first.",
+    "sheet": "Sheet",
+    "cellReference": "Cell reference (e.g. A5 or B12)",
+    "value": "Value",
+    "empty": "(empty)",
+    "linkCell": "Link cell",
+    "noPdfMeasurements": "No PDF measurements yet. Open a PDF in the PDF tab first and create measurements.",
+    "sumLengths": "Σ All lengths",
+    "sumAreas": "Σ All areas",
+    "individualMeasurements": "Individual measurements:",
+    "noIfcElements": "No IFC elements yet. Open an IFC file in the 3D tab and select an element.",
+    "cancel": "Cancel"
+  },
+  "excelPicker": {
+    "title": "Link to Excel",
+    "cannotReadFile": "Unable to read file",
+    "chooseFile": "Choose file...",
+    "noFileSelected": "No file selected",
+    "loadingFile": "Loading file...",
+    "cancel": "Cancel",
+    "select": "Select"
+  },
+  "costItemPicker": {
+    "title": "Link to estimate line",
+    "searchPlaceholder": "Search by description or code...",
+    "suggestions": "Suggestions",
+    "results": "Results ({{count}})",
+    "allLines": "All lines",
+    "unlink": "Unlink",
+    "cancel": "Cancel",
+    "link": "Link"
+  },
+  "resourceTypes": {
+    "arbeid": "Labor",
+    "materieel": "Equipment",
+    "materiaal": "Material",
+    "onderaannemer": "Subcontractor",
+    "overig": "Other"
+  },
+  "undo": {
+    "addResource": "Add resource",
+    "wizard": "Wizard: {{name}}"
+  },
+  "wizard": {
+    "previewTitle": "Preview — {{name}}"
+  },
+  "importWarnings": {
+    "title": "Import notices",
+    "intro_one": "The import of {{source}} finished with {{count}} notice:",
+    "intro_other": "The import of {{source}} finished with {{count}} notices:",
+    "copy": "Copy",
+    "copied": "Copied",
+    "close": "Close",
+    "bc3": {
+      "unknownConceptInDecomposition": "Unknown concept '{{concept}}' in the breakdown of '{{parent}}' — skipped.",
+      "unknownConceptUnder": "Unknown concept '{{concept}}' under '{{parent}}' — skipped.",
+      "zeroYieldDecomposition": "One or more items have a breakdown without yields — the unit price from the ~C record was used for those.",
+      "noRootStructure": "No root structure (##) with a breakdown found — separate branches were imported at the top level.",
+      "noProjectStructure": "No project structure (##/#) found — concepts were imported as a price book under a single chapter.",
+      "priceMismatch_one": "For {{count}} item the sum of the breakdown differs by more than 2% from the unit price in the ~C record ({{examples}}). The breakdown was used.",
+      "priceMismatch_other": "For {{count}} items the sum of the breakdown differs by more than 2% from the unit price in the ~C record (e.g. {{examples}}). The breakdown was used.",
+      "noPrices": "This file contains no prices — only descriptions and quantities (like a measurements library). The total therefore remains 0.00.",
+      "moreWarnings_one": "… and {{count}} more similar notice.",
+      "moreWarnings_other": "… and {{count}} more similar notices."
+    },
+    "onlv": {
+      "leistungsbuch": "This is a Leistungsbuch (catalogue of standard texts) without quantities or prices — all positions were imported with quantity 0.",
+      "wahlEventual_one": "{{count}} optional position (Wahl-/Eventualposition) does not count towards the LV total in ÖNORM. It was imported with quantity and price, marked in the notes and set to N in the settlement column; the total here does include it.",
+      "wahlEventual_other": "{{count}} optional positions (Wahl-/Eventualpositionen) do not count towards the LV total in ÖNORM. They were imported with quantity and price, marked in the notes and set to N in the settlement column; the total here does include them.",
+      "sumMismatch": "The LV total in the file ({{file}}) differs from the calculated sum of the positions ({{calculated}}).",
+      "unknownUnit_one": "{{count}} unit without an equivalent here was kept unchanged: {{examples}}.",
+      "unknownUnit_other": "{{count}} units without an equivalent here were kept unchanged: {{examples}}.",
+      "noPrices": "This file contains no prices — only texts and quantities (e.g. an Ausschreibungs-LV). The total therefore remains 0.00.",
+      "luecken_one": "{{count}} position contains gaps to fill in (Ausschreiber-/Bieterlücken); they appear as ____ in the notes.",
+      "luecken_other": "{{count}} positions contain gaps to fill in (Ausschreiber-/Bieterlücken); they appear as ____ in the notes."
+    }
+  }
+}

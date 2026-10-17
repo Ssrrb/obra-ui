@@ -1,0 +1,96 @@
+{
+  "columnMapping": {
+    "title": "Koppla kolumner",
+    "intro": "Koppla varje kolumn från <b>{{name}}</b> till rätt kalkylfält. Kolumner som är satta till ”— ignorera —” hoppas över.",
+    "columnN": "Kolumn {{n}}",
+    "columnsLinked_one": "{{count}} kolumn kopplad",
+    "columnsLinked_other": "{{count}} kolumner kopplade",
+    "rows": "{{count}} rader",
+    "linkDescriptionFirst": "koppla först en ”Beskrivning”-kolumn",
+    "cancel": "Avbryt",
+    "import": "Importera"
+  },
+  "quantityPicker": {
+    "title": "Koppla mängd",
+    "tabSpreadsheet": "Kalkylblad",
+    "tabPdf": "PDF-mätning",
+    "tabIfc": "IFC-element",
+    "cellNotNumeric": "Cellen innehåller inget giltigt tal",
+    "noSheets": "Inga blad ännu. Skapa först ett kalkylblad.",
+    "sheet": "Blad",
+    "cellReference": "Cellreferens (t.ex. A5 eller B12)",
+    "value": "Värde",
+    "empty": "(tom)",
+    "linkCell": "Koppla cell",
+    "noPdfMeasurements": "Inga PDF-mätningar ännu. Öppna först en PDF på fliken PDF och gör mätningar.",
+    "sumLengths": "Σ Alla längder",
+    "sumAreas": "Σ Alla areor",
+    "individualMeasurements": "Enskilda mätningar:",
+    "noIfcElements": "Inga IFC-element ännu. Öppna en IFC-fil på fliken 3D och markera ett element.",
+    "cancel": "Avbryt"
+  },
+  "excelPicker": {
+    "title": "Koppla till Excel",
+    "cannotReadFile": "Filen kan inte läsas",
+    "chooseFile": "Välj fil …",
+    "noFileSelected": "Ingen fil vald",
+    "loadingFile": "Läser in filen …",
+    "cancel": "Avbryt",
+    "select": "Välj"
+  },
+  "costItemPicker": {
+    "title": "Koppla till kalkylrad",
+    "searchPlaceholder": "Sök på beskrivning eller kod …",
+    "suggestions": "Förslag",
+    "results": "Resultat ({{count}})",
+    "allLines": "Alla rader",
+    "unlink": "Ta bort koppling",
+    "cancel": "Avbryt",
+    "link": "Koppla"
+  },
+  "resourceTypes": {
+    "arbeid": "Arbetskostnad",
+    "materieel": "Maskiner",
+    "materiaal": "Material",
+    "onderaannemer": "Underentreprenör",
+    "overig": "Övrigt"
+  },
+  "undo": {
+    "addResource": "Lägg till resurs",
+    "wizard": "Guide: {{name}}"
+  },
+  "wizard": {
+    "previewTitle": "Förhandsgranskning — {{name}}"
+  },
+  "importWarnings": {
+    "title": "Importmeddelanden",
+    "intro_one": "Importen av {{source}} slutfördes med {{count}} meddelande:",
+    "intro_other": "Importen av {{source}} slutfördes med {{count}} meddelanden:",
+    "copy": "Kopiera",
+    "copied": "Kopierat",
+    "close": "Stäng",
+    "bc3": {
+      "unknownConceptInDecomposition": "Okänd kod '{{concept}}' i uppdelningen av '{{parent}}' — hoppades över.",
+      "unknownConceptUnder": "Okänd kod '{{concept}}' under '{{parent}}' — hoppades över.",
+      "zeroYieldDecomposition": "En eller flera poster har en uppdelning utan åtgångar — för dessa användes enhetspriset från ~C-raden.",
+      "noRootStructure": "Ingen rotstruktur (##) med uppdelning hittades — separata grenar importerades på översta nivån.",
+      "noProjectStructure": "Ingen projektstruktur (##/#) hittades — elementen importerades som prisbok under ett enda kapitel.",
+      "priceMismatch_one": "För {{count}} post avviker summan av uppdelningen med mer än 2 % från enhetspriset i ~C-raden ({{examples}}). Uppdelningen användes.",
+      "priceMismatch_other": "För {{count}} poster avviker summan av uppdelningen med mer än 2 % från enhetspriset i ~C-raden (t.ex. {{examples}}). Uppdelningen användes.",
+      "noPrices": "Den här filen innehåller inga priser — endast beskrivningar och mängder (som ett mängdbibliotek). Totalen blir därför 0,00.",
+      "moreWarnings_one": "… och {{count}} ytterligare liknande meddelande.",
+      "moreWarnings_other": "… och {{count}} ytterligare liknande meddelanden."
+    },
+    "onlv": {
+      "leistungsbuch": "Detta är ett Leistungsbuch (katalog med standardtexter) utan mängder och priser — alla positioner har importerats med mängd 0.",
+      "wahlEventual_one": "{{count}} valfri position (Wahl-/Eventualposition) räknas enligt ÖNORM inte in i totalsumman. Den har importerats med mängd och pris, markerats i anteckningarna och satts till N i avräkningskolumnen; totalen här inkluderar den.",
+      "wahlEventual_other": "{{count}} valfria positioner (Wahl-/Eventualpositionen) räknas enligt ÖNORM inte in i totalsumman. De har importerats med mängd och pris, markerats i anteckningarna och satts till N i avräkningskolumnen; totalen här inkluderar dem.",
+      "sumMismatch": "Totalsumman i filen ({{file}}) avviker från den beräknade summan av positionerna ({{calculated}}).",
+      "unknownUnit_one": "{{count}} enhet utan motsvarighet har behållits oförändrad: {{examples}}.",
+      "unknownUnit_other": "{{count}} enheter utan motsvarighet har behållits oförändrade: {{examples}}.",
+      "noPrices": "Den här filen innehåller inga priser — endast texter och mängder (t.ex. ett Ausschreibungs-LV). Totalen förblir därför 0,00.",
+      "luecken_one": "{{count}} position innehåller luckor att fylla i (Ausschreiber-/Bieterlücken); de visas som ____ i anteckningarna.",
+      "luecken_other": "{{count}} positioner innehåller luckor att fylla i (Ausschreiber-/Bieterlücken); de visas som ____ i anteckningarna."
+    }
+  }
+}

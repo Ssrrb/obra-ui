@@ -1,0 +1,96 @@
+{
+  "columnMapping": {
+    "title": "열 연결",
+    "intro": "<b>{{name}}</b>의 각 열을 알맞은 내역서 항목에 연결하세요. “— 무시 —”로 설정한 열은 건너뜁니다.",
+    "columnN": "{{n}}번 열",
+    "columnsLinked_one": "{{count}}개 열 연결됨",
+    "columnsLinked_other": "{{count}}개 열 연결됨",
+    "rows": "{{count}}행",
+    "linkDescriptionFirst": "먼저 “명칭” 열을 연결하세요",
+    "cancel": "취소",
+    "import": "가져오기"
+  },
+  "quantityPicker": {
+    "title": "수량 연결",
+    "tabSpreadsheet": "스프레드시트",
+    "tabPdf": "PDF 측정",
+    "tabIfc": "IFC 요소",
+    "cellNotNumeric": "셀에 유효한 숫자가 없습니다",
+    "noSheets": "시트가 없습니다. 먼저 스프레드시트를 만드세요.",
+    "sheet": "시트",
+    "cellReference": "셀 참조(예: A5 또는 B12)",
+    "value": "값",
+    "empty": "(비어 있음)",
+    "linkCell": "셀 연결",
+    "noPdfMeasurements": "PDF 측정 결과가 없습니다. 먼저 PDF 탭에서 PDF를 열고 측정하세요.",
+    "sumLengths": "Σ 모든 길이",
+    "sumAreas": "Σ 모든 면적",
+    "individualMeasurements": "개별 측정 결과:",
+    "noIfcElements": "IFC 요소가 없습니다. 3D 탭에서 IFC 파일을 열고 요소를 선택하세요.",
+    "cancel": "취소"
+  },
+  "excelPicker": {
+    "title": "Excel에 연결",
+    "cannotReadFile": "파일을 읽을 수 없습니다",
+    "chooseFile": "파일 선택…",
+    "noFileSelected": "선택된 파일 없음",
+    "loadingFile": "파일을 불러오는 중…",
+    "cancel": "취소",
+    "select": "선택"
+  },
+  "costItemPicker": {
+    "title": "내역서 행에 연결",
+    "searchPlaceholder": "명칭 또는 코드로 검색…",
+    "suggestions": "추천",
+    "results": "결과({{count}})",
+    "allLines": "모든 행",
+    "unlink": "연결 해제",
+    "cancel": "취소",
+    "link": "연결"
+  },
+  "resourceTypes": {
+    "arbeid": "노무",
+    "materieel": "장비",
+    "materiaal": "재료",
+    "onderaannemer": "하도급업체",
+    "overig": "기타"
+  },
+  "undo": {
+    "addResource": "자원 추가",
+    "wizard": "마법사: {{name}}"
+  },
+  "wizard": {
+    "previewTitle": "미리보기 — {{name}}"
+  },
+  "importWarnings": {
+    "title": "가져오기 알림",
+    "intro_one": "{{source}} 가져오기가 완료되었습니다(알림 {{count}}건):",
+    "intro_other": "{{source}} 가져오기가 완료되었습니다(알림 {{count}}건):",
+    "copy": "복사",
+    "copied": "복사됨",
+    "close": "닫기",
+    "bc3": {
+      "unknownConceptInDecomposition": "'{{parent}}'의 구성 명세에 알 수 없는 항목 '{{concept}}'이(가) 있습니다 — 건너뛰었습니다.",
+      "unknownConceptUnder": "'{{parent}}' 아래에 알 수 없는 항목 '{{concept}}'이(가) 있습니다 — 건너뛰었습니다.",
+      "zeroYieldDecomposition": "하나 이상의 내역 항목에 소요량이 없는 구성 명세가 있습니다 — 해당 항목에는 ~C 레코드의 단가를 사용했습니다.",
+      "noRootStructure": "구성 명세가 있는 최상위 구조(##)를 찾지 못했습니다 — 개별 분기를 최상위 수준으로 가져왔습니다.",
+      "noProjectStructure": "공사 구조(##/#)를 찾지 못했습니다 — 항목을 단가집으로 하나의 장 아래에 가져왔습니다.",
+      "priceMismatch_one": "내역 항목 {{count}}건에서 구성 명세 합계가 ~C 레코드의 단가와 2% 넘게 차이 납니다({{examples}}). 구성 명세를 적용했습니다.",
+      "priceMismatch_other": "내역 항목 {{count}}건에서 구성 명세 합계가 ~C 레코드의 단가와 2% 넘게 차이 납니다(예: {{examples}}). 구성 명세를 적용했습니다.",
+      "noPrices": "이 파일에는 가격이 없습니다 — 명칭과 수량만 있습니다(수량 라이브러리처럼). 따라서 합계는 0.00으로 유지됩니다.",
+      "moreWarnings_one": "… 그 밖에 비슷한 알림 {{count}}건이 더 있습니다.",
+      "moreWarnings_other": "… 그 밖에 비슷한 알림 {{count}}건이 더 있습니다."
+    },
+    "onlv": {
+      "leistungsbuch": "이 파일은 수량과 가격이 없는 Leistungsbuch(표준 문안 카탈로그)입니다 — 모든 항목을 수량 0으로 가져왔습니다.",
+      "wahlEventual_one": "선택 항목 {{count}}건(Wahl-/Eventualposition)은 ÖNORM에서 합계에 포함되지 않습니다. 수량과 가격을 포함해 가져왔고, 메모에 표시하고 정산 열을 N으로 설정했습니다. 여기의 합계에는 포함되어 있습니다.",
+      "wahlEventual_other": "선택 항목 {{count}}건(Wahl-/Eventualpositionen)은 ÖNORM에서 합계에 포함되지 않습니다. 수량과 가격을 포함해 가져왔고, 메모에 표시하고 정산 열을 N으로 설정했습니다. 여기의 합계에는 포함되어 있습니다.",
+      "sumMismatch": "파일의 합계({{file}})가 항목의 계산된 합계({{calculated}})와 다릅니다.",
+      "unknownUnit_one": "대응 단위가 없는 단위 {{count}}개를 그대로 유지했습니다: {{examples}}.",
+      "unknownUnit_other": "대응 단위가 없는 단위 {{count}}개를 그대로 유지했습니다: {{examples}}.",
+      "noPrices": "이 파일에는 가격이 없습니다 — 문안과 수량만 있습니다(예: Ausschreibungs-LV). 따라서 합계는 0.00으로 유지됩니다.",
+      "luecken_one": "항목 {{count}}건에 채워야 할 빈칸(Ausschreiber-/Bieterlücken)이 있습니다. 메모에 ____로 표시됩니다.",
+      "luecken_other": "항목 {{count}}건에 채워야 할 빈칸(Ausschreiber-/Bieterlücken)이 있습니다. 메모에 ____로 표시됩니다."
+    }
+  }
+}

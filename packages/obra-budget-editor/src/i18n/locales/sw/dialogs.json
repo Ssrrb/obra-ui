@@ -1,0 +1,96 @@
+{
+  "columnMapping": {
+    "title": "Unganisha safu wima",
+    "intro": "Unganisha kila safu wima kutoka <b>{{name}}</b> na uga sahihi wa makadirio. Safu wima zilizowekwa \"— puuza —\" huachwa.",
+    "columnN": "Safu wima {{n}}",
+    "columnsLinked_one": "Safu wima {{count}} imeunganishwa",
+    "columnsLinked_other": "Safu wima {{count}} zimeunganishwa",
+    "rows": "Safu {{count}}",
+    "linkDescriptionFirst": "unganisha safu wima ya “Maelezo” kwanza",
+    "cancel": "Ghairi",
+    "import": "Ingiza"
+  },
+  "quantityPicker": {
+    "title": "Unganisha kiasi",
+    "tabSpreadsheet": "Lahajedwali",
+    "tabPdf": "Kipimo cha PDF",
+    "tabIfc": "Kipengele cha IFC",
+    "cellNotNumeric": "Kisanduku hakina namba halali",
+    "noSheets": "Bado hakuna laha. Tengeneza lahajedwali kwanza.",
+    "sheet": "Laha",
+    "cellReference": "Rejea ya kisanduku (mfano A5 au B12)",
+    "value": "Thamani",
+    "empty": "(tupu)",
+    "linkCell": "Unganisha kisanduku",
+    "noPdfMeasurements": "Bado hakuna vipimo vya PDF. Fungua PDF kwenye kichupo cha PDF kwanza kisha tengeneza vipimo.",
+    "sumLengths": "Σ Urefu wote",
+    "sumAreas": "Σ Maeneo yote",
+    "individualMeasurements": "Vipimo mmoja mmoja:",
+    "noIfcElements": "Bado hakuna vipengele vya IFC. Fungua faili ya IFC kwenye kichupo cha 3D kisha chagua kipengele.",
+    "cancel": "Ghairi"
+  },
+  "excelPicker": {
+    "title": "Unganisha na Excel",
+    "cannotReadFile": "Imeshindwa kusoma faili",
+    "chooseFile": "Chagua faili...",
+    "noFileSelected": "Hakuna faili iliyochaguliwa",
+    "loadingFile": "Inapakia faili...",
+    "cancel": "Ghairi",
+    "select": "Chagua"
+  },
+  "costItemPicker": {
+    "title": "Unganisha na mstari wa makadirio",
+    "searchPlaceholder": "Tafuta kwa maelezo au msimbo...",
+    "suggestions": "Mapendekezo",
+    "results": "Matokeo ({{count}})",
+    "allLines": "Mistari yote",
+    "unlink": "Tenganisha",
+    "cancel": "Ghairi",
+    "link": "Unganisha"
+  },
+  "resourceTypes": {
+    "arbeid": "Wafanyakazi",
+    "materieel": "Mitambo",
+    "materiaal": "Vifaa",
+    "onderaannemer": "Mkandarasi mdogo",
+    "overig": "Nyingine"
+  },
+  "undo": {
+    "addResource": "Ongeza rasilimali",
+    "wizard": "Mwongozo: {{name}}"
+  },
+  "wizard": {
+    "previewTitle": "Hakiki — {{name}}"
+  },
+  "importWarnings": {
+    "title": "Taarifa za uingizaji",
+    "intro_one": "Uingizaji wa {{source}} umekamilika na taarifa {{count}}:",
+    "intro_other": "Uingizaji wa {{source}} umekamilika na taarifa {{count}}:",
+    "copy": "Nakili",
+    "copied": "Imenakiliwa",
+    "close": "Funga",
+    "bc3": {
+      "unknownConceptInDecomposition": "Kipengele kisichojulikana '{{concept}}' katika uchanganuzi wa '{{parent}}' — kimerukwa.",
+      "unknownConceptUnder": "Kipengele kisichojulikana '{{concept}}' chini ya '{{parent}}' — kimerukwa.",
+      "zeroYieldDecomposition": "Kipengele kimoja au zaidi kina uchanganuzi usio na viwango vya matumizi — bei ya kipimo kutoka rekodi ya ~C imetumika kwa vipengele hivyo.",
+      "noRootStructure": "Hakuna muundo mkuu (##) wenye uchanganuzi uliopatikana — matawi tofauti yameingizwa kwenye ngazi ya juu.",
+      "noProjectStructure": "Hakuna muundo wa mradi (##/#) uliopatikana — vipengele vimeingizwa kama kitabu cha bei chini ya sura moja.",
+      "priceMismatch_one": "Kwa kipengele {{count}}, jumla ya uchanganuzi inatofautiana kwa zaidi ya 2% na bei ya kipimo katika rekodi ya ~C ({{examples}}). Uchanganuzi umetumika.",
+      "priceMismatch_other": "Kwa vipengele {{count}}, jumla ya uchanganuzi inatofautiana kwa zaidi ya 2% na bei ya kipimo katika rekodi ya ~C (k.m. {{examples}}). Uchanganuzi umetumika.",
+      "noPrices": "Faili hii haina bei — ina maelezo na viasi tu (kama maktaba ya vipimo). Kwa hiyo jumla inabaki 0.00.",
+      "moreWarnings_one": "… na taarifa {{count}} nyingine inayofanana.",
+      "moreWarnings_other": "… na taarifa {{count}} nyingine zinazofanana."
+    },
+    "onlv": {
+      "leistungsbuch": "Hii ni Leistungsbuch (katalogi ya maandishi sanifu) bila viasi wala bei — vipengele vyote vimeingizwa kwa kiasi 0.",
+      "wahlEventual_one": "Kipengele {{count}} cha hiari (Wahl-/Eventualposition) hakihesabiwi kwenye jumla kulingana na ÖNORM. Kimeingizwa na kiasi na bei, kimewekewa alama kwenye maelezo na kuwekwa N kwenye safu ya malipo; jumla hapa inakijumuisha.",
+      "wahlEventual_other": "Vipengele {{count}} vya hiari (Wahl-/Eventualpositionen) havihesabiwi kwenye jumla kulingana na ÖNORM. Vimeingizwa na kiasi na bei, vimewekewa alama kwenye maelezo na kuwekwa N kwenye safu ya malipo; jumla hapa inavijumuisha.",
+      "sumMismatch": "Jumla katika faili ({{file}}) inatofautiana na jumla iliyokokotolewa ya vipengele ({{calculated}}).",
+      "unknownUnit_one": "Kipimo {{count}} kisicho na kilinganifu kimehifadhiwa bila mabadiliko: {{examples}}.",
+      "unknownUnit_other": "Vipimo {{count}} visivyo na vilinganifu vimehifadhiwa bila mabadiliko: {{examples}}.",
+      "noPrices": "Faili hii haina bei — ina maandishi na viasi tu (k.m. Ausschreibungs-LV). Kwa hivyo jumla inabaki 0.00.",
+      "luecken_one": "Kipengele {{count}} kina nafasi za kujaza (Ausschreiber-/Bieterlücken); zinaonekana kama ____ kwenye maelezo.",
+      "luecken_other": "Vipengele {{count}} vina nafasi za kujaza (Ausschreiber-/Bieterlücken); zinaonekana kama ____ kwenye maelezo."
+    }
+  }
+}
