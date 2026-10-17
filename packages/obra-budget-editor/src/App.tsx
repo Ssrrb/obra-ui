@@ -40,6 +40,7 @@ import { initMcpBridge } from "./services/mcp/mcpBridge";
 import { initOsUsername } from "./services/system/osUser";
 import { loadSampleBudgetText } from "./services/file/sampleBudget";
 import { isEmbedded, getEmbedOptions } from "./lib/hostRoot";
+import { CTRL_BUILD } from "./services/buildFlags";
 import { sendDockRequest, onWindowBridgeMessage } from "./services/windowBridge";
 import "./styles/themes.css";
 import "./components/layout/layout.css";
@@ -153,13 +154,14 @@ function App() {
 
     // Register built-in extensions and load user-installed extensions
     registerBuiltinExtensions();
-    loadAllExtensions().catch((err) =>
+    // ctrl: no user-installed extensions (they run through new Function, which a strict CSP forbids).
+    if (!CTRL_BUILD) loadAllExtensions().catch((err) =>
       console.error('[Extensions] Failed to load extensions:', err)
     );
 
     // Start the MCP bridge (listens for WebSocket mutations via Tauri events)
     let cleanupBridge: (() => void) | undefined;
-    initMcpBridge().then((cleanup) => { cleanupBridge = cleanup; });
+    if (!CTRL_BUILD) initMcpBridge().then((cleanup) => { cleanupBridge = cleanup; });
 
     // Auto-open file from query parameter (used by "Open in nieuw venster")
     // Ingebouwd in een andere site is de query-string van de gastpagina;
@@ -441,9 +443,10 @@ function App() {
 
   return (
     <>
-      <TitleBar onSettingsClick={() => setSettingsOpen(true)} onFeedbackClick={() => setFeedbackOpen(true)} />
+      {/* ctrl: VS Code provides the window chrome, title and the single document tab. */}
+      {!CTRL_BUILD && <TitleBar onSettingsClick={() => setSettingsOpen(true)} onFeedbackClick={() => setFeedbackOpen(true)} />}
       <Ribbon onFileTabClick={() => setBackstageOpen(true)} />
-      <FileTabBar />
+      {!CTRL_BUILD && <FileTabBar />}
       {isDetachedWindow && (
         <div
           className="dock-handle"
@@ -460,7 +463,7 @@ function App() {
       )}
       <div className="content">
         {/* Start sidebar — always visible (collapsible) */}
-        {!startSidebarOpen && (
+        {!CTRL_BUILD && !startSidebarOpen && (
           <button
             className="start-sidebar-collapsed-tab"
             onClick={() => setStartSidebarOpen(true)}
@@ -469,7 +472,7 @@ function App() {
             <span>{t('start')}</span>
           </button>
         )}
-        {startSidebarOpen && (
+        {!CTRL_BUILD && startSidebarOpen && (
           <StartSidebar
             onLoadVoorbeeld={loadVoorbeeldBudget}
             onClose={() => setStartSidebarOpen(false)}
@@ -478,7 +481,7 @@ function App() {
 
         {documents.length === 0 ? (
           <div className="start-empty-main">
-            <h3>{t("appName")}</h3>
+            {!CTRL_BUILD && <h3>{t("appName")}</h3>}
             <p>{t('app.noBudgetOpen')}</p>
           </div>
         ) : (
@@ -595,7 +598,7 @@ function App() {
         )}
       </div>
       {/* Floating chat button + panel — bottom right */}
-      {!showChatPanel && (
+      {!CTRL_BUILD && !showChatPanel && (
         <button
           className="chat-fab"
           onClick={() => useAppStore.getState().toggleChatPanel()}
@@ -605,7 +608,7 @@ function App() {
           💬
         </button>
       )}
-      {showChatPanel && (
+      {!CTRL_BUILD && showChatPanel && (
         <div className="chat-floating">
           <ChatPanel />
         </div>
@@ -622,7 +625,7 @@ function App() {
         theme={theme}
         onThemeChange={(t: string) => { setTheme(t as typeof theme); updateSettings({ theme: t as any }); }}
       />
-      <FeedbackDialog open={feedbackOpen} onClose={() => setFeedbackOpen(false)} />
+      {!CTRL_BUILD && <FeedbackDialog open={feedbackOpen} onClose={() => setFeedbackOpen(false)} />}
       <UnsavedChangesDialog open={unsavedDialog.open} fileName={unsavedDialog.fileName} onResult={handleUnsavedResult} />
       <ResourcePicker />
       <WizardModal open={activeDialog === 'wizard'} onClose={closeDialog} />

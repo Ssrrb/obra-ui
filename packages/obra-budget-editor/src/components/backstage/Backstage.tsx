@@ -20,7 +20,7 @@ import ExtensionManagerPanel from "./ExtensionManagerPanel";
 import { CloudPanel } from "./CloudPanel";
 import ColumnMappingDialog from "./ColumnMappingDialog";
 import { showImportWarnings } from "../common/ImportWarningsDialog";
-import { OPENAEC_ENABLED } from "../../services/buildFlags";
+import { OPENAEC_ENABLED, CTRL_BUILD } from "../../services/buildFlags";
 import "./Backstage.css";
 
 const ICONS = {
@@ -106,7 +106,9 @@ export default function Backstage({ open, onClose, onOpenSettings }: BackstagePr
   useEffect(() => {
     if (!open) { setActivePanel("none"); return; }
     // Default to "open" panel when backstage opens if there are recent files
-    if ((settings.recentFiles?.length ?? 0) > 0) {
+    if (CTRL_BUILD) {
+      setActivePanel("import");
+    } else if ((settings.recentFiles?.length ?? 0) > 0) {
       setActivePanel("open");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -629,22 +631,28 @@ export default function Backstage({ open, onClose, onOpenSettings }: BackstagePr
           <span>{t("file")}</span>
         </button>
         <div className="backstage-items">
+          {/* ctrl: the host persists the document; no local new/open/save. */}
+          {!CTRL_BUILD && (<>
           <MenuItem icon={ICONS.new} label={t("new")} shortcut="Ctrl+N" onClick={() => actionAndClose(newFile)} />
           <MenuItem icon={ICONS.open} label={t("open")} shortcut="Ctrl+O" active={activePanel === "open"} onClick={() => setActivePanel("open")} />
           <MenuItem icon={ICONS.save} label={t("save")} shortcut="Ctrl+S" onClick={() => { onClose(); void saveFile(); }} />
           <MenuItem icon={ICONS.save} label={t("saveAs")} shortcut="Ctrl+Shift+S" onClick={() => { onClose(); void saveFileAs(); }} />
           <Divider />
+          </>)}
           <MenuItem icon={ICONS.print} label={t("printMenu")} shortcut="Ctrl+P" onClick={() => { printBudget(schedule, items, 'hoofdaanneming'); onClose(); }} />
           <Divider />
           <MenuItem icon={ICONS.import} label={t("import")} active={activePanel === "import"} onClick={() => setActivePanel("import")} />
           <MenuItem icon={ICONS.export} label={t("export")} active={activePanel === "export"} onClick={() => setActivePanel("export")} />
-          {OPENAEC_ENABLED && (
+          {OPENAEC_ENABLED && !CTRL_BUILD && (
             <MenuItem icon={ICONS.cloud} label="OpenAEC Cloud" active={activePanel === "cloud"} onClick={() => setActivePanel("cloud")} />
           )}
           <Divider />
+          {!CTRL_BUILD && (<>
           <MenuItem icon={ICONS.extensions} label={t("extensions")} active={activePanel === "extensions"} onClick={() => setActivePanel("extensions")} />
           <Divider />
+          </>)}
           <MenuItem icon={ICONS.preferences} label={t("preferences")} shortcut="Ctrl+," onClick={() => actionAndClose(onOpenSettings)} />
+          {!CTRL_BUILD && (<>
           <Divider />
           <MenuItem icon={ICONS.about} label={t("about")} active={activePanel === "about"} onClick={() => setActivePanel("about")} />
           <Divider />
@@ -652,6 +660,7 @@ export default function Backstage({ open, onClose, onOpenSettings }: BackstagePr
             onClose();
             import("@tauri-apps/api/window").then(({ getCurrentWindow }) => getCurrentWindow().close()).catch(() => {});
           }} />
+          </>)}
         </div>
       </div>
       <div className="backstage-content" onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}>

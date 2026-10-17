@@ -1,4 +1,5 @@
 import type { StateCreator } from 'zustand';
+import { CTRL_BUILD } from '@/services/buildFlags';
 import type { ResourceLibraryItem, ResourceType, CostUnit } from '@/types/costModel';
 import { createDefaultResourceLibrary } from '@/data/defaultResourceLibrary';
 
@@ -66,7 +67,8 @@ function parseLibraryJson(json: unknown): ResourceLibraryItem[] {
 
 export const createResourceLibrarySlice: StateCreator<ResourceLibrarySlice> = (set) => {
   // Try to load the GWW library from public/libraries/ at startup
-  fetch('/libraries/middelen-gww.json')
+  // ctrl: no network/asset fetch from the webview origin; keep the defaults.
+  if (!CTRL_BUILD) fetch('/libraries/middelen-gww.json')
     .then((res) => res.ok ? res.json() : null)
     .then((json) => {
       if (json) {

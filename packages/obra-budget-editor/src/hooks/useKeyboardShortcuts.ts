@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import i18next from 'i18next';
 import { useAppStore } from '@/state/appStore';
 import { useFileOperations } from './useFileOperations';
+import { CTRL_BUILD } from '@/services/buildFlags';
 import { copyItemsToExcel } from '@/services/clipboard/excelClipboard';
 import { isFooterRow } from '@/services/grid/gridRows';
 import { eventInsideHost } from '@/lib/hostRoot';
@@ -34,6 +35,8 @@ export function useKeyboardShortcuts() {
       const ctrl = e.ctrlKey || e.metaKey;
       const { isEditing } = useAppStore.getState();
       const isInInput = e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement;
+      // ctrl: new/open/save belong to the host (VS Code); let the key through.
+      if (CTRL_BUILD && ctrl && /^[nso]$/i.test(e.key)) return;
 
       if (ctrl && e.key === 'z') {
         e.preventDefault();
