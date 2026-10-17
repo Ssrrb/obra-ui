@@ -33,3 +33,6 @@ output/
 # Agent-tooling (lokaal)
 .agents/
 .codex/
+
+# ctrl webview bundle (built by `pnpm build:ctrl`; copied into ctrl with its manifest)
+dist-ctrl/

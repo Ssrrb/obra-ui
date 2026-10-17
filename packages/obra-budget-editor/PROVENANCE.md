@@ -50,3 +50,24 @@ outside internal development until an authentic license notice — copyright
 holder and year — has been obtained from the OpenAEC Foundation (e.g. a
 `LICENSE` file added upstream, or written confirmation).** Once obtained, add
 it verbatim as `LICENSE` in this directory and update this section.
+
+## Workspace integration
+
+- Package renamed to `@ctrlmas/obra-budget-editor` (still `private`) and
+  installed through the pnpm workspace; upstream's npm `package-lock.json` was
+  removed in favour of the root `pnpm-lock.yaml`. Dependency ranges are
+  unchanged.
+
+## Upstream test characterization
+
+`pnpm exec vitest run` in this directory, right after the import (no source
+changes), Node 24.18, vitest 4.1.12:
+
+- Test files: 66 passed, 3 skipped, **1 failed** (70)
+- Tests: 446 passed, 6 skipped (452)
+- The failing file is `src/test/onlvRoundtrip.test.ts`: it reads
+  `verification/onorm-a2063/LB-SCHOKO_V2021.onlb` at collection time (inside
+  a `describe.skipIf` body, which vitest still evaluates), and `verification/`
+  is excluded from this import. Not a behaviour failure; left as is.
+- Skipped tests need private/absent fixtures (`verification/`, IBIS-TRAD
+  `.xtb` customer files).
