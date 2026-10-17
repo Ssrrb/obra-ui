@@ -12,7 +12,9 @@
     "preview": "vite preview",
     "tauri": "tauri",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "build:ctrl": "vite build -c vite.ctrl.config.ts && node scripts/ctrl-manifest.mjs",
+    "test:ctrl": "vitest run src/ctrl"
   },
   "dependencies": {
     "@tauri-apps/api": "^2.10.1",

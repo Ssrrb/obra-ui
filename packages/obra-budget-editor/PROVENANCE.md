@@ -71,3 +71,24 @@ changes), Node 24.18, vitest 4.1.12:
   is excluded from this import. Not a behaviour failure; left as is.
 - Skipped tests need private/absent fixtures (`verification/`, IBIS-TRAD
   `.xtb` customer files).
+
+## ctrl adaptations
+
+New, ctrl-only: `src/ctrl/` (webview entry, bridge, controller, stubs,
+tests), `vite.ctrl.config.ts`, `scripts/ctrl-manifest.mjs`, the
+`build:ctrl`/`test:ctrl` scripts.
+
+Upstream files modified (all gated on `CTRL_BUILD`, i.e. no behaviour change
+in upstream's own builds):
+
+| File | Change |
+| --- | --- |
+| `src/services/buildFlags.ts` | adds `CTRL_BUILD` (`VITE_CTRL_BUILD=true`, set only by `vite.ctrl.config.ts`) |
+| `src/App.tsx` | hides title bar, file tab bar, start sidebar, chat, feedback dialog, the app-name heading of the empty state; skips user-extension loading (`new Function`) and the MCP bridge |
+| `src/components/backstage/Backstage.tsx` | hides New/Open/Save/Save as, OpenAEC Cloud, Extensions, About, Exit; opens on the Import panel |
+| `src/hooks/useKeyboardShortcuts.ts` | Ctrl+N/O/S/Shift+S pass through to VS Code |
+| `src/state/slices/resourceLibrarySlice.ts` | no startup `fetch('/libraries/middelen-gww.json')` |
+
+The ctrl build also replaces the 3D and PDF viewers (hidden tabs) with empty
+stand-ins at build time (`src/ctrl/stubs/viewers.tsx`); the upstream files
+are unchanged.

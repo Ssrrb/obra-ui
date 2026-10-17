@@ -1,0 +1,48 @@
+/* ctrl webview shell. Starts with .ocs-embed or is outside it, so the
+   embed's CSS scoping leaves these selectors as they are. */
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.ocs-embed.ocs-embed {
+  min-height: 0;
+  /* System/VS Code font: no Inter download (fonts are not bundled). */
+  font-family: var(--vscode-font-family, system-ui, -apple-system, "Segoe UI", sans-serif);
+}
+
+.ctrl-status {
+  position: fixed;
+  top: 6px;
+  right: 10px;
+  z-index: 2147483000;
+  pointer-events: none;
+  padding: 1px 8px;
+  border-radius: 9px;
+  font: 11px/18px var(--vscode-font-family, system-ui, sans-serif);
+  color: var(--vscode-descriptionForeground, #6b6b6b);
+  background: var(--vscode-editorWidget-background, rgba(127, 127, 127, 0.12));
+  border: 1px solid var(--vscode-widget-border, transparent);
+  opacity: 0.9;
+}
+
+.ctrl-status-conflict,
+.ctrl-status-error {
+  color: var(--vscode-errorForeground, #c42b1c);
+}
+
+.ctrl-status-reconnecting {
+  color: var(--vscode-editorWarning-foreground, #b26b00);
+}
+
+.ctrl-revoked {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  font: 13px var(--vscode-font-family, system-ui, sans-serif);
+  color: var(--vscode-foreground, inherit);
+  background: var(--vscode-editor-background, transparent);
+}
