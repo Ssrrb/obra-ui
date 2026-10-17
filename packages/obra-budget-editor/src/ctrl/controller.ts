@@ -4,7 +4,7 @@
  * worth posting. Pure store logic (no React), so it is unit-testable.
  */
 import { useAppStore } from '../state/appStore';
-import { deserializeProject } from '../services/file/fileService';
+import { deserializeProject, serializeProject } from '../services/file/fileService';
 import { openProjectInStore } from '../services/file/openProject';
 import type { ProjectFile } from '../types/costModel';
 import type { BudgetStatus, HostToWebview, WebviewToHost } from './bridge';
@@ -101,6 +101,17 @@ export function createBridgeController(
 	let hostDoc: ProjectFile | null = null;
 
 	const markApplied = () => { applied = docRefs(); };
+	/** Store holds a user change not yet posted (debounce pending or not). */
+	const hasUnposted = () => applied !== null && docRefs().some((r, i) => r !== applied![i]);
+	/** Post the store's document now, against the last applied seq. */
+	const postNow = (project: ProjectFile) => {
+		post({ v: 1, type: 'changed', seq, document: withHostFields(project, hostDoc) });
+		markApplied(); // the embed's pending debounce then finds nothing new and posts nothing
+	};
+	const storeProject = (): ProjectFile => {
+		const s = useAppStore.getState();
+		return JSON.parse(serializeProject(s.schedule, s.items, s.companyInfo, s.subSheets, s.offerte)) as ProjectFile;
+	};
 
 	// One document per webview: importers (Excel/CSV, .bc3, …) open their
 	// result through newFile() as a new tab. Fold any extra tab back into the
@@ -132,6 +143,10 @@ export function createBridgeController(
 				return;
 			}
 			if (revoked && msg.type === 'remote') return;
+			// An edit the user made since the last post (e.g. inside the 300 ms
+			// debounce) would be overwritten by this document: post it first,
+			// against the seq it was made on, so the host can rebase it.
+			if (!revoked && documentId !== null && hasUnposted()) postNow(storeProject());
 			let doc: ProjectFile;
 			try {
 				doc = normalize(msg.document);
@@ -155,9 +170,8 @@ export function createBridgeController(
 		},
 		onChange(project) {
 			if (revoked || documentId === null) return;
-			const refs = docRefs();
-			if (applied && refs.every((r, i) => r === applied![i])) return;
-			post({ v: 1, type: 'changed', seq, document: withHostFields(project, hostDoc) });
+			if (!hasUnposted()) return;
+			postNow(project);
 		},
 		dispose() {
 			unsubscribe();

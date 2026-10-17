@@ -91,6 +91,25 @@ describe('ctrl webview entry', () => {
 		expect(changed[0].document.items.find((i: any) => i.id === id).quantity).toBe(120);
 	});
 
+	it('an edit inside the debounce is flushed with the previous seq before a remote, with no stale post later', async () => {
+		const before = posted.filter((m) => m.type === 'changed').length;
+		const s = useAppStore.getState();
+		const id = s.items.find((i) => i.description === 'Limpieza del terreno')!.id;
+		await act(async () => { s.updateItem(id, 'quantity', 130); });
+		await wait(100); // debounce still pending
+		const remote = JSON.parse(JSON.stringify({ ...doc(), items: useAppStore.getState().items })) as ProjectFile;
+		remote.items = remote.items.map((i) => (i.id === id ? { ...i, quantity: 120, notes: 'remoto' } : i));
+		await send({ v: 1, type: 'remote', seq: 3, revision: 3, document: remote });
+		let changed = posted.filter((m) => m.type === 'changed');
+		expect(changed).toHaveLength(before + 1);
+		expect(changed.at(-1).seq).toBe(2);
+		expect(changed.at(-1).document.items.find((i: any) => i.id === id).quantity).toBe(130);
+		expect(useAppStore.getState().items.find((i) => i.id === id)!.notes).toBe('remoto');
+		await wait(450);
+		changed = posted.filter((m) => m.type === 'changed');
+		expect(changed).toHaveLength(before + 1);
+	});
+
 	it('follows the VS Code theme', async () => {
 		const wrapper = document.querySelector('#root .ocs-embed')!;
 		expect(wrapper.getAttribute('data-theme')).toBe('light');

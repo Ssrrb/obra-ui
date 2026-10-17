@@ -119,7 +119,7 @@ describe('bridge controller', () => {
 		c.dispose();
 	});
 
-	it('remote replaces content in place: no tab, no undo entry, no changed post, view state kept', () => {
+	it('remote replaces content in place: no tab, no undo entry, no echo, view state kept', () => {
 		const { c, posted } = setup();
 		const base = makeDoc();
 		c.handle({ v: 1, type: 'load', seq: 1, revision: 1, document: base, title: 'Casa' });
@@ -151,14 +151,17 @@ describe('bridge controller', () => {
 		expect(s.items.find((i) => i.id === chapter.id)!.isCollapsed).toBe(true);
 		expect(s.activeItemId).toBe(chapter.id);
 
+		// The unposted local edit went out first (against seq 1); the remote itself is not echoed.
+		expect(posted).toHaveLength(1);
+		expect(posted[0]).toMatchObject({ v: 1, type: 'changed', seq: 1 });
 		c.onChange(currentProject());
-		expect(posted).toHaveLength(0);
+		expect(posted).toHaveLength(1);
 
 		// The next user edit is posted against the remote's seq.
 		s.updateItem(target.id, 'description', 'mine');
 		c.onChange(currentProject());
-		expect(posted).toHaveLength(1);
-		expect(posted[0]).toMatchObject({ v: 1, type: 'changed', seq: 7 });
+		expect(posted).toHaveLength(2);
+		expect(posted[1]).toMatchObject({ v: 1, type: 'changed', seq: 7 });
 		c.dispose();
 	});
 
@@ -174,6 +177,42 @@ describe('bridge controller', () => {
 		expect(msg.seq).toBe(3);
 		expect(msg.document.items.find((i) => i.id === item.id)!.description).toBe('Excavación');
 		expect(msg.document.brandSlug).toBe('obra');
+		c.dispose();
+	});
+
+	it('an unposted user edit is posted (previous seq) before a remote is applied, and not again', () => {
+		const order: string[] = [];
+		const posted: WebviewToHost[] = [];
+		const c = createBridgeController((m) => {
+			posted.push(m);
+			order.push(`post:${useAppStore.getState().items.find((i) => i.description === 'Remoto') ? 'after' : 'before'}-remote`);
+		});
+		const base = makeDoc();
+		c.handle({ v: 1, type: 'load', seq: 5, revision: 1, document: base, title: 'Casa' });
+		const target = base.items.find((i) => i.description === 'Excavación')!;
+		const other = base.items.find((i) => i.description === 'Relleno compactado')!;
+
+		// User edit; the embed's 300 ms debounce has not fired yet.
+		useAppStore.getState().updateItem(target.id, 'quantity', 99);
+		const remote = makeDoc((d) => {
+			d.items = base.items.map((i) => (i.id === other.id ? { ...i, description: 'Remoto' } : i));
+		});
+		c.handle({ v: 1, type: 'remote', seq: 6, revision: 2, document: remote });
+
+		expect(posted).toHaveLength(1);
+		expect(order).toEqual(['post:before-remote']);
+		const msg = posted[0] as Extract<WebviewToHost, { type: 'changed' }>;
+		expect(msg.seq).toBe(5);
+		expect(msg.document.items.find((i) => i.id === target.id)!.quantity).toBe(99);
+		expect(useAppStore.getState().items.find((i) => i.id === other.id)!.description).toBe('Remoto');
+
+		// The stale debounce then fires: nothing more is posted.
+		c.onChange(currentProject());
+		expect(posted).toHaveLength(1);
+
+		// A remote with no unposted edit posts nothing.
+		c.handle({ v: 1, type: 'remote', seq: 7, revision: 3, document: remote });
+		expect(posted).toHaveLength(1);
 		c.dispose();
 	});
 
