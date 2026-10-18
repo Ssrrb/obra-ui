@@ -868,6 +868,8 @@ export default function Backstage({ open, onClose, onOpenSettings }: BackstagePr
                   <span>{t("exportPanel.asHtmlDesc")}</span>
                 </div>
               </button>
+              {/* ctrl: only HTML and BC3; the rest are Dutch and Austrian formats. */}
+              {!CTRL_BUILD && (<>
               <button className="bs-panel-option" onClick={handleExportInschrijfstaat}>
                 <div className="bs-panel-option-icon" dangerouslySetInnerHTML={{ __html: ICONS.export }} />
                 <div className="bs-panel-option-text">
@@ -885,6 +887,7 @@ export default function Backstage({ open, onClose, onOpenSettings }: BackstagePr
                   <span>{t("exportPanel.cufDesc")}</span>
                 </div>
               </button>
+              </>)}
               <button
                 className="bs-panel-option"
                 onClick={async () => {
@@ -899,6 +902,8 @@ export default function Backstage({ open, onClose, onOpenSettings }: BackstagePr
                   <span>{t("exportPanel.bc3Desc")}</span>
                 </div>
               </button>
+              {/* ctrl: Austrian and Dutch formats. */}
+              {!CTRL_BUILD && (<>
               <button
                 className="bs-panel-option"
                 onClick={() => void handleXmlExport('onlv', 'ÖNORM A 2063')}
@@ -929,6 +934,7 @@ export default function Backstage({ open, onClose, onOpenSettings }: BackstagePr
                   <span>{t("exportPanel.rsxDesc")}</span>
                 </div>
               </button>
+              </>)}
               {isTauriEnvironment() && (
                 <button className="bs-panel-option" onClick={handleExportWpCalc}>
                   <div className="bs-panel-option-icon" dangerouslySetInnerHTML={{ __html: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h5"/></svg>' }} />
