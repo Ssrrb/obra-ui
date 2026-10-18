@@ -175,7 +175,7 @@ function App() {
           const { readTextFile } = await import('@tauri-apps/plugin-fs');
           const content = await readTextFile(filePath);
           const parsed = deserializeProject(content);
-          const fileName = filePath.replace(/\\/g, '/').split('/').pop()?.replace(/\.(ifcx|json|ocs)$/i, '') ?? 'Begroting';
+          const fileName = filePath.replace(/\\/g, '/').split('/').pop()?.replace(/\.(ifcx|json|ocs)$/i, '') ?? 'Presupuesto';
           const id = crypto.randomUUID();
           const store = useAppStore.getState();
           store.addDocument({ id, filePath, fileName, isModified: false, items: parsed.items, schedule: parsed.schedule });
@@ -212,7 +212,7 @@ function App() {
         const { readTextFile, readFile } = await import("@tauri-apps/plugin-fs");
         unlistenAssoc = await listen<string>('file-association-open', async (e) => {
           const filePath = e.payload;
-          const fileName = filePath.replace(/\\/g, '/').split('/').pop() ?? 'Begroting';
+          const fileName = filePath.replace(/\\/g, '/').split('/').pop() ?? 'Presupuesto';
           const ext = fileName.split('.').pop()?.toLowerCase();
           const store = useAppStore.getState();
           try {
@@ -261,7 +261,7 @@ function App() {
           const { readTextFile, readFile } = await import("@tauri-apps/plugin-fs");
           const store = useAppStore.getState();
           for (const filePath of paths) {
-            const fileName = filePath.replace(/\\/g, '/').split('/').pop() ?? 'Begroting';
+            const fileName = filePath.replace(/\\/g, '/').split('/').pop() ?? 'Presupuesto';
             const ext = fileName.split('.').pop()?.toLowerCase();
             try {
               if (ext === 'ifcCalc' || ext === 'ifccalc' || ext === 'json' || ext === 'ocs' || ext === 'ifcx') {

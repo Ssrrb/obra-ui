@@ -1,12 +1,16 @@
 import { describe, it, expect, beforeAll } from 'vitest';
 import { buildBouw1Html } from '@/services/print/bouw1PrintService';
-import { createDefaultSchedule, createDefaultItems } from '@/data/defaultBudget';
+import { createDefaultSchedule } from '@/data/defaultBudget';
+import { makeStaartItem } from '@/services/calculation/staartDefaults';
 import { recalculateItems } from '@/services/calculation/calculator';
 import { useAppStore } from '@/state/appStore';
+import { loadLocale } from '@/i18n/config';
 
 // Deze tests controleren de Nederlandse rapportteksten: zet de rapporttaal
 // expliciet op Nederlands (de testomgeving detecteert anders Engels).
-beforeAll(() => {
+beforeAll(async () => {
+  // Dutch is no longer bundled at init (Spanish is); load it like the app does.
+  await loadLocale('nl');
   const { settings, setSettings } = useAppStore.getState();
   setSettings({ ...settings, reportLocale: 'nl' });
 });
@@ -14,6 +18,14 @@ beforeAll(() => {
 // i18next is niet geïnitialiseerd in de testomgeving → schedule.name is undefined.
 // In de echte app heeft de begroting altijd een naam; geef er hier dus één mee
 // zodat de report-HTML normaal opbouwt (esc() zou anders op undefined crashen).
+// The Dutch staart chain this Bouw 1 report summarizes (no longer the default).
+function createDefaultItems() {
+  return [
+    makeStaartItem('staart_abk', 'Algemene bedrijfskosten:', '6', 9000),
+    makeStaartItem('staart_risico', 'Risico:', '3', 9001),
+  ];
+}
+
 function namedSchedule() {
   return { ...createDefaultSchedule(), name: 'Testbegroting', projectName: 'Testproject' };
 }

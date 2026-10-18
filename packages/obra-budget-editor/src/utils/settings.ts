@@ -19,12 +19,10 @@ const SETTINGS_KEY = 'settings';
 
 export const defaultSettings: AppSettings = {
   theme: 'light',
-  // Engels als standaard: de live demo en nieuwe installaties openen voor
-  // iedereen in dezelfde, internationaal leesbare taal. Wie een eerdere
-  // keuze heeft opgeslagen, houdt die.
-  locale: 'en',
+  // Spanish (Paraguay) is the official language; a stored choice still wins.
+  locale: 'es',
   reportLocale: 'auto',
-  currency: 'EUR',
+  currency: 'PYG',
   autoSave: false,
   autoSaveInterval: 300000,
   recentFiles: [],

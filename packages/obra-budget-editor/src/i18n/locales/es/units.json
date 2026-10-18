@@ -1,18 +1,18 @@
 {
-  "st": "ud",
+  "st": "u",
   "m": "m",
   "m²": "m²",
   "m³": "m³",
   "kg": "kg",
   "ton": "t",
   "uur": "h",
-  "dgn": "días",
+  "dgn": "día",
   "km": "km",
   "keer": "vez",
-  "ls": "PA",
+  "ls": "gl",
   "week": "sem",
   "mnd": "mes",
-  "post": "ud",
+  "post": "gl",
   "%": "%",
-  "pm": "PM"
+  "pm": "Nota"
 }

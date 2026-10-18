@@ -97,7 +97,7 @@ export default function RapportageTab() {
         if (active?.filePath) {
           defaultPath = active.filePath.replace(/\.(ocs|ifcCalc|ifcx)$/i, '.pdf');
         } else {
-          const base = (active?.fileName ?? schedule.projectName ?? schedule.name ?? 'Begroting').replace(/\.(ocs|ifcCalc|ifcx)$/i, '');
+          const base = (active?.fileName ?? schedule.projectName ?? schedule.name ?? 'Presupuesto').replace(/\.(ocs|ifcCalc|ifcx)$/i, '');
           defaultPath = `${base}.pdf`;
         }
         const outputPath = await tauri.save({

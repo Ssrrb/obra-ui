@@ -57,7 +57,7 @@ export function CloudPanel({ onClose }: { onClose: () => void }) {
 
   // Bestandsnaam voor "Opslaan op OpenAEC Cloud" — vooringevuld met de
   // huidige begrotingsnaam, door de gebruiker aanpasbaar.
-  const scheduleName = useAppStore((s) => (s.schedule?.name || s.schedule?.projectName || 'begroting'));
+  const scheduleName = useAppStore((s) => (s.schedule?.name || s.schedule?.projectName || 'presupuesto'));
   const [uploadName, setUploadName] = useState('');
   useEffect(() => {
     setUploadName(String(scheduleName).replace(/\.(ifcCalc|ocs|json)$/i, ''));
@@ -120,8 +120,8 @@ export function CloudPanel({ onClose }: { onClose: () => void }) {
     if (!iso) return '';
     const d = new Date(iso);
     if (isNaN(d.getTime())) return '';
-    return d.toLocaleDateString('nl-NL', { day: '2-digit', month: '2-digit', year: '2-digit' })
-      + ' ' + d.toLocaleTimeString('nl-NL', { hour: '2-digit', minute: '2-digit' });
+    return d.toLocaleDateString('es-PY', { day: '2-digit', month: '2-digit', year: '2-digit' })
+      + ' ' + d.toLocaleTimeString('es-PY', { hour: '2-digit', minute: '2-digit' });
   };
 
   const FolderIcon = (

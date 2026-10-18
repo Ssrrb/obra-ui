@@ -52,6 +52,7 @@ export function intlLocaleFor(lang: string): string {
     case "nl": return "nl-NL";
     // Europese datumvolgorde (dd/mm/jjjj) voor Engelstalige rapporten
     case "en": return "en-GB";
+    case "es": return "es-PY";
     default: return lang;
   }
 }
@@ -171,8 +172,9 @@ export function reportNumberFormat(intlLocale: string): ReportNumberFormat {
   const grouping = secondary !== primary ? [primary, secondary] : [primary];
   const minGroupingDigits = plain.formatToParts(1234).some((p) => p.type === "group") ? 1 : 2;
 
-  // narrowSymbol: overal "€", ook waar de locale "EUR" schrijft (hu, ro, uk).
-  const money = new Intl.NumberFormat(locale, { style: "currency", currency: "EUR", currencyDisplay: "narrowSymbol" });
+  // The budget currency (PYG or USD) as a narrow symbol.
+  const currency = useAppStore.getState().schedule?.currency || "PYG";
+  const money = new Intl.NumberFormat(locale, { style: "currency", currency, currencyDisplay: "narrowSymbol" });
   const percent = new Intl.NumberFormat(locale, { style: "percent" });
 
   // Datumvolgorde en scheidingstekens uit een datum met herkenbare delen.

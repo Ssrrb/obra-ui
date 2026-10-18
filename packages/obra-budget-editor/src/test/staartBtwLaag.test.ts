@@ -71,15 +71,8 @@ describe('btw laag tarief', () => {
     expect(bd.aanneemsomAfgerond).toBe('10000'); // 11980 → 10000
   });
 
-  it('synthesizeStaartItems bevat een Btw laag-regel van 9%', () => {
-    const staart = synthesizeStaartItems({});
-    const laag = staart.find(i => i.rowType === 'staart_btw_laag');
-    expect(laag).toBeDefined();
-    expect(laag!.staartPercentage).toBe('9');
-    // Laag staat vóór hoog
-    const idxLaag = staart.findIndex(i => i.rowType === 'staart_btw_laag');
-    const idxHoog = staart.findIndex(i => i.rowType === 'staart_btw');
-    expect(idxLaag).toBeLessThan(idxHoog);
+  it('synthesizeStaartItems: only the K row, no Dutch VAT rows', () => {
+    expect(synthesizeStaartItems({}).map(i => i.rowType)).toEqual(['staart_ak']);
   });
 
   it('per-onderdeel markering: laag hoofdstuk telt pro rata mee', () => {

@@ -1,3 +1,4 @@
+import i18next from 'i18next';
 import * as XLSX from 'xlsx';
 import type { CostItem } from '../../types/costModel';
 
@@ -99,25 +100,25 @@ export async function updateAllExcelLinks(items: CostItem[]): Promise<{
         }
 
         if (!wb) {
-          errors.push(`Kan bestand niet lezen: ${filePath}`);
+          errors.push(i18next.t('common:excelLinkCannotRead', { file: filePath }));
           return item;
         }
 
         const ws = wb.Sheets[sheet];
         if (!ws) {
-          errors.push(`Sheet "${sheet}" niet gevonden in ${filePath}`);
+          errors.push(i18next.t('common:excelLinkSheetMissing', { sheet, file: filePath }));
           return item;
         }
 
         const cellObj = ws[cell];
         if (!cellObj) {
-          errors.push(`Cel ${cell} is leeg in ${sheet} (${filePath})`);
+          errors.push(i18next.t('common:excelLinkCellEmpty', { cell, sheet, file: filePath }));
           return item;
         }
 
         const newQty = typeof cellObj.v === 'number' ? cellObj.v : parseFloat(String(cellObj.v));
         if (isNaN(newQty)) {
-          errors.push(`Cel ${cell} bevat geen getal in ${sheet} (${filePath})`);
+          errors.push(i18next.t('common:excelLinkNotNumber', { cell, sheet, file: filePath }));
           return item;
         }
 
@@ -127,7 +128,7 @@ export async function updateAllExcelLinks(items: CostItem[]): Promise<{
         }
         return item;
       } catch (e) {
-        errors.push(`Fout bij ${filePath}!${sheet}!${cell}: ${e}`);
+        errors.push(i18next.t('common:excelLinkError', { ref: `${filePath}!${sheet}!${cell}`, error: String(e) }));
         return item;
       }
     }),

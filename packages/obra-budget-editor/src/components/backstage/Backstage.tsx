@@ -533,7 +533,7 @@ export default function Backstage({ open, onClose, onOpenSettings }: BackstagePr
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${schedule.name || 'begroting'}.ifc`;
+    a.download = `${schedule.name || 'presupuesto'}.ifc`;
     a.click();
     URL.revokeObjectURL(url);
     onClose();
@@ -560,7 +560,7 @@ export default function Backstage({ open, onClose, onOpenSettings }: BackstagePr
   ) => {
     onClose();
     const ext = format === 'rsx' ? 'rsx' : format === 'tradxml' ? 'xml' : format === 'onlv' ? 'onlv' : 'cuf';
-    const baseName = (schedule.projectName || schedule.name || 'begroting').replace(/\.(ifcCalc|ifcx|ocs)$/i, '');
+    const baseName = (schedule.projectName || schedule.name || 'presupuesto').replace(/\.(ifcCalc|ifcx|ocs)$/i, '');
     const defaultPath = `${baseName}.${ext}`;
 
     const input: ExportInput = { schedule, items };

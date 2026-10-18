@@ -3,11 +3,9 @@ import i18next from "i18next";
 import { initReactI18next } from "react-i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
 
-// Nederlands en Engels zijn de bronvertalingen: die worden altijd meegebundeld
-// (Engels is de fallback, dus moet synchroon beschikbaar zijn bij init). De
-// overige talen worden pas opgehaald wanneer ze gekozen of gedetecteerd
-// worden — anders belandt elke taal in de entry-chunk en wordt het opstarten
-// onnodig traag.
+// Spanish (the official language and fallback) and English are always
+// bundled, so both are available synchronously at init. Other languages load
+// only when chosen or detected, to keep them out of the entry chunk.
 import enCommon from "./locales/en/common.json";
 import enRibbon from "./locales/en/ribbon.json";
 import enBackstage from "./locales/en/backstage.json";
@@ -18,16 +16,16 @@ import enDialogs from "./locales/en/dialogs.json";
 import enReleases from "./locales/en/releases.json";
 import enReport from "./locales/en/report.json";
 import enUnits from "./locales/en/units.json";
-import nlCommon from "./locales/nl/common.json";
-import nlRibbon from "./locales/nl/ribbon.json";
-import nlBackstage from "./locales/nl/backstage.json";
-import nlSettings from "./locales/nl/settings.json";
-import nlFeedback from "./locales/nl/feedback.json";
-import nlGrid from "./locales/nl/grid.json";
-import nlDialogs from "./locales/nl/dialogs.json";
-import nlReleases from "./locales/nl/releases.json";
-import nlReport from "./locales/nl/report.json";
-import nlUnits from "./locales/nl/units.json";
+import esCommon from "./locales/es/common.json";
+import esRibbon from "./locales/es/ribbon.json";
+import esBackstage from "./locales/es/backstage.json";
+import esSettings from "./locales/es/settings.json";
+import esFeedback from "./locales/es/feedback.json";
+import esGrid from "./locales/es/grid.json";
+import esDialogs from "./locales/es/dialogs.json";
+import esReleases from "./locales/es/releases.json";
+import esReport from "./locales/es/report.json";
+import esUnits from "./locales/es/units.json";
 
 export interface LanguageDef {
   code: string;
@@ -94,7 +92,7 @@ const localeModules = import.meta.glob("./locales/*/*.json") as Record<
   () => Promise<{ default: Record<string, unknown> }>
 >;
 
-const loadedLanguages = new Set(["en", "nl"]);
+const loadedLanguages = new Set(["en", "es"]);
 
 function isKnownLanguage(lng: string): boolean {
   return LANGUAGES.some((l) => l.code === lng);
@@ -129,15 +127,13 @@ i18next
   .init({
     resources: {
       en: { common: enCommon, ribbon: enRibbon, backstage: enBackstage, settings: enSettings, feedback: enFeedback, grid: enGrid, dialogs: enDialogs, releases: enReleases, report: enReport, units: enUnits },
-      nl: { common: nlCommon, ribbon: nlRibbon, backstage: nlBackstage, settings: nlSettings, feedback: nlFeedback, grid: nlGrid, dialogs: nlDialogs, releases: nlReleases, report: nlReport, units: nlUnits },
+      es: { common: esCommon, ribbon: esRibbon, backstage: esBackstage, settings: esSettings, feedback: esFeedback, grid: esGrid, dialogs: esDialogs, releases: esReleases, report: esReport, units: esUnits },
     },
     ns,
     defaultNS: "common",
-    // Standaard Engels. Alleen een eerder gemaakte keuze (localStorage) wint;
-    // de browsertaal telt bewust niet mee, zodat de live demo en een nieuwe
-    // installatie voor iedereen in het Engels openen. Wie de browsertaal wil
-    // volgen, kiest "Auto-detect" in de voorkeuren.
-    fallbackLng: "en",
+    // Spanish is the official language. Only an earlier choice (localStorage)
+    // wins; the browser language is not used ("Auto-detect" follows it).
+    fallbackLng: "es",
     interpolation: { escapeValue: false },
     detection: {
       order: ["localStorage"],
@@ -153,7 +149,7 @@ i18next
     },
   });
 
-// De gedetecteerde taal is bij init nog niet geladen als het niet en/nl is;
+// The detected language is not loaded at init unless it is en or es;
 // haal hem alsnog op zodat de UI meteen in de juiste taal verschijnt.
 void loadLocale(i18next.language);
 

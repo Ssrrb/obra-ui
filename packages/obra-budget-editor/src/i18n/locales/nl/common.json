@@ -481,5 +481,12 @@
     "delete": "Verwijderen",
     "cutPaste": "Knippen en plakken",
     "paste": "Plakken"
-  }
+  },
+  "noImporter": "Geen importer gevonden voor .{{ext}} bestanden",
+  "cannotOpenFile": "Kan bestand niet openen: {{error}}",
+  "excelLinkCannotRead": "Kan bestand niet lezen: {{file}}",
+  "excelLinkSheetMissing": "Sheet \"{{sheet}}\" niet gevonden in {{file}}",
+  "excelLinkCellEmpty": "Cel {{cell}} is leeg in {{sheet}} ({{file}})",
+  "excelLinkNotNumber": "Cel {{cell}} bevat geen getal in {{sheet}} ({{file}})",
+  "excelLinkError": "Fout bij {{ref}}: {{error}}"
 }

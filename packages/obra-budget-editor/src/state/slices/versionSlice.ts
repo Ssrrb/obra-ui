@@ -1,3 +1,4 @@
+import i18next from 'i18next';
 import type { StateCreator } from 'zustand';
 import type { ProjectSnapshot, SnapshotDiff, CostItem } from '@/types/costModel';
 import { str, sumDec } from '@/utils/decimal';
@@ -45,13 +46,13 @@ function computeDiffs(oldItems: CostItem[], newItems: CostItem[]): SnapshotDiff[
 
     // Check key fields
     const fields: { key: keyof CostItem; label: string }[] = [
-      { key: 'description', label: 'Omschrijving' },
-      { key: 'quantity', label: 'Hoeveelheid' },
-      { key: 'unitPrice', label: 'Eenheidsprijs' },
-      { key: 'total', label: 'Totaal' },
-      { key: 'materialPrice', label: 'Materiaalprijs' },
-      { key: 'laborPrice', label: 'Arbeidsprijs' },
-      { key: 'unit', label: 'Eenheid' },
+      { key: 'description', label: i18next.t('grid:columns.description') },
+      { key: 'quantity', label: i18next.t('grid:columns.quantity') },
+      { key: 'unitPrice', label: i18next.t('grid:columns.unitPrice') },
+      { key: 'total', label: i18next.t('grid:columns.total') },
+      { key: 'materialPrice', label: i18next.t('grid:columns.material') },
+      { key: 'laborPrice', label: i18next.t('grid:columns.labour') },
+      { key: 'unit', label: i18next.t('grid:columns.unit') },
     ];
 
     for (const f of fields) {

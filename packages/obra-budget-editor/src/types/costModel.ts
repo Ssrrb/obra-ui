@@ -24,8 +24,8 @@ export function createDefaultProjectInfo(): ProjectInfo {
 
 export function createDefaultProjectProperties(): ProjectProperty[] {
   return [
-    { id: crypto.randomUUID(), name: 'Bruto inhoud', value: null, unit: 'm\u00B3', isDefault: true },
-    { id: crypto.randomUUID(), name: 'BVO', value: null, unit: 'm\u00B2', isDefault: true },
+    { id: crypto.randomUUID(), name: 'Volumen bruto', value: null, unit: 'm\u00B3', isDefault: true },
+    { id: crypto.randomUUID(), name: 'Superficie cubierta', value: null, unit: 'm\u00B2', isDefault: true },
   ];
 }
 

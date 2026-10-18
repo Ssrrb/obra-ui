@@ -1,7 +1,7 @@
 {
   "title": "Configuración",
   "resetToDefaults": "Restablecer valores predeterminados",
-  "resetConfirm": "¿Seguro que desea restablecer toda la configuración?",
+  "resetConfirm": "¿Seguro que quieres restablecer toda la configuración?",
   "tabs": {
     "general": "General",
     "appearance": "Apariencia",
@@ -16,7 +16,7 @@
     "language": "Idioma",
     "reportLanguage": "Idioma de los informes",
     "reportLanguageAuto": "Igual que la interfaz",
-    "reportLanguageHelp": "Idioma de las impresiones y de los informes en PDF. Útil cuando el idioma de la interfaz no coincide con el de su cliente.",
+    "reportLanguageHelp": "Idioma de las impresiones y de los informes en PDF. Útil cuando el idioma de la interfaz no coincide con el de tu cliente.",
     "startup": "Inicio",
     "restoreSession": "Restaurar la sesión al iniciar",
     "checkUpdates": "Buscar actualizaciones",
@@ -60,10 +60,10 @@
     "placeholder": "Aquí se gestionarán los complementos"
   },
   "about": {
-    "appName": "Open Calc Studio",
+    "appName": "Presupuestos de Ctrl+",
     "version": "Versión",
     "framework": "Framework",
     "license": "Licencia",
-    "description": "Software libre de presupuestos para la construcción neerlandesa. Almacenamiento en formato IFC."
+    "description": "Editor de presupuestos de obra de Ctrl+. Almacenamiento en formato IFC."
   }
 }

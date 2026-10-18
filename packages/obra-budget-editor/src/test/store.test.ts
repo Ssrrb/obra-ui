@@ -15,13 +15,13 @@ describe('AppStore', () => {
   it('initializes with default budget items', () => {
     const { items } = useAppStore.getState();
     // Default items are 10 staart items (gedetailleerde staartkosten-breakdown)
-    expect(items.length).toBe(10);
+    expect(items.length).toBe(1);
   });
 
   it('has a valid default schedule', () => {
     const { schedule } = useAppStore.getState();
     // i18next.t() returns undefined in test env (not initialized), so skip name check
-    expect(schedule.currency).toBe('EUR');
+    expect(schedule.currency).toBe('PYG');
   });
 
   it('addItem creates a new item', () => {

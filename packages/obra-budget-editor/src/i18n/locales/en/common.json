@@ -481,5 +481,12 @@
     "delete": "Delete",
     "cutPaste": "Cut and paste",
     "paste": "Paste"
-  }
+  },
+  "noImporter": "No importer found for .{{ext}} files",
+  "cannotOpenFile": "Cannot open file: {{error}}",
+  "excelLinkCannotRead": "Cannot read file: {{file}}",
+  "excelLinkSheetMissing": "Sheet \"{{sheet}}\" not found in {{file}}",
+  "excelLinkCellEmpty": "Cell {{cell}} is empty in {{sheet}} ({{file}})",
+  "excelLinkNotNumber": "Cell {{cell}} does not contain a number in {{sheet}} ({{file}})",
+  "excelLinkError": "Error at {{ref}}: {{error}}"
 }

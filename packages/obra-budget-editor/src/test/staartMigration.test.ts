@@ -8,8 +8,7 @@ describe('staart migration on load', () => {
       schedule: {
         name: 'Test',
         staartRows: [
-          { label: 'Algemene kosten over onderaanneming:', percentage: 9 },
-          { label: 'Btw hoog:', percentage: 21 },
+          { label: 'Gastos generales (K):', percentage: 12 },
         ],
       },
       items: [
@@ -19,14 +18,10 @@ describe('staart migration on load', () => {
     });
     const parsed = deserializeProject(json);
     const staart = parsed.items.filter((i: any) => i.rowType?.startsWith('staart_'));
-    expect(staart.length).toBeGreaterThanOrEqual(8);
-    const akoa = staart.find((s: any) => s.rowType === 'staart_ak_oa');
-    expect(akoa?.staartPercentage).toBe('9');
-    const btw = staart.find((s: any) => s.rowType === 'staart_btw');
-    expect(btw?.staartPercentage).toBe('21');
+    expect(staart.map((s: any) => [s.rowType, s.staartPercentage])).toEqual([['staart_ak', '12']]);
   });
 
-  it('uses standard NL bouw defaults when no staartRows cached', () => {
+  it('uses the K default when no staartRows cached', () => {
     const json = JSON.stringify({
       version: '2.1.0',
       schedule: { name: 'Empty' },
@@ -35,8 +30,7 @@ describe('staart migration on load', () => {
     });
     const parsed = deserializeProject(json);
     const staart = parsed.items.filter((i: any) => i.rowType?.startsWith('staart_'));
-    const akoa = staart.find((s: any) => s.rowType === 'staart_ak_oa');
-    expect(akoa?.staartPercentage).toBe('9'); // NL bouw default
+    expect(staart.map((s: any) => [s.rowType, s.staartPercentage])).toEqual([['staart_ak', '10']]);
   });
 
   it('does NOT inject when staart_* items already exist', () => {
@@ -49,10 +43,7 @@ describe('staart migration on load', () => {
       spreadsheets: { sheets: [], activeSheetId: null },
     });
     const parsed = deserializeProject(json);
-    // Geen volledige synthese; wel krijgt een oude staart er een
-    // "Btw laag"-regel bij (vóór de bestaande hoog-regel).
-    expect(parsed.items.length).toBe(2);
-    expect(parsed.items[0].rowType).toBe('staart_btw_laag');
-    expect(parsed.items[1].rowType).toBe('staart_btw');
+    // An existing staart is kept as it is: no synthesis, no added Dutch VAT row.
+    expect(parsed.items.map((i: any) => i.rowType)).toEqual(['staart_btw']);
   });
 });

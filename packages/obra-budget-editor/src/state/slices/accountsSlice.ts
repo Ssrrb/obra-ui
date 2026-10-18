@@ -116,7 +116,7 @@ export const createAccountsSlice: StateCreator<AccountsSlice> = (set, get) => ({
     const s = get() as any;
     const { serializeProjectForFile } = await import('@/services/file/fileService');
     const content = serializeProjectForFile(s.schedule, s.items, s.companyInfo, s.subSheets, s.offerte);
-    const base = (fileName?.trim() || s.schedule?.name || s.schedule?.projectName || 'begroting') as string;
+    const base = (fileName?.trim() || s.schedule?.name || s.schedule?.projectName || 'presupuesto') as string;
     const cleanBase = `${base.replace(/\.(ifcCalc|ocs|json)$/i, '')}.ifcCalc`;
     // Mappen via "/"-prefix — werkt zodra het platform paden in namen toestaat.
     const fullName = path && path.length ? `${path.join('/')}/${cleanBase}` : cleanBase;

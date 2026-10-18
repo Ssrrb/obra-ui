@@ -113,7 +113,7 @@ export const FileTabBar: React.FC = () => {
         const tempDir = await appDataDir();
         const dir = `${tempDir}temp`;
         try { await mkdir(dir, { recursive: true }); } catch { /* exists */ }
-        filePath = `${dir}/${doc.fileName || 'begroting'}.ifcx`;
+        filePath = `${dir}/${doc.fileName || 'presupuesto'}.ifcx`;
         const store = useAppStore.getState();
         const { serializeProjectForFile } = await import('@/services/file/fileService');
         const scheduleWithProjectInfo = { ...store.schedule, projectInfo: store.projectInfo };

@@ -313,7 +313,8 @@ export const CostGrid: React.FC = () => {
 
       // Nr-kolom: dubbelklik opent de coderingskiezer (STABU / NL-SfB) i.p.v.
       // tekstinvoer, zodat je een standaardcode kunt kiezen of er zelf één toevoegt.
-      if (colDef?.key === 'rowNumber' && item.rowType !== 'witregel') {
+      // ctrl: the Dutch code lists (STABU / NL-SfB) do not apply in Paraguay.
+      if (!CTRL_BUILD && colDef?.key === 'rowNumber' && item.rowType !== 'witregel') {
         setCodePickerItem(item);
         return;
       }

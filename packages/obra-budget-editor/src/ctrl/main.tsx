@@ -9,6 +9,7 @@ import { createRoot } from 'react-dom/client';
 import { parseHostMessage, statusText, themeFromBodyClass, type BudgetStatus, type WebviewToHost } from './bridge';
 import { createBridgeController } from './controller';
 import './ctrl.css';
+import './vscode-theme.css';
 
 declare function acquireVsCodeApi(): { postMessage(msg: unknown): void };
 

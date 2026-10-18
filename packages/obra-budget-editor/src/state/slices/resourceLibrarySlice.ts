@@ -82,7 +82,8 @@ export const createResourceLibrarySlice: StateCreator<ResourceLibrarySlice> = (s
     .catch(() => {/* fallback to defaults */});
 
   return {
-    resourceLibrary: createDefaultResourceLibrary(),
+    // ctrl: the built-in library holds Dutch resources priced in EUR; it starts empty.
+    resourceLibrary: CTRL_BUILD ? [] : createDefaultResourceLibrary(),
     resourcePickerOpen: false,
     resourcePickerParentId: null,
     setResourceLibrary: (resourceLibrary) => set({ resourceLibrary }),

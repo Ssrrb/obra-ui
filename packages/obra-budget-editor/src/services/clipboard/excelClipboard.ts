@@ -2,20 +2,13 @@
  * Excel clipboard service — copies cost items to the system clipboard
  * in TSV format so they can be pasted directly into Excel/Google Sheets.
  */
+import i18next from 'i18next';
 import type { CostItem } from '@/types/costModel';
 import { formatNumber, formatCurrency, formatDecimal } from '@/utils/formatting';
 import { isZeroDec } from '@/utils/decimal';
 import { regelHours } from '@/services/grid/cellValue';
 
-const COLUMNS = [
-  { key: 'nr', header: 'Nr' },
-  { key: 'code', header: 'Code' },
-  { key: 'description', header: 'Omschrijving' },
-  { key: 'unit', header: 'Eenheid' },
-  { key: 'quantity', header: 'Hoeveelheid' },
-  { key: 'unitPrice', header: 'Eenheidsprijs' },
-  { key: 'total', header: 'Totaal' },
-] as const;
+const COLUMNS = ['nr', 'code', 'description', 'unit', 'quantity', 'unitPrice', 'total'] as const;
 
 function getCellValue(item: CostItem, key: string): string {
   switch (key) {
@@ -94,9 +87,9 @@ export function getGridCellDisplayValue(item: CostItem, colKey: string): string 
 
 /** Build a TSV string from cost items */
 function itemsToTsv(items: CostItem[]): string {
-  const header = COLUMNS.map(c => c.header).join('\t');
+  const header = COLUMNS.map(key => i18next.t(`grid:columns.${key}`)).join('\t');
   const rows = items.map(item =>
-    COLUMNS.map(c => getCellValue(item, c.key)).join('\t')
+    COLUMNS.map(key => getCellValue(item, key)).join('\t')
   );
   return [header, ...rows].join('\n');
 }

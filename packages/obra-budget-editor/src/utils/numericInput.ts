@@ -16,7 +16,7 @@ export const MAX_INTEGER_DIGITS = 24;
 export const MAX_FRACTION_DIGITS = 12;
 
 export const INPUT_MESSAGES = {
-  invalid: 'Número no válido. Use 1.234,56 o una fórmula como =12,5*3.',
+  invalid: 'Número no válido. Usa 1.234,56 o una fórmula como =12,5*3.',
   formula: `Fórmula no válida, división por cero o resultado con más de ${MAX_INTEGER_DIGITS} enteros o ${MAX_FRACTION_DIGITS} decimales.`,
   integer: `El valor supera ${MAX_INTEGER_DIGITS} dígitos enteros.`,
   fraction: `El valor tiene más de ${MAX_FRACTION_DIGITS} decimales; no se redondea.`,

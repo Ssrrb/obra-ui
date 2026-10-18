@@ -570,7 +570,7 @@ export const IfcPreview: React.FC = () => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${schedule.name || 'begroting'}.ifc`;
+    a.download = `${schedule.name || 'presupuesto'}.ifc`;
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -580,7 +580,7 @@ export const IfcPreview: React.FC = () => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${schedule.name || 'begroting'}.ifcx.json`;
+    a.download = `${schedule.name || 'presupuesto'}.ifcx.json`;
     a.click();
     URL.revokeObjectURL(url);
   };

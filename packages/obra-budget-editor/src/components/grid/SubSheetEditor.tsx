@@ -538,11 +538,11 @@ export function SubSheetEditor({ sheetId }: { sheetId: string }) {
                     const display = cell
                       ? (cell.computed !== undefined
                           ? (fmt === 'currency'
-                              ? `${CTRL_BUILD ? currencyLabel(useAppStore.getState().schedule.currency) : '€'} ${cell.computed.toLocaleString('nl-NL', { minimumFractionDigits: dec, maximumFractionDigits: dec })}`
+                              ? `${CTRL_BUILD ? currencyLabel(useAppStore.getState().schedule.currency) : '€'} ${cell.computed.toLocaleString('es-PY', { minimumFractionDigits: dec, maximumFractionDigits: dec })}`
                               : fmt === 'percentage'
                                 ? `${(cell.computed * 100).toFixed(dec)}%`
                                 : typeof cell.computed === 'number'
-                                  ? cell.computed.toLocaleString('nl-NL', { minimumFractionDigits: dec, maximumFractionDigits: dec })
+                                  ? cell.computed.toLocaleString('es-PY', { minimumFractionDigits: dec, maximumFractionDigits: dec })
                                   : cell.value)
                           : cell.value)
                       : '';

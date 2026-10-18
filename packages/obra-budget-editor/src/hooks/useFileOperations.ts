@@ -1,3 +1,4 @@
+import i18next from 'i18next';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppStore } from '@/state/appStore';
@@ -34,8 +35,8 @@ export function isNativeSavePath(filePath: string): boolean {
  */
 export function toIfcCalcPath(filePath: string | null | undefined, fileName: string | null | undefined): string {
   if (filePath) return filePath.replace(/\.[^.\\/]+$/, '') + '.ifcCalc';
-  const base = (fileName || 'begroting').replace(/\.[^.]+$/, '');
-  return `${base || 'begroting'}.ifcCalc`;
+  const base = (fileName || 'presupuesto').replace(/\.[^.]+$/, '');
+  return `${base || 'presupuesto'}.ifcCalc`;
 }
 
 /**
@@ -132,7 +133,7 @@ export function useFileOperations() {
       }
     } else {
       // Browser fallback
-      browserDownload(json, doc.fileName || 'begroting');
+      browserDownload(json, doc.fileName || 'presupuesto');
       updateDocument(activeId, { isModified: false });
     }
   }, [updateDocument, addToRecentFiles]);
@@ -168,7 +169,7 @@ export function useFileOperations() {
         await showError(`Failed to save: ${err}`);
       }
     } else {
-      browserDownload(json, doc.fileName || 'begroting');
+      browserDownload(json, doc.fileName || 'presupuesto');
       updateDocument(activeId, { isModified: false });
     }
   }, [updateDocument, addToRecentFiles]);
@@ -205,7 +206,7 @@ export function useFileOperations() {
           const store = useAppStore.getState();
           const importers = store.extensionImporters;
           const imp = importers.find(i => i.fileExtensions.some(fe => fe.replace(/^\./, '') === ext));
-          if (!imp) { await showError(`Geen importer gevonden voor .${ext} bestanden`); return; }
+          if (!imp) { await showError(i18next.t('common:noImporter', { ext })); return; }
 
           const file = new File([data], fileName);
           const importResult = await imp.handler(file);
@@ -222,7 +223,7 @@ export function useFileOperations() {
         if (ext === 'rsx' || ext === 'onlv' || ext === 'onlb') {
           const store = useAppStore.getState();
           const imp = store.extensionImporters.find(i => i.fileExtensions.some(fe => fe.replace(/^\./, '') === ext));
-          if (!imp) { await showError(`Geen importer gevonden voor .${ext} bestanden`); return; }
+          if (!imp) { await showError(i18next.t('common:noImporter', { ext })); return; }
 
           const file = new File([result.content], fileName, { type: 'text/plain' });
           const importResult = await imp.handler(file);
@@ -281,7 +282,7 @@ export function useFileOperations() {
         const store = useAppStore.getState();
         const importers = store.extensionImporters;
         const imp = importers.find(i => i.fileExtensions.some(fe => fe.replace(/^\./, '') === ext));
-        if (!imp) { await showError(`Geen importer gevonden voor .${ext} bestanden`); return; }
+        if (!imp) { await showError(i18next.t('common:noImporter', { ext })); return; }
 
         const file = new File([data], fileName);
         const importResult = await imp.handler(file);
@@ -300,7 +301,7 @@ export function useFileOperations() {
         const content = await readTextFile(filePath);
         const store = useAppStore.getState();
         const imp = store.extensionImporters.find(i => i.fileExtensions.some(fe => fe.replace(/^\./, '') === ext));
-        if (!imp) { await showError(`Geen importer gevonden voor .${ext} bestanden`); return; }
+        if (!imp) { await showError(i18next.t('common:noImporter', { ext })); return; }
 
         const file = new File([content], fileName, { type: 'text/plain' });
         const importResult = await imp.handler(file);
@@ -329,7 +330,7 @@ export function useFileOperations() {
       // Remove invalid path from recent files
       const current = settings.recentFiles ?? [];
       updateSettings({ recentFiles: current.filter((p: string) => p !== filePath) });
-      await showError(`Kan bestand niet openen: ${err}`);
+      await showError(i18next.t('common:cannotOpenFile', { error: String(err) }));
     }
   }, [addDocument, setCompanyInfo, setSubSheets, setOfferte, setProjectInfo, addToRecentFiles, settings.recentFiles, updateSettings]);
 

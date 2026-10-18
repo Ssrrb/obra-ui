@@ -4,7 +4,7 @@
     "v0.12.1": "Números y fechas de los informes PDF en el idioma de los informes",
     "v0.12.0": "Informes y unidades en tu idioma",
     "v0.11.0": "39 idiomas + FIEBDC-3 (.bc3)",
-    "v0.10.3": "IVA general y reducido — seleccionable por elemento",
+    "v0.10.3": "IVA 10 % y 5 % — seleccionable por elemento",
     "v0.10.0": "Logotipo en el encabezado del informe + fórmulas en las celdas",
     "v0.9.0": "Totales BasCalc exactos + informes en formato de pliego",
     "v0.8.8": "Corrección de la importación Excel/CSV + vía MCP",
@@ -20,16 +20,16 @@
   },
   "highlights": {
     "v0.13.0": [
-      "ÖNORM A 2063, el formato de intercambio austríaco: importación de mediciones (.onlv) como presupuesto y de libros de servicios estándar (.onlb, como LB-Hochbau y LB-Haustechnik del BMWET) como catálogo; exportación como .onlv, válida contra los esquemas XML oficiales",
+      "ÖNORM A 2063, el formato de intercambio austríaco: importación de pliegos (.onlv) como presupuesto y de libros de servicios estándar (.onlb, como LB-Hochbau y LB-Haustechnik del BMWET) como catálogo; exportación como .onlv, válida contra los esquemas XML oficiales",
       "FIEBDC-3 (.bc3): la ida y vuelta con 22 archivos ahora es idéntica campo por campo en 21; cada diferencia con los archivos de origen se explica en el informe, con capturas de pantalla como prueba",
       "Las descripciones cortas vacías en archivos .bc3 toman la primera línea del texto largo; la exportación escribe los números sin ruido de coma flotante",
-      "Una partida o partida de control sin capítulo por encima ahora también recibe un precio unitario derivado",
+      "Un ítem o ítem de control sin rubro por encima ahora también recibe un precio unitario derivado",
       "Nuevas capturas de pantalla en inglés, neerlandés y alemán"
     ],
     "v0.12.1": [
-      "Los informes PDF escriben importes, mediciones, porcentajes y fechas con la notación del idioma de los informes — por ejemplo 1.234,56 € y DD/MM/AAAA en español, 1 234,56 € en francés",
-      "Un tipo de IVA como 5,5 % se redondeaba a 6 % en el informe — corregido",
-      "Ida y vuelta FIEBDC-3 (.bc3) verificada con 21 archivos reales: tras importar → exportar → volver a importar, todos los importes, descripciones, mediciones y textos vuelven sin cambios; el exportador ahora escribe los números sin redondear, conserva los saltos de línea en los textos, comparte los recursos idénticos como un solo concepto y ya no cuenta dinero en los recursos con rendimiento 0",
+      "Los informes PDF escriben importes, cantidades, porcentajes y fechas con la notación del idioma de los informes — por ejemplo 1.234,56 y DD/MM/AAAA en español, 1 234,56 en francés",
+      "Una tasa de IVA como 5,5 % se redondeaba a 6 % en el informe — corregido",
+      "Ida y vuelta FIEBDC-3 (.bc3) verificada con 21 archivos reales: tras importar → exportar → volver a importar, todos los importes, descripciones, cantidades y textos vuelven sin cambios; el exportador ahora escribe los números sin redondear, conserva los saltos de línea en los textos, comparte los recursos idénticos como un solo concepto y ya no cuenta dinero en los recursos con rendimiento 0",
       "REST API: las exportaciones a PDF e IFC (/api/v1/export/…) informaban de éxito pero no escribían ningún archivo; ahora el archivo se escribe en el idioma de los informes y quien llama recibe la ruta, o un mensaje de error real"
     ],
     "v0.12.0": [
@@ -47,32 +47,32 @@
       "macOS: resuelto el aviso de «dañado» y reparada la propia compilación; «Novedades» aparece ahora en tu idioma"
     ],
     "v0.10.3": [
-      "Nueva línea de recargo «IVA reducido» (9 %) junto a «IVA general»: los presupuestos existentes la reciben automáticamente",
-      "Marque capítulos, partidas o líneas como tipo reducido con el clic derecho; los elementos hijos heredan el tipo y la tabla muestra una etiqueta de IVA",
-      "Base imponible calculada a prorrata a partir del marcado (recargos incluidos) o introducida a mano en el panel de recargos",
-      "El reparto del IVA se aplica en todos los informes (IBIS muestra por separado la base general y la reducida) y en el servidor MCP",
-      "Correcciones: el IVA se contaba dos veces en el resumen de Bouw 1 y un importe con IVA aparecía bajo la etiqueta «Presupuesto de contrata sin IVA»"
+      "Nueva línea de recargo «IVA 5 %» junto a «IVA 10 %»: los presupuestos existentes la reciben automáticamente",
+      "Marca rubros, ítems o líneas con IVA 5 % con el clic derecho; los elementos hijos heredan la tasa y la tabla muestra una etiqueta de IVA",
+      "Base imponible calculada a prorrata a partir del marcado (recargos incluidos) o ingresada a mano en el panel de recargos",
+      "El reparto del IVA se aplica en todos los informes (IBIS muestra por separado la base del 10 % y la del 5 %) y en el servidor MCP",
+      "Correcciones: el IVA se contaba dos veces en el resumen de Bouw 1 y un importe con IVA aparecía bajo la etiqueta «Monto del contrato sin IVA»"
     ],
     "v0.10.0": [
       "Logotipo de la empresa arriba a la derecha del encabezado del informe (transparente y a escala); altura del encabezado y color de la línea ajustables",
       "Fórmulas en las celdas numéricas (=12.2*2.22 o 12,2*2,2), y corregido el error que descartaba decimales",
-      "Recargos: introduzca el importe final sin IVA y el redondeo pasa a ser automáticamente la diferencia; el IVA se calcula sobre el importe redondeado",
-      "Contrata principal: sume líneas con «+», columna A opcional (abonable heredado del capítulo) y vistas de solo subtotales",
-      "Trabaje más rápido: precios ±%, buscar y reemplazar con Ctrl+F, contraer por nivel, deshacer varios pasos, líneas de texto con ajuste de línea"
+      "Recargos: ingresa el importe final sin IVA y el redondeo pasa a ser automáticamente la diferencia; el IVA se calcula sobre el importe redondeado",
+      "Vista contratista: suma líneas con «+», columna A opcional (liquidable heredado del rubro) y vistas de solo subtotales",
+      "Trabaja más rápido: precios ±%, buscar y reemplazar con Ctrl+F, contraer por nivel, deshacer varios pasos, líneas de texto con ajuste de línea"
     ],
     "v0.9.0": [
-      "Importación BasCalc: el precio de coste y el presupuesto de contrata coinciden al céntimo con Excel (recargos planos + partida de redondeo fija)",
-      "Memoria de trabajos y contrata principal en formato de pliego: sin bordes de celda, apartados sangrados y subtotal por apartado",
-      "El botón + junto a la línea añade una línea de cálculo; mediciones sí/no directamente en la barra de herramientas del informe",
+      "Importación BasCalc: el costo y el monto del contrato coinciden al céntimo con Excel (recargos planos + ítem de redondeo fijo)",
+      "Especificaciones técnicas y vista contratista en formato de pliego: sin bordes de celda, sub-rubros sangrados y subtotal por sub-rubro",
+      "El botón + junto a la línea agrega una línea de cálculo; cantidades sí/no directamente en la barra de herramientas del informe",
       "Guardar como usa ahora .ifcCalc por defecto y protege el archivo original",
       "Nuevo logotipo verde; correcciones de navegación y diálogos (hoja de cálculo ↔ presupuesto)"
     ],
     "v0.8.8": [
-      "Importación Excel/CSV: a veces los importes acababan en 0 € — corregido",
+      "Importación Excel/CSV: a veces los importes acababan en 0 — corregido",
       "La importación Excel/CSV también está disponible vía el servidor MCP (herramienta import_excel_csv)"
     ],
     "v0.8.7": [
-      "Importación Excel/CSV con asignación de columnas: lea disposiciones libres de Excel/CSV y vincule usted mismo las columnas",
+      "Importación Excel/CSV con asignación de columnas: lee disposiciones libres de Excel/CSV y vincula tú mismo las columnas",
       "Formatos nuevos: STABU SUFX (pliego XML) y RAW antiguo (.rsu)",
       "Catálogo de precios (BMEcat/DICO) → directo a la biblioteca de recursos"
     ],
@@ -86,12 +86,12 @@
       "Motor de importación reconstruido desde cero; los totales coinciden exactamente con los archivos de origen"
     ],
     "v0.8.4": [
-      "Campo de código: elija códigos STABU/NL-SfB con doble clic (y añada los suyos)",
+      "Campo de código: elige códigos STABU/NL-SfB con doble clic (y agrega los tuyos)",
       "Importación de presupuestos (.dnc): ahora se abre directamente como informe compacto para el cliente",
       "Proyecto, logotipos y variantes trasladados a la cinta; propiedades depuradas"
     ],
     "v0.8.3": [
-      "Seguimiento de cambios: elija si se resalta la línea entera o solo la celda modificada",
+      "Seguimiento de cambios: elige si se resalta la línea entera o solo la celda modificada",
       "Los cambios también se ven en el PDF del informe",
       "Importación de presupuestos: los presupuestos para el cliente (.dnc) se importan directamente y se abren con Archivo → Abrir",
       "Opción de informe de presupuesto para el cliente; historial de cambios por línea (quién/cuándo/qué)"
@@ -106,7 +106,7 @@
     ],
     "v0.8.0": [
       "El asistente de presupuestos aplica los cambios directamente en el documento abierto",
-      "Abra archivos .calc/.mdb con JSON como proyecto nativo de OCS"
+      "Abre archivos .calc/.mdb con JSON como proyecto nativo"
     ],
     "v0.7.10": [
       "Cuenta OpenAEC y navegación en la barra inferior",

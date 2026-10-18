@@ -17,8 +17,8 @@ describe('Opslaan als → standaard .ifcCalc', () => {
   it('valt zonder pad terug op de documentnaam + .ifcCalc', () => {
     expect(toIfcCalcPath(null, 'Nieuwbouw fase 2')).toBe('Nieuwbouw fase 2.ifcCalc');
     expect(toIfcCalcPath(null, 'import.xls')).toBe('import.ifcCalc');
-    expect(toIfcCalcPath(null, null)).toBe('begroting.ifcCalc');
-    expect(toIfcCalcPath(undefined, '')).toBe('begroting.ifcCalc');
+    expect(toIfcCalcPath(null, null)).toBe('presupuesto.ifcCalc');
+    expect(toIfcCalcPath(undefined, '')).toBe('presupuesto.ifcCalc');
   });
 
   it('mappen met punten in de naam breken het pad niet', () => {

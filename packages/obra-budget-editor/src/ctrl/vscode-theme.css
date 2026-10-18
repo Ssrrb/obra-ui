@@ -1,0 +1,111 @@
+/* ctrl module theme: maps the OpenCalc tokens to the VS Code theme tokens, so the
+   editor follows the active color theme, not only light/dark/high contrast.
+   The doubled class outranks `.ocs-embed[data-theme=…]` in themes.css.
+   Tokens that are not listed keep the palette that themeFromBodyClass selects. */
+.ocs-embed.ocs-embed[data-theme] {
+  /* Base */
+  --theme-bg: var(--vscode-editor-background);
+  --theme-bg-lighter: var(--vscode-editorWidget-background);
+  --theme-surface: var(--vscode-sideBar-background, var(--vscode-editor-background));
+  --theme-content-bg: var(--vscode-editor-background);
+  --theme-border: var(--vscode-widget-border, var(--vscode-panel-border));
+  --theme-border-subtle: var(--vscode-editorGroup-border, var(--vscode-panel-border));
+  --theme-text: var(--vscode-foreground);
+  --theme-text-secondary: var(--vscode-descriptionForeground);
+  --theme-text-muted: var(--vscode-descriptionForeground);
+  --theme-text-faint: var(--vscode-disabledForeground);
+  --theme-accent: var(--vscode-focusBorder);
+  --theme-accent-hover: var(--vscode-button-hoverBackground);
+  --theme-accent-text: var(--vscode-textLink-foreground);
+  --theme-hover: var(--vscode-list-hoverBackground);
+  --theme-hover-strong: var(--vscode-toolbar-hoverBackground);
+  --theme-active: var(--vscode-list-activeSelectionBackground);
+  --theme-focus-color: var(--vscode-focusBorder);
+  --theme-danger-color: var(--vscode-errorForeground);
+  --theme-editable-text: var(--vscode-input-foreground);
+  --theme-editable-bg: var(--vscode-input-background);
+  --theme-placeholder-text: var(--vscode-input-placeholderForeground);
+  --theme-scrollbar-track: transparent;
+  --theme-scrollbar-thumb: var(--vscode-scrollbarSlider-background);
+  --theme-dialog-shadow: 0 0 8px 2px var(--vscode-widget-shadow);
+  --theme-panel-shadow: 0 0 8px 2px var(--vscode-widget-shadow);
+  --theme-popover-shadow: 0 0 8px 2px var(--vscode-widget-shadow);
+
+  /* Title bar and ribbon: the tool bar of the editor */
+  --theme-titlebar-bg: var(--vscode-editorGroupHeader-tabsBackground);
+  --theme-titlebar-bg-start: var(--vscode-editorGroupHeader-tabsBackground);
+  --theme-titlebar-bg-end: var(--vscode-editorGroupHeader-tabsBackground);
+  --theme-titlebar-border: var(--vscode-editorGroupHeader-tabsBorder, var(--vscode-panel-border));
+  --theme-titlebar-text: var(--vscode-foreground);
+  --theme-titlebar-btn-color: var(--vscode-icon-foreground);
+  --theme-titlebar-btn-hover: var(--vscode-toolbar-hoverBackground);
+  --theme-titlebar-btn-active: var(--vscode-toolbar-activeBackground);
+  --theme-ribbon-bg-start: var(--vscode-editor-background);
+  --theme-ribbon-bg-end: var(--vscode-editor-background);
+  --theme-ribbon-tabs-bg-start: var(--vscode-editorGroupHeader-tabsBackground);
+  --theme-ribbon-tabs-bg-end: var(--vscode-editorGroupHeader-tabsBackground);
+  --theme-ribbon-content-bg: var(--vscode-editor-background);
+  --theme-ribbon-border: var(--vscode-panel-border);
+  --theme-ribbon-text: var(--vscode-foreground);
+  --theme-ribbon-text-hover: var(--vscode-foreground);
+  --theme-ribbon-tab-hover: var(--vscode-toolbar-hoverBackground);
+  --theme-ribbon-tab-active-bg: var(--vscode-tab-activeBackground);
+  --theme-ribbon-tab-active-border: var(--vscode-tab-activeBorderTop, var(--vscode-focusBorder));
+  --theme-ribbon-btn-hover: var(--vscode-toolbar-hoverBackground);
+  --theme-ribbon-btn-active-bg: var(--vscode-toolbar-activeBackground);
+  --theme-ribbon-btn-active-text: var(--vscode-foreground);
+  --theme-ribbon-icon-stroke: var(--vscode-icon-foreground);
+  --theme-ribbon-group-label: var(--vscode-descriptionForeground);
+  --theme-ribbon-group-border: var(--vscode-panel-border);
+  --theme-ribbon-input-bg: var(--vscode-input-background);
+  --theme-ribbon-input-border: var(--vscode-input-border, var(--vscode-widget-border));
+  --theme-ribbon-input-text: var(--vscode-input-foreground);
+  --theme-ribbon-input-focus-border: var(--vscode-focusBorder);
+  --theme-ribbon-input-focus-bg: var(--vscode-input-background);
+
+  /* Panels and status bar */
+  --theme-panel-bg: var(--vscode-sideBar-background, var(--vscode-editor-background));
+  --theme-panel-border: var(--vscode-panel-border);
+  --theme-panel-header-text: var(--vscode-sideBarSectionHeader-foreground, var(--vscode-foreground));
+  --theme-panel-accent: var(--vscode-focusBorder);
+  --theme-status-bg: var(--vscode-statusBar-background);
+  --theme-status-border: var(--vscode-statusBar-border, transparent);
+  --theme-status-text: var(--vscode-statusBar-foreground);
+  --theme-status-text-label: var(--vscode-statusBar-foreground);
+  --theme-status-text-value: var(--vscode-statusBar-foreground);
+  --theme-status-hover: var(--vscode-statusBarItem-hoverBackground);
+
+  /* Dialogs, inputs and buttons */
+  --theme-dialog-overlay: rgba(0, 0, 0, 0.4);
+  --theme-dialog-bg: var(--vscode-editorWidget-background);
+  --theme-dialog-border: var(--vscode-editorWidget-border, var(--vscode-widget-border));
+  --theme-dialog-header-bg: var(--vscode-editorWidget-background);
+  --theme-dialog-header-text: var(--vscode-editorWidget-foreground, var(--vscode-foreground));
+  --theme-dialog-sidebar-bg: var(--vscode-sideBar-background, var(--vscode-editorWidget-background));
+  --theme-dialog-content-bg: var(--vscode-editorWidget-background);
+  --theme-dialog-content-text: var(--vscode-editorWidget-foreground, var(--vscode-foreground));
+  --theme-dialog-content-secondary: var(--vscode-descriptionForeground);
+  --theme-dialog-input-bg: var(--vscode-input-background);
+  --theme-dialog-input-border: var(--vscode-input-border, var(--vscode-widget-border));
+  --theme-dialog-input-text: var(--vscode-input-foreground);
+  --theme-dialog-tab-active-accent: var(--vscode-focusBorder);
+  --theme-btn-primary-bg: var(--vscode-button-background);
+  --theme-btn-primary-text: var(--vscode-button-foreground);
+  --theme-btn-primary-border: var(--vscode-button-border, transparent);
+  --theme-btn-primary-hover-bg: var(--vscode-button-hoverBackground);
+  --theme-btn-primary-hover-text: var(--vscode-button-foreground);
+  --theme-btn-secondary-bg: var(--vscode-button-secondaryBackground);
+  --theme-btn-secondary-text: var(--vscode-button-secondaryForeground);
+  --theme-btn-secondary-hover-bg: var(--vscode-button-secondaryHoverBackground);
+  --theme-btn-secondary-hover-border: var(--vscode-focusBorder);
+
+  /* Grid */
+  --theme-grid-header-bg: var(--vscode-editorGroupHeader-tabsBackground);
+  --theme-grid-line: var(--vscode-editorGroup-border, var(--vscode-panel-border));
+  --theme-grid-vline: var(--vscode-editorGroup-border, var(--vscode-panel-border));
+  --theme-grid-cell-border: var(--vscode-editorGroup-border, var(--vscode-panel-border));
+  --theme-grid-active-bg: var(--vscode-list-activeSelectionBackground);
+  --theme-grid-active-text: var(--vscode-list-activeSelectionForeground, var(--vscode-foreground));
+  --theme-grid-input-bg: var(--vscode-input-background);
+  --theme-grid-input-border: var(--vscode-focusBorder);
+}

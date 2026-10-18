@@ -133,6 +133,8 @@ describe('rapportlabels voor de Rust/Typst-generators', () => {
   });
 
   it('leidt de getalnotatie per rapporttaal af (numberFormat)', () => {
+    // The currency symbol follows the budget currency; these upstream cases use EUR.
+    useAppStore.getState().setSchedule({ currency: 'EUR' });
     // Nederlands = de standaard van de Rust-kant (numfmt.rs)
     expect(reportNumberFormat('nl-NL')).toEqual({
       decimal: ',', group: '.', grouping: [3], minGroupingDigits: 1, minus: '-',
@@ -155,6 +157,8 @@ describe('rapportlabels voor de Rust/Typst-generators', () => {
     }
     // Altijd het €-teken, ook waar de locale "EUR" schrijft
     expect(reportNumberFormat('hu').currency).toContain('€');
+    useAppStore.getState().setSchedule({ currency: 'PYG' });
+    expect(reportNumberFormat('es-PY').currency).toContain('₲');
   });
 
   it('getReportRequestLocale levert labels én notatie in de rapporttaal', async () => {
