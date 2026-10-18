@@ -1,5 +1,6 @@
 import type { StateCreator } from 'zustand';
 import type { ProjectSnapshot, SnapshotDiff, CostItem } from '@/types/costModel';
+import { str, sumDec } from '@/utils/decimal';
 
 function genId(): string {
   return `snap_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
@@ -95,7 +96,7 @@ export const createVersionSlice: StateCreator<VersionSlice> = (set, get) => ({
 
     // Calculate total
     const topChapters = state.items.filter((i: CostItem) => i.rowType === 'chapter' && i.depth === 0);
-    const totaalExclBtw = topChapters.reduce((sum: number, i: CostItem) => sum + i.total, 0);
+    const totaalExclBtw = str(sumDec(topChapters.map((i: CostItem) => i.total)));
 
     const snapshot: ProjectSnapshot = {
       id: genId(),

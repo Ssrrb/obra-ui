@@ -82,9 +82,9 @@ describe('ÖNORM A 2063 (.onlv) import — structuur', () => {
     const a = byCode(res.items, '01.02.03A');
     expect(a.description).toBe('bis 500 m²');
     expect(a.unit).toBe('m²');
-    expect(a.quantity).toBe(12.5);
-    expect(a.laborPrice).toBe(40);
-    expect(a.materialPrice).toBe(60);
+    expect(a.quantity).toBe('12.5');
+    expect(a.laborPrice).toBe('40');
+    expect(a.materialPrice).toBe('60');
     expect(a.normUnitPrice).toBeNull();
     // Grundtext vóór de folgetekst in de notities.
     expect(a.notes).toBe('Baustelle einrichten,\nfür kleine Baustellen.');
@@ -130,7 +130,7 @@ describe('ÖNORM A 2063 (.onlv) import — structuur', () => {
       + '</gliederung-posfrei></kostenschaetzungs-lv></onlv>';
     const b = importOnlv(frei);
     expect(b.items.map((i) => `${i.depth}:${i.rowType}:${i.code}`)).toEqual(['0:begrotingspost:A-1.5']);
-    expect(b.items[0].normUnitPrice).toBe(5);
+    expect(b.items[0].normUnitPrice).toBe('5');
   });
 
   it('nummert ungeteilte posities met Mehrfachverwendung en zet pospreis zonder preisanteile op prijs/middel', () => {
@@ -142,7 +142,7 @@ describe('ÖNORM A 2063 (.onlv) import — structuur', () => {
     expect(items.filter((i) => i.rowType === 'begrotingspost').map((i) => i.code)).toEqual(['01.02.07', '01.02.071']);
     const kran = byCode(items, '01.02.07');
     expect(kran.unit).toBe('mnd');
-    expect(kran.normUnitPrice).toBe(1500);
+    expect(kran.normUnitPrice).toBe('1500');
     expect(kran.laborPrice).toBeNull();
     expect(kran.total).toBeCloseTo(3000, 2);
     expect(getKostprijs(items)).toBeCloseTo(4500, 2);
@@ -151,9 +151,9 @@ describe('ÖNORM A 2063 (.onlv) import — structuur', () => {
   it('vangt een gesamt die niet gelijk is aan de som van de preisanteile op in prijs/middel', () => {
     const xml = lgOnlv(`<grundtextnr nr="01"><ungeteilteposition mfv="">${pos('X', { menge: '1.00', pa1: '10.00', pa2: '20.00', gesamt: '31.00' })}</ungeteilteposition></grundtextnr>`);
     const it = recalculateItems(importOnlv(xml).items).find((i) => i.rowType === 'begrotingspost')!;
-    expect(it.laborPrice).toBe(10);
-    expect(it.materialPrice).toBe(20);
-    expect(it.normUnitPrice).toBe(1);
+    expect(it.laborPrice).toBe('10');
+    expect(it.materialPrice).toBe('20');
+    expect(it.normUnitPrice).toBe('1');
     expect(it.unitPrice).toBeCloseTo(31, 2);
   });
 });
@@ -171,8 +171,8 @@ describe('ÖNORM A 2063 (.onlv) import — positiesoorten, teksten, eenheden', (
     expect(byCode(items, '01.02.01').verrekenbaar).toBeNull();
     const ev = byCode(items, '01.02.02');
     expect(ev.verrekenbaar).toBe('N');
-    expect(ev.quantity).toBe(1);
-    expect(ev.normUnitPrice).toBe(50);
+    expect(ev.quantity).toBe('1');
+    expect(ev.normUnitPrice).toBe('50');
     expect(ev.notes.split('\n')[0]).toBe(POSART_MARKERS.eventual);
     const wahl = byCode(items, '01.02.03');
     expect(wahl.verrekenbaar).toBe('N');
@@ -285,13 +285,13 @@ describe('ÖNORM A 2063 (.onlb) import — Leistungsbuch', () => {
       'chapter:21', 'chapter:01', 'begrotingspost:21.01.01A', 'begrotingspost:21.01.01B', 'begrotingspost:21.01.51', 'tekstregel:21.01.52',
     ]);
     const b = byCode(res.items, '21.01.01B');
-    expect(b.quantity).toBe(0);
+    expect(b.quantity).toBe('0');
     expect(b.unit).toBe('m²');
     expect(b.notes).toBe('Bitumenbahn verlegen,\nzweilagig, Farbe ____.');
     expect(byCode(res.items, '21.01.51').unit).toBe('uur');
     expect(byCode(res.items, '21').notes).toBe('Version 3');
     expect(res.warningCodes?.map((c) => c.code)).toEqual(['leistungsbuch', 'luecken']);
-    expect(getKostprijs(recalculateItems(res.items))).toBe(0);
+    expect(getKostprijs(recalculateItems(res.items))).toBe('0');
   });
 
   it('meldingen hebben een en- en nl-vertaling en worden via de codes vertaald', () => {
@@ -357,8 +357,8 @@ describe('ÖNORM A 2063 (.onlv) export', () => {
       'chapter:01:Grondwerk', 'chapter:01:Grondwerk',
       'begrotingspost:01.01.01:Ontgraven', 'begrotingspost:01.01.02:Aanvullen', 'tekstregel:01.01.03:Let op de grondwaterstand.',
     ]);
-    expect(byCode(items2, '01.01.01').laborPrice).toBe(5);
-    expect(byCode(items2, '01.01.01').materialPrice).toBe(20);
+    expect(byCode(items2, '01.01.01').laborPrice).toBe('5');
+    expect(byCode(items2, '01.01.01').materialPrice).toBe('20');
     expect(byCode(items2, '01.01.01').total).toBeCloseTo(2300, 2);
     expect(byCode(items2, '01.01.02').verrekenbaar).toBe('N');
     expect(byCode(items2, '01.01.03').notes).toBe('Bemaling apart.');

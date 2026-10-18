@@ -120,8 +120,13 @@ export function createBridgeController(
 		if (!documentId || s.documents.length <= 1) return;
 		const primary = s.documents.find((d) => d.id === documentId);
 		if (!primary) return;
+		// The budget's currency and IVA mode belong to the host document, not the imported file.
+		const schedule = hostDoc
+			? { ...s.schedule, currency: hostDoc.schedule.currency, ivaMode: hostDoc.schedule.ivaMode }
+			: s.schedule;
 		useAppStore.setState({
-			documents: [{ ...primary, items: s.items, schedule: s.schedule }],
+			schedule,
+			documents: [{ ...primary, items: s.items, schedule }],
 			activeDocumentId: documentId,
 		});
 	});

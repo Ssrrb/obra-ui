@@ -7,6 +7,9 @@
  * losse, net-iets-andere item-fabrieken meer rondzwerven.
  */
 import type { CostItem, CostUnit, RowType } from '@/types/costModel';
+import type { DecimalString } from '@ctrlmas/budget-engine';
+import { fromNumber } from '@/utils/decimal';
+import { canonicalParts } from '@/utils/numericInput';
 
 // ── id / guid ───────────────────────────────────────────────────────────────
 
@@ -52,6 +55,40 @@ export function parseNumber(raw: string | number | null | undefined): number {
   return Number.isFinite(n) ? n : 0;
 }
 
+/**
+ * A number literal from a source file → canonical decimal text, keeping
+ * every digit of the literal (no binary double in between). Same reading as
+ * parseNumber: a comma means NL/es notation ("1.234,56"), otherwise the dot
+ * is the decimal point ("1234.56"); whitespace is ignored; an exponent
+ * ("1.5E3") is accepted. Empty or unreadable → '0' (as parseNumber).
+ * Throws when the literal has more than 24 integer / 12 fraction digits:
+ * importing must not round silently.
+ */
+export function parseDecimal(raw: string | number | null | undefined): DecimalString {
+  if (typeof raw === 'number') return fromNumber(raw) ?? '0';
+  const s = String(raw ?? '').replace(/\s/g, '');
+  if (!s) return '0';
+  const t = s.indexOf(',') >= 0 ? s.replace(/\./g, '').replace(',', '.') : s;
+  const m = /^([+-]?)(\d*)(?:\.(\d*))?(?:[eE]([+-]?\d+))?$/.exec(t);
+  if (!m || (!m[2] && !m[3])) {
+    const n = parseFloat(t); // upstream tolerance for trailing text ("12 m2")
+    return Number.isFinite(n) ? parseDecimal(/^[+-]?\d*\.?\d+/.exec(t)?.[0] ?? '0') : '0';
+  }
+  let int = m[2] ?? '';
+  let frac = m[3] ?? '';
+  const exp = m[4] ? parseInt(m[4], 10) : 0;
+  if (exp > 0) { frac = frac.padEnd(exp, '0'); int += frac.slice(0, exp); frac = frac.slice(exp); }
+  if (exp < 0) { int = int.padStart(-exp + 1, '0'); frac = int.slice(int.length + exp) + frac; int = int.slice(0, int.length + exp); }
+  const r = canonicalParts(m[1] === '-', int, frac);
+  if (!r.ok) throw new Error(`${raw}: ${r.message}`);
+  return r.value ?? '0';
+}
+
+/** Like parseDecimal but empty text stays null. */
+export function parseDecimalOrNull(raw: string | number | null | undefined): DecimalString | null {
+  return raw == null || (typeof raw === 'string' && !raw.trim()) ? null : parseDecimal(raw);
+}
+
 // ── eenheden ────────────────────────────────────────────────────────────────
 
 const UNIT_MAP: Record<string, CostUnit> = {
@@ -82,8 +119,30 @@ export function normalizeUnit(raw: string | null | undefined): CostUnit {
  * de relevante velden mee; de rest krijgt zinnige defaults. `rowType` is altijd
  * vereist (bepaalt o.a. de default voor `verrekenbaar`).
  */
-export function makeCostItem(partial: Partial<CostItem> & { rowType: RowType }): CostItem {
-  const rowType = partial.rowType;
+/** Money fields an importer may still hand over as a number (converted by makeCostItem). */
+const DECIMAL_FIELDS = ['quantity', 'materialPrice', 'laborPrice', 'unitPrice', 'total', 'staartPercentage', 'normQuantity', 'normFactor', 'normDivisor', 'normUnitPrice', 'staartDoelbedrag', 'staartVastBedrag', 'staartAfrondingStap', 'staartBtwBasis'] as const;
+type DecimalField = typeof DECIMAL_FIELDS[number];
+/**
+ * Item input of an importer: money as decimal text, or as a number for
+ * formats whose values are binary doubles or computed by the importer
+ * (converted with its shortest round-trip text, see fromNumber).
+ */
+export type ItemDraft = Omit<Partial<CostItem>, DecimalField> & { rowType: RowType } & {
+  [K in DecimalField]?: DecimalString | number | null;
+};
+
+const toDecimalFields = (partial: ItemDraft): Partial<CostItem> => {
+  const out: Record<string, unknown> = { ...partial };
+  for (const f of DECIMAL_FIELDS) {
+    const v = out[f];
+    if (typeof v === 'number') out[f] = fromNumber(v);
+  }
+  return out as Partial<CostItem>;
+};
+
+export function makeCostItem(draft: ItemDraft): CostItem {
+  const rowType = draft.rowType;
+  const partial = toDecimalFields(draft);
   return {
     id: genId(),
     parentId: null,
@@ -94,8 +153,8 @@ export function makeCostItem(partial: Partial<CostItem> & { rowType: RowType }):
     quantity: null,
     materialPrice: null,
     laborPrice: null,
-    unitPrice: 0,
-    total: 0,
+    unitPrice: '0',
+    total: '0',
     isCollapsed: false,
     depth: 0,
     notes: '',
@@ -111,6 +170,7 @@ export function makeCostItem(partial: Partial<CostItem> & { rowType: RowType }):
     tariefGroep: null,
     verrekenbaar: rowType === 'chapter' ? 'V' : null,
     ...partial,
+    rowType,
   };
 }
 
@@ -125,7 +185,7 @@ export class BudgetBuilder {
   readonly items: CostItem[] = [];
   private _sort = 0;
 
-  add(partial: Partial<CostItem> & { rowType: RowType }): CostItem {
+  add(partial: ItemDraft): CostItem {
     const item = makeCostItem({ sortOrder: this._sort++, ...partial });
     this.items.push(item);
     return item;

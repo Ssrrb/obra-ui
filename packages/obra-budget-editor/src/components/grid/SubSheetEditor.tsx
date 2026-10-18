@@ -6,6 +6,8 @@ import { SubSheetRowContextMenu } from './SubSheetRowContextMenu';
 import { SubSheetBorderPicker } from './SubSheetBorderPicker';
 import { shiftFormulaRefs } from '@/services/spreadsheet/formulaRefs';
 import type { CellBorder } from '@/types/costModel';
+import { CTRL_BUILD } from '@/services/buildFlags';
+import { currencyLabel } from '@/utils/formatting';
 
 const COL_WIDTH = 90;
 const ROW_HEIGHT = 24;
@@ -536,7 +538,7 @@ export function SubSheetEditor({ sheetId }: { sheetId: string }) {
                     const display = cell
                       ? (cell.computed !== undefined
                           ? (fmt === 'currency'
-                              ? `€ ${cell.computed.toLocaleString('nl-NL', { minimumFractionDigits: dec, maximumFractionDigits: dec })}`
+                              ? `${CTRL_BUILD ? currencyLabel(useAppStore.getState().schedule.currency) : '€'} ${cell.computed.toLocaleString('nl-NL', { minimumFractionDigits: dec, maximumFractionDigits: dec })}`
                               : fmt === 'percentage'
                                 ? `${(cell.computed * 100).toFixed(dec)}%`
                                 : typeof cell.computed === 'number'

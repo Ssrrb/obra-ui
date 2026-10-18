@@ -21,9 +21,9 @@ describe('staart migration on load', () => {
     const staart = parsed.items.filter((i: any) => i.rowType?.startsWith('staart_'));
     expect(staart.length).toBeGreaterThanOrEqual(8);
     const akoa = staart.find((s: any) => s.rowType === 'staart_ak_oa');
-    expect(akoa?.staartPercentage).toBe(9);
+    expect(akoa?.staartPercentage).toBe('9');
     const btw = staart.find((s: any) => s.rowType === 'staart_btw');
-    expect(btw?.staartPercentage).toBe(21);
+    expect(btw?.staartPercentage).toBe('21');
   });
 
   it('uses standard NL bouw defaults when no staartRows cached', () => {
@@ -36,7 +36,7 @@ describe('staart migration on load', () => {
     const parsed = deserializeProject(json);
     const staart = parsed.items.filter((i: any) => i.rowType?.startsWith('staart_'));
     const akoa = staart.find((s: any) => s.rowType === 'staart_ak_oa');
-    expect(akoa?.staartPercentage).toBe(9); // NL bouw default
+    expect(akoa?.staartPercentage).toBe('9'); // NL bouw default
   });
 
   it('does NOT inject when staart_* items already exist', () => {

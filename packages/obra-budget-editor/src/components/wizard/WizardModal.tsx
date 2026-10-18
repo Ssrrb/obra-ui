@@ -9,6 +9,7 @@ import { formatUnit } from '@/i18n/formatUnit';
 
 // Import wizards to register them
 import '@/services/wizard/hsbWandCalculator';
+import { currencyLabel, formatDecimal } from '@/utils/formatting';
 
 type WizardStep = 'select' | 'params' | 'preview';
 
@@ -23,7 +24,7 @@ export default function WizardModal({ open, onClose }: WizardModalProps) {
   const [selectedWizard, setSelectedWizard] = useState<WizardDefinition | null>(null);
   const [paramValues, setParamValues] = useState<Record<string, number | string>>({});
   const [result, setResult] = useState<WizardResult | null>(null);
-  const { items, setItems, pushHistory } = useAppStore();
+  const { items, setItems, pushHistory, schedule } = useAppStore();
 
   const wizards = useMemo(() => getAllWizards(), []);
 
@@ -168,10 +169,10 @@ export default function WizardModal({ open, onClose }: WizardModalProps) {
                   <tr key={idx} className={`wizard-row-${item.rowType}`} style={{ paddingLeft: item.depth * 16 }}>
                     <td className="wizard-rowtype">{item.rowType}</td>
                     <td style={{ paddingLeft: item.depth * 16 }}>{item.description}</td>
-                    <td className="align-right">{item.quantity != null ? item.quantity.toFixed(2) : ''}</td>
+                    <td className="align-right">{item.quantity != null ? formatDecimal(item.quantity, { scale: 2 }) : ''}</td>
                     <td>{item.quantity != null ? formatUnit(item.unit) : ''}</td>
-                    <td className="align-right">{item.materialPrice != null ? `€ ${item.materialPrice.toFixed(2)}` : ''}</td>
-                    <td className="align-right">{item.laborPrice != null ? `€ ${item.laborPrice.toFixed(2)}` : ''}</td>
+                    <td className="align-right">{item.materialPrice != null ? `${currencyLabel(schedule.currency)} ${formatDecimal(item.materialPrice, { scale: 2 })}` : ''}</td>
+                    <td className="align-right">{item.laborPrice != null ? `${currencyLabel(schedule.currency)} ${formatDecimal(item.laborPrice, { scale: 2 })}` : ''}</td>
                   </tr>
                 ))}
               </tbody>

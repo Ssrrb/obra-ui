@@ -1,5 +1,6 @@
 import * as XLSX from 'xlsx';
-import { BudgetBuilder, parseNumber, normalizeUnit } from './core';
+import { BudgetBuilder, parseDecimal, normalizeUnit } from './core';
+import { dec, str } from '@/utils/decimal';
 import type { ImportResult } from './types';
 
 /**
@@ -96,10 +97,14 @@ export function parseXlsxTabular(buf: ArrayBuffer | Uint8Array, sourceName = 'Ex
   // Kies het tabblad met de meeste rijen — dat is doorgaans de databladzijde.
   let best: unknown[][] | null = null;
   for (const name of wb.SheetNames) {
-    const rows = XLSX.utils.sheet_to_json<unknown[]>(wb.Sheets[name], { header: 1, blankrows: false });
+    // raw: true → each cell's stored value `v`, never the formatted text `w`.
+    const rows = XLSX.utils.sheet_to_json<unknown[]>(wb.Sheets[name], { header: 1, blankrows: false, raw: true });
     if (!best || rows.length > best.length) best = rows;
   }
   if (!best || best.length === 0) return { headers: [], rows: [], sourceName };
+  // Numbers: String(v) is the shortest round-trip text of the stored IEEE
+  // double (0.1 → "0.1"). An .xlsx cell holds a double, so digits beyond
+  // ~15–17 significant ones are not in the file and cannot be recovered.
   const toStr = (v: unknown) => (v == null ? '' : String(v).trim());
   const headers = (best[0] as unknown[]).map(toStr);
   const rows = best.slice(1).map((r) => (r as unknown[]).map(toStr));
@@ -190,11 +195,12 @@ export function buildFromMapping(data: TabularData, mapping: ColumnMapping): Imp
       continue;
     }
 
-    let materialPrice = matRaw !== '' ? parseNumber(matRaw) : null;
-    const laborPrice = labRaw !== '' ? parseNumber(labRaw) : null;
-    let quantity = hasQty ? parseNumber(qtyRaw) : null;
-    const explicitUnit = upRaw !== '' ? parseNumber(upRaw) : null;
-    const explicitTotal = totRaw !== '' ? parseNumber(totRaw) : null;
+    // Decimal text straight from the cell literal (no float in between).
+    let materialPrice = matRaw !== '' ? parseDecimal(matRaw) : null;
+    const laborPrice = labRaw !== '' ? parseDecimal(labRaw) : null;
+    let quantity = hasQty ? parseDecimal(qtyRaw) : null;
+    const explicitUnit = upRaw !== '' ? parseDecimal(upRaw) : null;
+    const explicitTotal = totRaw !== '' ? parseDecimal(totRaw) : null;
 
     // Een kale begrotingspost (zonder regels) haalt zijn totaal bij de
     // herberekening uit hoeveelheid × (materiaal + arbeid). Zit er geen
@@ -205,12 +211,18 @@ export function buildFromMapping(data: TabularData, mapping: ColumnMapping): Imp
       if (explicitUnit != null) {
         materialPrice = explicitUnit;
       } else if (explicitTotal != null) {
-        if (quantity == null || quantity === 0) { quantity = 1; materialPrice = explicitTotal; }
-        else { materialPrice = explicitTotal / quantity; }
+        if (quantity == null || dec(quantity).isZero()) { quantity = '1'; materialPrice = explicitTotal; }
+        else {
+          const exact = dec(explicitTotal).div(dec(quantity));
+          materialPrice = str(exact);
+          if (!exact.eq(materialPrice)) {
+            warnings.push(`Precio unitario ${materialPrice} = total ${explicitTotal} / cantidad ${quantity}, redondeado a 12 decimales (fila "${description || code}").`);
+          }
+        }
       }
     }
-    const unitPrice = (materialPrice ?? 0) + (laborPrice ?? 0);
-    const total = (quantity ?? 0) * unitPrice;
+    const unitPrice = dec(materialPrice).plus(dec(laborPrice));
+    const total = str(dec(quantity).times(unitPrice));
 
     builder.add({
       parentId: currentChapterId,
@@ -223,7 +235,7 @@ export function buildFromMapping(data: TabularData, mapping: ColumnMapping): Imp
       quantity,
       materialPrice,
       laborPrice,
-      unitPrice,
+      unitPrice: str(unitPrice),
       total,
     });
   }

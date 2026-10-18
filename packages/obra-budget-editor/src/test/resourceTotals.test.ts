@@ -3,8 +3,8 @@ import { useAppStore } from '@/state/appStore';
 import { computeResourceTotals } from '@/services/grid/resourceTotals';
 
 const s = () => useAppStore.getState();
-const somKolommen = (t?: Record<string, number>) =>
-  !t ? 0 : t.arbeidTotal + t.materiaalTotal + t.materieelTotal + t.stelpostTotal + t.onderaannemingTotal;
+const somKolommen = (t?: Record<string, string>) =>
+  !t ? 0 : Number(t.arbeidTotal) + Number(t.materiaalTotal) + Number(t.materieelTotal) + Number(t.stelpostTotal) + Number(t.onderaannemingTotal);
 
 beforeEach(() => {
   s().resetSchedule();
@@ -28,7 +28,7 @@ describe('kostensoort-kolommen sluiten aan op het totaal', () => {
 
     const map = computeResourceTotals(s().items);
     // Zonder de norm zou hier 71,50 staan i.p.v. 572,00
-    expect(somKolommen(map.get(regel))).toBeCloseTo(572, 2);
+    expect(Number(somKolommen(map.get(regel)))).toBeCloseTo(572, 2);
     expect(somKolommen(map.get(ch))).toBeCloseTo(s().items.find(i => i.id === ch)!.total, 2);
   });
 
@@ -42,7 +42,7 @@ describe('kostensoort-kolommen sluiten aan op het totaal', () => {
     s().addBewakingspost(post);
 
     const map = computeResourceTotals(s().items);
-    expect(somKolommen(map.get(post))).toBeCloseTo(550, 2);
+    expect(Number(somKolommen(map.get(post)))).toBeCloseTo(550, 2);
     expect(somKolommen(map.get(ch))).toBeCloseTo(550, 2);
     expect(map.get(post)!.materiaalTotal).toBeCloseTo(550, 2);
   });
@@ -70,7 +70,7 @@ describe('kostensoort-kolommen sluiten aan op het totaal', () => {
     s().updateItem(regel, 'normUnitPrice', 100);
 
     const map = computeResourceTotals(s().items);
-    expect(somKolommen(map.get(post))).toBeCloseTo(200, 2);
+    expect(Number(somKolommen(map.get(post)))).toBeCloseTo(200, 2);
     expect(s().items.find(i => i.id === post)!.total).toBeCloseTo(200, 2);
   });
 
@@ -126,8 +126,8 @@ describe('kostensoort-kolommen sluiten aan op het totaal', () => {
 
     const hoofdstuk = s().items.find(i => i.id === ch)!;
     const kolommen = somKolommen(computeResourceTotals(s().items).get(ch));
-    expect(hoofdstuk.total).toBeGreaterThan(0);
-    expect(kolommen).toBeCloseTo(hoofdstuk.total, 2);
+    expect(Number(hoofdstuk.total)).toBeGreaterThan(0);
+    expect(kolommen).toBeCloseTo(Number(hoofdstuk.total), 2);
   });
 
   it('loonregel (WpCalc-model) blijft ongewijzigd: aantal × loon', () => {
@@ -143,6 +143,6 @@ describe('kostensoort-kolommen sluiten aan op het totaal', () => {
     const t = map.get(regel)!;
     expect(t.arbeidTotal).toBeCloseTo(120, 2);
     expect(t.materiaalTotal).toBeCloseTo(30, 2);
-    expect(somKolommen(t)).toBeCloseTo(s().items.find(i => i.id === regel)!.total, 2);
+    expect(Number(somKolommen(t))).toBeCloseTo(Number(s().items.find(i => i.id === regel)!.total), 2);
   });
 });

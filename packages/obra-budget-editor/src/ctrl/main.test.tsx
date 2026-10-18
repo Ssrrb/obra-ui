@@ -81,29 +81,29 @@ describe('ctrl webview entry', () => {
 	it('a user edit posts changed once, debounced, with the last seq', async () => {
 		const s = useAppStore.getState();
 		const id = s.items.find((i) => i.description === 'Limpieza del terreno')!.id;
-		await act(async () => { s.updateItem(id, 'quantity', 120); });
+		await act(async () => { s.updateItem(id, 'quantity', '120'); });
 		await wait(100);
 		expect(posted.filter((m) => m.type === 'changed')).toHaveLength(0);
 		await wait(350);
 		const changed = posted.filter((m) => m.type === 'changed');
 		expect(changed).toHaveLength(1);
 		expect(changed[0].seq).toBe(2);
-		expect(changed[0].document.items.find((i: any) => i.id === id).quantity).toBe(120);
+		expect(changed[0].document.items.find((i: any) => i.id === id).quantity).toBe('120');
 	});
 
 	it('an edit inside the debounce is flushed with the previous seq before a remote, with no stale post later', async () => {
 		const before = posted.filter((m) => m.type === 'changed').length;
 		const s = useAppStore.getState();
 		const id = s.items.find((i) => i.description === 'Limpieza del terreno')!.id;
-		await act(async () => { s.updateItem(id, 'quantity', 130); });
+		await act(async () => { s.updateItem(id, 'quantity', '130'); });
 		await wait(100); // debounce still pending
 		const remote = JSON.parse(JSON.stringify({ ...doc(), items: useAppStore.getState().items })) as ProjectFile;
-		remote.items = remote.items.map((i) => (i.id === id ? { ...i, quantity: 120, notes: 'remoto' } : i));
+		remote.items = remote.items.map((i) => (i.id === id ? { ...i, quantity: '120', notes: 'remoto' } : i));
 		await send({ v: 1, type: 'remote', seq: 3, revision: 3, document: remote });
 		let changed = posted.filter((m) => m.type === 'changed');
 		expect(changed).toHaveLength(before + 1);
 		expect(changed.at(-1).seq).toBe(2);
-		expect(changed.at(-1).document.items.find((i: any) => i.id === id).quantity).toBe(130);
+		expect(changed.at(-1).document.items.find((i: any) => i.id === id).quantity).toBe('130');
 		expect(useAppStore.getState().items.find((i) => i.id === id)!.notes).toBe('remoto');
 		await wait(450);
 		changed = posted.filter((m) => m.type === 'changed');

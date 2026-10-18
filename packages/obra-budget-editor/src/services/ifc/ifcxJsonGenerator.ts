@@ -1,6 +1,7 @@
 import type { CostItem, CostSchedule, OfferteDocument } from '@/types/costModel';
 import { createDefaultProjectProperties } from '@/types/costModel';
 import { getGrandTotal } from '@/services/calculation/calculator';
+import { dec, isZeroDec, toNumber } from '@/utils/decimal';
 
 /**
  * IfcX JSON generator — IFC5-development (IfcX alpha) format
@@ -102,9 +103,11 @@ interface IfcxDocument {
 
 /** Build the cost breakdown attribute for a non-chapter item */
 function buildBreakdown(item: CostItem): Record<string, unknown> | null {
-  const materialAmount = item.materialPrice ?? 0;
-  const laborAmount = item.laborPrice ?? 0;
-  const totalAmount = materialAmount + laborAmount;
+  // IFCX JSON carries numbers: decimals become JSON numbers here (the
+  // format's limit, ~15-17 significant digits); the sum is exact first.
+  const materialAmount = toNumber(item.materialPrice);
+  const laborAmount = toNumber(item.laborPrice);
+  const totalAmount = dec(item.materialPrice).plus(dec(item.laborPrice)).toNumber();
 
   if (totalAmount <= 0) return null;
 
@@ -140,8 +143,8 @@ function buildBreakdown(item: CostItem): Record<string, unknown> | null {
   if (isStagart && item.staartPercentage !== null) {
     (breakdown as Record<string, unknown>).surcharges = {
       [item.rowType.replace('staart_', '').toUpperCase()]: {
-        percentage: item.staartPercentage,
-        amount: item.total,
+        percentage: toNumber(item.staartPercentage),
+        amount: toNumber(item.total),
       },
     };
   }
@@ -168,9 +171,9 @@ function buildCostItemNode(
   };
 
   // Quantity
-  if (item.quantity != null && item.quantity !== 0) {
+  if (item.quantity != null && !isZeroDec(item.quantity)) {
     attributes['bsi::ifc::prop::Quantity'] = {
-      value: item.quantity,
+      value: toNumber(item.quantity),
       unit: item.unit || 'st',
     };
   }
@@ -183,17 +186,17 @@ function buildCostItemNode(
     }
 
     // Unit prices
-    if (item.materialPrice != null && item.materialPrice !== 0) {
-      attributes['ifcx::cost::materialPrice'] = item.materialPrice;
+    if (item.materialPrice != null && !isZeroDec(item.materialPrice)) {
+      attributes['ifcx::cost::materialPrice'] = toNumber(item.materialPrice);
     }
-    if (item.laborPrice != null && item.laborPrice !== 0) {
-      attributes['ifcx::cost::laborPrice'] = item.laborPrice;
+    if (item.laborPrice != null && !isZeroDec(item.laborPrice)) {
+      attributes['ifcx::cost::laborPrice'] = toNumber(item.laborPrice);
     }
-    if (item.unitPrice !== 0) {
-      attributes['ifcx::cost::unitPrice'] = item.unitPrice;
+    if (!isZeroDec(item.unitPrice)) {
+      attributes['ifcx::cost::unitPrice'] = toNumber(item.unitPrice);
     }
-    if (item.total !== 0) {
-      attributes['ifcx::cost::total'] = item.total;
+    if (!isZeroDec(item.total)) {
+      attributes['ifcx::cost::total'] = toNumber(item.total);
     }
   }
 
@@ -204,7 +207,7 @@ function buildCostItemNode(
       attributes['ifcx::cost::phase'] = phase;
     }
     if (item.staartPercentage !== null) {
-      attributes['ifcx::cost::staartPercentage'] = item.staartPercentage;
+      attributes['ifcx::cost::staartPercentage'] = toNumber(item.staartPercentage);
     }
   }
 
@@ -212,10 +215,10 @@ function buildCostItemNode(
   if (item.rowType === 'regel') {
     if (item.normQuantity != null || item.normFactor != null || item.normDivisor != null || item.normUnitPrice != null) {
       attributes['ifcx::ocs::normCalculation'] = {
-        ...(item.normQuantity != null ? { quantity: item.normQuantity } : {}),
-        ...(item.normFactor != null ? { factor: item.normFactor } : {}),
-        ...(item.normDivisor != null ? { divisor: item.normDivisor } : {}),
-        ...(item.normUnitPrice != null ? { unitPrice: item.normUnitPrice } : {}),
+        ...(item.normQuantity != null ? { quantity: toNumber(item.normQuantity) } : {}),
+        ...(item.normFactor != null ? { factor: toNumber(item.normFactor) } : {}),
+        ...(item.normDivisor != null ? { divisor: toNumber(item.normDivisor) } : {}),
+        ...(item.normUnitPrice != null ? { unitPrice: toNumber(item.normUnitPrice) } : {}),
       };
     }
   }
@@ -296,10 +299,10 @@ export function generateIfcxJson(
   // Tarieven metadata
   if (schedule.tarieven && Object.keys(schedule.tarieven).length > 0) {
     scheduleAttributes['ifcx::cost::metadata'] = {
-      tarieven: schedule.tarieven,
-      uitvoeringskosten: schedule.uitvoeringskosten,
-      algemeneKosten: schedule.algemeneKosten,
-      winstRisico: schedule.winstRisico,
+      tarieven: Object.fromEntries(Object.entries(schedule.tarieven).map(([k, v]) => [k, toNumber(v)])),
+      uitvoeringskosten: toNumber(schedule.uitvoeringskosten),
+      algemeneKosten: toNumber(schedule.algemeneKosten),
+      winstRisico: toNumber(schedule.winstRisico),
     };
   }
 
@@ -338,11 +341,11 @@ export function generateIfcxJson(
   for (const prop of projectProps) {
     if (prop.value != null) {
       const key = prop.name.replace(/\s+/g, '_');
-      const pricePerUnit = prop.value > 0 && grandTotal > 0 ? grandTotal / prop.value : null;
+      const pricePerUnit = prop.value > 0 && dec(grandTotal).gt(0) ? dec(grandTotal).div(String(prop.value)).toDecimalPlaces(2).toNumber() : null;
       metricsObj[key] = {
         value: prop.value,
         unit: prop.unit,
-        ...(pricePerUnit != null ? { pricePerUnit: Math.round(pricePerUnit * 100) / 100 } : {}),
+        ...(pricePerUnit != null ? { pricePerUnit } : {}),
       };
     }
   }

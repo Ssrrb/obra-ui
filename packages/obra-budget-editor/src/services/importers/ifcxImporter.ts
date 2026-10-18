@@ -1,4 +1,4 @@
-import { makeCostItem, normalizeUnit } from './core';
+import { makeCostItem, normalizeUnit, parseDecimal, type ItemDraft } from './core';
 import type { ImportResult } from './types';
 import type { CostItem, CostSchedule, ResourceType, RowType } from '@/types/costModel';
 
@@ -16,7 +16,9 @@ type Attrs = Record<string, unknown>;
 interface IfcxNode { path?: string; inherits?: string[]; attributes?: Attrs; children?: Record<string, IfcxNode> }
 
 const str = (v: unknown): string => (typeof v === 'string' ? v : '');
-const numOrNull = (v: unknown): number | null => (typeof v === 'number' && Number.isFinite(v) ? v : null);
+/** IFCX money: a JSON number (its shortest text) or decimal text → canonical decimal. */
+const numOrNull = (v: unknown): string | null =>
+  (typeof v === 'number' && Number.isFinite(v)) || (typeof v === 'string' && v.trim() !== '') ? parseDecimal(v as number | string) : null;
 const inheritsAny = (n: IfcxNode | undefined, type: string): boolean =>
   Array.isArray(n?.inherits) && n!.inherits!.includes(type);
 
@@ -52,10 +54,10 @@ export function importIfcx(jsonText: string): ImportResult {
   const meta = schedA['ifcx::cost::metadata'];
   if (meta && typeof meta === 'object') {
     const m = meta as Record<string, unknown>;
-    if (m.tarieven && typeof m.tarieven === 'object') schedule.tarieven = m.tarieven as Record<string, number>;
-    if (numOrNull(m.uitvoeringskosten) != null) schedule.uitvoeringskosten = m.uitvoeringskosten as number;
-    if (numOrNull(m.algemeneKosten) != null) schedule.algemeneKosten = m.algemeneKosten as number;
-    if (numOrNull(m.winstRisico) != null) schedule.winstRisico = m.winstRisico as number;
+    if (m.tarieven && typeof m.tarieven === 'object') schedule.tarieven = Object.fromEntries(Object.entries(m.tarieven as Record<string, number | string>).map(([k, v]) => [k, parseDecimal(v)]));
+    if (numOrNull(m.uitvoeringskosten) != null) schedule.uitvoeringskosten = numOrNull(m.uitvoeringskosten)!;
+    if (numOrNull(m.algemeneKosten) != null) schedule.algemeneKosten = numOrNull(m.algemeneKosten)!;
+    if (numOrNull(m.winstRisico) != null) schedule.winstRisico = numOrNull(m.winstRisico)!;
   }
 
   let sort = 0;
@@ -71,7 +73,7 @@ export function importIfcx(jsonText: string): ImportResult {
     const tg = str(a['ifcx::ocs::tariefGroep']);
     const tariefGroep = tg === 'A' || tg === 'B' || tg === 'C' ? tg : null;
 
-    const partial: Partial<CostItem> & { rowType: RowType } = {
+    const partial: ItemDraft = {
       parentId,
       sortOrder: sort++,
       depth,

@@ -1,7 +1,8 @@
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppStore } from '@/state/appStore';
-import { formatCurrency } from '@/utils/formatting';
+import { formatCurrency, formatDecimal } from '@/utils/formatting';
+import { sumDec } from '@/utils/decimal';
 import { formatUnit } from '@/i18n/formatUnit';
 import type { CostItem } from '@/types/costModel';
 
@@ -63,11 +64,8 @@ export const SplitGridPane: React.FC<SplitGridPaneProps> = ({ documentId, onClos
     );
   }
 
-  const total = visibleItems.reduce((sum, item) => {
-    // Only sum root-level items to avoid double-counting
-    if (!item.parentId) return sum + (item.total || 0);
-    return sum;
-  }, 0);
+  // Only sum root-level items to avoid double-counting
+  const total = sumDec(visibleItems.filter((item) => !item.parentId).map((item) => item.total));
 
   return (
     <div className="split-pane">
@@ -106,7 +104,7 @@ export const SplitGridPane: React.FC<SplitGridPaneProps> = ({ documentId, onClos
                     {item.description}
                   </td>
                   <td className="split-col-qty">
-                    {isRegel && item.quantity != null ? item.quantity : ''}
+                    {isRegel && item.quantity != null ? formatDecimal(item.quantity) : ''}
                   </td>
                   <td className="split-col-unit">
                     {(isRegel || isBgr) ? formatUnit(item.unit, t) : ''}

@@ -22,7 +22,9 @@
  * De praktijk wijkt op een aantal punten af van de specificatie; zie de
  * opmerkingen bij `keyOf`, `isContainer`, `decodeBc3` en de variantafhandeling.
  */
-import { makeCostItem, parseNumber, normalizeUnit, genId } from './core';
+import { makeCostItem, type ItemDraft, parseNumber, parseDecimal, normalizeUnit, genId } from './core';
+import type { DecimalString } from '@ctrlmas/budget-engine';
+import { Dec, dec, str } from '@/utils/decimal';
 import { decodeCp850 } from './dncImporter';
 import { decodeWindows1252 } from './windows1252';
 import type { ImportResult, ImportWarningCode } from './types';
@@ -34,6 +36,8 @@ interface Bc3Child {
   key: string;
   factor: number;
   yield_: number;
+  /** factor × yield from the literals, exact (the numbers above only drive heuristics). */
+  rend: DecimalString;
 }
 
 interface Bc3Concept {
@@ -42,6 +46,8 @@ interface Bc3Concept {
   unit: string;
   summary: string;
   price: number;
+  /** ~C price literal as decimal text: what goes into the budget. */
+  priceText: DecimalString;
   type: string;          // '0'..'5', '%' of leeg
   isRoot: boolean;
   isChapter: boolean;
@@ -61,7 +67,7 @@ interface Bc3Data {
    */
   variants: Map<string, Bc3Concept[]>;
   order: Bc3Concept[];                 // alle concepten in declaratievolgorde
-  measurements: Map<string, number>;   // "#pad", "ouder::kind::positie", "ouder::kind" of "*::kind" → totaal
+  measurements: Map<string, DecimalString>;   // "#pad", "ouder::kind::positie", "ouder::kind" of "*::kind" → totaal
   measured: Set<string>;               // kind-keys waarvoor een ~M/~N bestaat
 }
 
@@ -128,7 +134,7 @@ function parseBc3(text: string): Bc3Data {
     const last = list[list.length - 1];
     if (last) return last;
     const stub: Bc3Concept = {
-      code: key, key, unit: '', summary: '', price: 0, type: '',
+      code: key, key, unit: '', summary: '', price: 0, priceText: '0', type: '',
       isRoot: false, isChapter: false, isPercentage: false, explicitPercentage: false,
       children: [], stub: true,
     };
@@ -161,6 +167,7 @@ function parseBc3(text: string): Bc3Data {
           // staan; de omschrijving is bij ons één regel.
           summary: (fields[2] ?? '').replace(/\s*\r?\n\s*/g, ' ').trim(),
           price: parseNumber(priceRaw),
+          priceText: parseDecimal(priceRaw),
           type: conceptType,
           isRoot: /##\s*$/.test(code),
           isChapter: /(^|[^#])#\s*$/.test(code),
@@ -202,6 +209,7 @@ function parseBc3(text: string): Bc3Data {
             key: keyOf(code),
             factor: factorRaw ? parseNumber(factorRaw) : 1,
             yield_: yieldRaw ? parseNumber(yieldRaw) : 1,
+            rend: str(dec(factorRaw ? parseDecimal(factorRaw) : '1').times(dec(yieldRaw ? parseDecimal(yieldRaw) : '1'))),
           });
         }
         break;
@@ -217,12 +225,12 @@ function parseBc3(text: string): Bc3Data {
         const ref = (fields[0] ?? '').split('\\').map((c) => keyOf(c)).filter(Boolean);
         const childKey = ref[ref.length - 1];
         if (!childKey) break;
-        const total = parseNumber(fields[2] ?? '');
+        const total = dec(parseDecimal(fields[2] ?? ''));
         const parentKey = ref.length > 1 ? ref[ref.length - 2] : '';
         const pos = (fields[1] ?? '').split('\\').map((p) => p.trim()).filter(Boolean);
         const index = pos.length > 0 ? Number.parseInt(pos[pos.length - 1], 10) : Number.NaN;
         const bump = (k: string): void => {
-          data.measurements.set(k, (data.measurements.get(k) ?? 0) + total);
+          data.measurements.set(k, str(dec(data.measurements.get(k)).plus(total)));
         };
         data.measured.add(childKey);
         if (!parentKey) {
@@ -282,7 +290,7 @@ export function importBc3(text: string): ImportResult {
   };
   let sort = 0;
 
-  const add = (partial: Partial<CostItem> & { rowType: CostItem['rowType'] }): CostItem => {
+  const add = (partial: ItemDraft): CostItem => {
     const item = makeCostItem({ sortOrder: sort++, ...partial });
     items.push(item);
     return item;
@@ -331,6 +339,7 @@ export function importBc3(text: string): ImportResult {
    * Percentage als fractie: sommige schrijvers noteren 3 in plaats van 0,03.
    */
   const asFraction = (rend: number): number => (Math.abs(rend) >= 1 ? rend / 100 : rend);
+  const asFractionD = (rend: Dec): Dec => (rend.abs().gte(1) ? rend.div(100) : rend);
 
   /**
    * TCQ/BEDEC-conventie: een `A%…`-concept "despeses auxiliars" is een opslag
@@ -424,7 +433,7 @@ export function importBc3(text: string): ImportResult {
     return !measured.has(c.key);
   };
 
-  const measurementFor = (path: number[], parentKey: string, childKey: string, index: number, fallback: number): number =>
+  const measurementFor = (path: number[], parentKey: string, childKey: string, index: number, fallback: DecimalString): DecimalString =>
     measurements.get(`#${path.join('.')}`)
     ?? measurements.get(`${parentKey}::${childKey}::${index}`)
     ?? measurements.get(`${parentKey}::${childKey}`)
@@ -436,9 +445,9 @@ export function importBc3(text: string): ImportResult {
    * de partida terug, zodat de aanroeper die kan vergelijken met de prijs op
    * het ~C-record.
    */
-  const addRegels = (post: CostItem, parent: Bc3Concept, postQty: number, depth: number): number => {
-    let unitCost = 0;
-    let labourCost = 0;
+  const addRegels = (post: CostItem, parent: Bc3Concept, postQty: DecimalString, depth: number): Dec => {
+    let unitCost = new Dec(0);
+    let labourCost = new Dec(0);
     for (const ch of parent.children) {
       const c = resolve(ch.key);
       if (!c) {
@@ -453,7 +462,7 @@ export function importBc3(text: string): ImportResult {
         // Percentageregel: het rendement is een percentage over de som van de
         // voorgaande regels, niet een hoeveelheid maal een prijs. Sommige
         // schrijvers noteren 3 in plaats van 0,03.
-        const pct = asFraction(ch.factor * ch.yield_);
+        const pct = asFractionD(dec(ch.rend));
         // Grondslag: de som van de voorgaande regels, of (TCQ) alleen de
         // arbeid daarin. Eenheid '%' is de markering die BC3 zelf gebruikt
         // (UNIDAD = %); zo blijft de regel ook na een export herkenbaar.
@@ -465,19 +474,19 @@ export function importBc3(text: string): ImportResult {
           code: c.code,
           description: summaryOf(c),
           unit: '%',
-          quantity: pct === 0 ? 0 : postQty, // 0 % telt niet mee (zie hieronder)
-          normQuantity: pct,
-          normFactor: 1,
-          normUnitPrice: base,
+          quantity: pct.isZero() ? '0' : postQty, // 0 % telt niet mee (zie hieronder)
+          normQuantity: str(pct),
+          normFactor: '1',
+          normUnitPrice: str(base),
           resourceType: 'overig',
           notes: c.text ?? '',
         });
-        unitCost += base * pct;
+        unitCost = unitCost.plus(base.times(pct));
         continue;
       }
-      const norm = ch.factor * ch.yield_;
-      unitCost += norm * c.price;
-      if (c.type === '1') labourCost += norm * c.price;
+      const norm = dec(ch.rend);
+      unitCost = unitCost.plus(norm.times(dec(c.priceText)));
+      if (c.type === '1') labourCost = labourCost.plus(norm.times(dec(c.priceText)));
       // Rendement 0 betekent in het bestand: dit middel telt niet mee. De
       // calculator leest norm 0 echter als "directe prijs" (aantal × prijs),
       // wat geld zou toevoegen dat er niet is. Aantal 0 houdt de regel
@@ -489,10 +498,10 @@ export function importBc3(text: string): ImportResult {
         code: plainCode(c.code),
         description: summaryOf(c),
         unit: bc3Unit(c.unit),
-        quantity: norm === 0 ? 0 : postQty,
-        normQuantity: norm,
-        normFactor: 1,
-        normUnitPrice: c.price,
+        quantity: norm.isZero() ? '0' : postQty,
+        normQuantity: ch.rend,
+        normFactor: '1',
+        normUnitPrice: c.priceText,
         resourceType: RESOURCE_BY_TYPE[c.type] ?? 'materiaal',
         notes: c.text ?? '',
       });
@@ -518,7 +527,7 @@ export function importBc3(text: string): ImportResult {
       return;
     }
     // Partida (begrotingspost): aantal uit ~M, anders het rendement.
-    const fallbackQty = ch ? ch.factor * ch.yield_ || 1 : 1;
+    const fallbackQty = ch && !dec(ch.rend).isZero() ? ch.rend : '1';
     const qty = measurementFor(path, parentKey, c.key, path[path.length - 1] ?? 1, fallbackQty);
     const post = add({
       rowType: 'begrotingspost',
@@ -528,19 +537,19 @@ export function importBc3(text: string): ImportResult {
       description: summaryOf(c),
       unit: bc3Unit(c.unit),
       quantity: qty,
-      normUnitPrice: c.children.length > 0 ? null : c.price,
+      normUnitPrice: c.children.length > 0 ? null : c.priceText,
       notes: c.text ?? '',
     });
     if (c.children.length === 0) return;
 
     const first = items.length;
-    const unitCost = addRegels(post, c, qty, depth + 1);
+    const unitCost = addRegels(post, c, qty, depth + 1).toNumber(); // number only for the checks below
     // Sommige exporteurs schrijven wel de samenstelling maar laten alle
     // rendementen op 0 staan. Dan is de prijs op het ~C-record de enige
     // bruikbare bron en gaat de lege decompositie eruit.
     if (Math.abs(unitCost) < 0.005 && Math.abs(c.price) >= 0.005) {
       items.length = first;
-      post.normUnitPrice = c.price;
+      post.normUnitPrice = c.priceText;
       warn(
         'zeroYieldDecomposition',
         'Eén of meer partida\'s hebben een samenstelling zonder rendementen — daar is de eenheidsprijs van het ~C-record aangehouden.',
@@ -609,8 +618,8 @@ export function importBc3(text: string): ImportResult {
           code: c.code,
           description: summaryOf(c),
           unit: bc3Unit(c.unit),
-          quantity: 1,
-          normUnitPrice: c.price,
+          quantity: '1',
+          normUnitPrice: c.priceText,
           notes: c.text ?? '',
         });
       }
@@ -630,7 +639,7 @@ export function importBc3(text: string): ImportResult {
   // Een prijsloze import (bv. een "biblioteca de mediciones": posten mét
   // hoeveelheden maar zónder prijzen) levert anders zwijgend € 0 op. Zeg dat
   // erbij, anders lijkt de import mislukt.
-  if (items.length > 0 && items.every((i) => (i.normUnitPrice ?? 0) === 0 && (i.unitPrice ?? 0) === 0)) {
+  if (items.length > 0 && items.every((i) => dec(i.normUnitPrice).isZero() && dec(i.unitPrice).isZero())) {
     warn(
       'noPrices',
       'Dit bestand bevat geen prijzen — alleen omschrijvingen en hoeveelheden '

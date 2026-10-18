@@ -222,9 +222,9 @@ export async function importInschrijfstaatFile(buffer: ArrayBuffer): Promise<{
     client: opdrachtgever,
     author: companyName,
     ifcGuid: crypto.randomUUID(),
-    uitvoeringskosten: 0,
-    algemeneKosten: 0,
-    winstRisico: 0,
+    uitvoeringskosten: '0',
+    algemeneKosten: '0',
+    winstRisico: '0',
   };
 
   const companyInfo: CompanyInfo | undefined = companyName ? {

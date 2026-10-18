@@ -7,6 +7,8 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
+      // The engine's ported OpenCalc calculator (not re-exported by its index).
+      '@ctrlmas/budget-engine/opencalc': path.resolve(__dirname, 'node_modules/@ctrlmas/budget-engine/src/opencalc'),
       '@': path.resolve(__dirname, './src'),
     },
   },

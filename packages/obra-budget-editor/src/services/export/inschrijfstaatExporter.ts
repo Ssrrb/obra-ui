@@ -21,6 +21,7 @@
  */
 
 import type { CostItem, CostSchedule, CompanyInfo } from '@/types/costModel';
+import { sumDec, toNumber } from '@/utils/decimal';
 
 function spaceOutTitle(text: string): string {
   return text.split('').join(' ');
@@ -115,14 +116,14 @@ export function buildInschrijfstaatRows(
       ? spaceOutTitle(item.description.toUpperCase())
       : item.description;
     const qty = (item.rowType === 'begrotingspost' || item.rowType === 'regel')
-      ? (item.quantity ?? 0) : '';
+      ? toNumber(item.quantity) : ''; // xlsx cells hold IEEE doubles
     const unit = (item.rowType === 'begrotingspost' || item.rowType === 'regel')
       ? mapUnitToExport(item.unit || 'st') : '';
     const verr = item.rowType === 'chapter' ? (item.verrekenbaar || '') :
                  (item.rowType === 'begrotingspost' || item.rowType === 'regel')
                   ? 'N' : '';
-    const ehpr = item.unitPrice || 0;
-    const bedr = item.total || 0;
+    const ehpr = toNumber(item.unitPrice);
+    const bedr = toNumber(item.total);
 
     rows.push(['vr', ' ', code, desc, qty, unit, verr, ehpr, bedr, 0]);
 
@@ -150,7 +151,7 @@ export function buildInschrijfstaatRows(
   }
 
   // Total row
-  const grandTotal = topItems.reduce((sum, i) => sum + (i.total || 0), 0);
+  const grandTotal = sumDec(topItems.map((i) => i.total)).toNumber();
   rows.push(['vt', ' ', '', 'Totaal', '', '', '', 0, grandTotal, grandTotal]);
 
   return rows;

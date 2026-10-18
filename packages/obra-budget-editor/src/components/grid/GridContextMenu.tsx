@@ -1,4 +1,6 @@
 import React, { useEffect, useRef, useState, useMemo } from 'react';
+import type { IvaRate } from '@ctrlmas/budget-engine';
+import { CTRL_BUILD } from '@/services/buildFlags';
 import { useTranslation } from 'react-i18next';
 import { useAppStore } from '@/state/appStore';
 import { copyItemsToExcel } from '@/services/clipboard/excelClipboard';
@@ -213,6 +215,32 @@ export const GridContextMenu: React.FC<Props> = ({ x, y, rowIndex, itemId, onClo
   };
   const btwCheck = (v: 'hoog' | 'laag' | null) => ((item.btwTarief ?? null) === v ? '✓ ' : ' ');
 
+  // ctrl schema 2: IVA rate per row (exento / 5 % / 10 %), inherited by
+  // children; null inherits (root default 10 %). Replaces the Dutch btw menu.
+  const handleSetIvaRate = (rate: IvaRate | null) => {
+    pushHistory(items, 'Tasa de IVA');
+    const targets = hasMultipleSelected ? selectedItems : [item];
+    for (const it of targets) {
+      if (['chapter', 'begrotingspost', 'bewakingspost', 'regel'].includes(it.rowType)) {
+        updateItem(it.id, 'ivaRate', rate);
+      }
+    }
+    onClose();
+  };
+  const ivaCheck = (v: IvaRate | null) => ((item.ivaRate ?? null) === v ? '✓ ' : ' ');
+  const vatMenu: { label: string; action: () => void; shortcut?: string; disabled?: boolean }[] = CTRL_BUILD
+    ? [
+      { label: `${ivaCheck(null)}IVA: heredar del nivel superior`, action: () => handleSetIvaRate(null) },
+      { label: `${ivaCheck('10')}IVA 10%`, action: () => handleSetIvaRate('10') },
+      { label: `${ivaCheck('5')}IVA 5%`, action: () => handleSetIvaRate('5') },
+      { label: `${ivaCheck('exento')}Exento de IVA`, action: () => handleSetIvaRate('exento') },
+    ]
+    : [
+      { label: `${btwCheck(null)}${t('grid:contextMenu.vatInherit')}`, action: () => handleSetBtwTarief(null) },
+      { label: `${btwCheck('hoog')}${t('grid:contextMenu.vatHigh')}`, action: () => handleSetBtwTarief('hoog') },
+      { label: `${btwCheck('laag')}${t('grid:contextMenu.vatLow')}`, action: () => handleSetBtwTarief('laag') },
+    ];
+
   // Chapters for "Move to chapter" submenu
   const chapters = useMemo(() =>
     items.filter(i => i.rowType === 'chapter' && i.parentId === null && i.id !== item.parentId),
@@ -227,7 +255,7 @@ export const GridContextMenu: React.FC<Props> = ({ x, y, rowIndex, itemId, onClo
     onClose();
   };
 
-  const menuItems = [
+  const menuItems: { label: string; action?: () => void; shortcut?: string; disabled?: boolean; hasSubmenu?: boolean }[] = [
     { label: t('insertRowAbove'), action: handleInsertAbove },
     { label: t('insertRowBelow'), action: handleInsertBelow },
     { label: '-' },
@@ -255,9 +283,7 @@ export const GridContextMenu: React.FC<Props> = ({ x, y, rowIndex, itemId, onClo
     ] : []),
     ...(canSetBtw ? [
       { label: '-' },
-      { label: `${btwCheck(null)}${t('grid:contextMenu.vatInherit')}`, action: () => handleSetBtwTarief(null) },
-      { label: `${btwCheck('hoog')}${t('grid:contextMenu.vatHigh')}`, action: () => handleSetBtwTarief('hoog') },
-      { label: `${btwCheck('laag')}${t('grid:contextMenu.vatLow')}`, action: () => handleSetBtwTarief('laag') },
+      ...vatMenu,
     ] : []),
   ];
 

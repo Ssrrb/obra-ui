@@ -5,6 +5,9 @@ import { useAppStore } from '@/state/appStore';
 import { itemsForReport } from '@/services/print/printService';
 import { getReportRequestLocale } from '@/i18n/reportI18n';
 import ProgressModal from '@/components/common/ProgressModal';
+import { toNumber } from '@/utils/decimal';
+const num = (v: string | null | undefined): number | null => (v == null ? null : toNumber(v));
+/** The Rust (Tauri) PDF generator takes f64: decimals become numbers at this boundary. */
 
 /** Get Tauri invoke function */
 async function getTauriInvoke(): Promise<((cmd: string, args?: any) => Promise<any>) | null> {
@@ -80,10 +83,10 @@ export const ReportPreview: React.FC = () => {
             author: schedule.author,
             description: schedule.description,
             status: schedule.status,
-            algemeneKosten: schedule.algemeneKosten,
-            winstRisico: schedule.winstRisico,
-            tarieven: schedule.tarieven,
-            staartRows: schedule.staartRows || null,
+            algemeneKosten: num(schedule.algemeneKosten),
+            winstRisico: num(schedule.winstRisico),
+            tarieven: schedule.tarieven ? Object.fromEntries(Object.entries(schedule.tarieven).map(([k, v]) => [k, num(v)])) : undefined,
+            staartRows: schedule.staartRows?.map((r) => Object.fromEntries(Object.entries(r).map(([k, v]) => [k, typeof v === 'string' ? num(v) : v]))) ?? null,
             reportShowChanges: schedule.reportShowChanges ?? false,
             reportShowVerrekenbaar: schedule.reportShowVerrekenbaar ?? null,
             reportAmountsSubtotalsOnly: schedule.reportAmountsSubtotalsOnly ?? false,
@@ -97,23 +100,23 @@ export const ReportPreview: React.FC = () => {
             description: item.description,
             nr: item.nr || null,
             rowType: item.rowType,
-            quantity: item.quantity,
+            quantity: num(item.quantity),
             unit: item.unit,
-            unitPrice: item.unitPrice,
-            total: item.total,
-            normUnitPrice: item.normUnitPrice,
-            laborPrice: item.laborPrice,
+            unitPrice: num(item.unitPrice),
+            total: num(item.total),
+            normUnitPrice: num(item.normUnitPrice),
+            laborPrice: num(item.laborPrice),
             depth: item.depth,
             parentId: item.parentId,
-            staartPercentage: item.staartPercentage,
+            staartPercentage: num(item.staartPercentage),
             staartBasis: item.staartBasis ?? null,
-            staartDoelbedrag: item.staartDoelbedrag ?? null,
+            staartDoelbedrag: num(item.staartDoelbedrag),
             verrekenbaar: item.verrekenbaar,
             resourceType: item.resourceType,
             tariefGroep: item.tariefGroep,
-            normQuantity: item.normQuantity,
-            normFactor: item.normFactor,
-            normDivisor: item.normDivisor,
+            normQuantity: num(item.normQuantity),
+            normFactor: num(item.normFactor),
+            normDivisor: num(item.normDivisor),
             history: item.history ?? null,
           })),
           reportView,

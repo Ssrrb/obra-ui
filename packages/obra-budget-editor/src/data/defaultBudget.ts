@@ -27,8 +27,8 @@ function generateIfcGuid(): string {
  */
 export function createDefaultSchedule(): CostSchedule {
   const staart = createDefaultItems();
-  const pctOf = (rowType: string): number =>
-    staart.find((i) => i.rowType === rowType)?.staartPercentage ?? 0;
+  const pctOf = (rowType: string): string =>
+    staart.find((i) => i.rowType === rowType)?.staartPercentage ?? '0';
   return {
     id: crypto.randomUUID(),
     name: i18next.t('newBudget', { defaultValue: 'New budget' }),
@@ -50,7 +50,7 @@ export function createDefaultSchedule(): CostSchedule {
 
 /** Default items with staartkosten for a new budget */
 export function createDefaultItems(): CostItem[] {
-  const makeItem = (rowType: string, description: string, pct: number | null, sortOrder: number): CostItem => ({
+  const makeItem = (rowType: string, description: string, pct: string | null, sortOrder: number): CostItem => ({
     id: crypto.randomUUID(),
     parentId: null,
     sortOrder,
@@ -60,8 +60,8 @@ export function createDefaultItems(): CostItem[] {
     quantity: pct,
     materialPrice: null,
     laborPrice: null,
-    unitPrice: 0,
-    total: 0,
+    unitPrice: '0',
+    total: '0',
     isCollapsed: false,
     depth: 0,
     notes: '',
@@ -80,15 +80,15 @@ export function createDefaultItems(): CostItem[] {
   });
 
   return [
-    makeItem('staart_ak_oa', 'Algemene kosten over onderaanneming:', 9, 9000),
-    makeItem('staart_abk', 'Algemene bedrijfskosten:', 6, 9001),
-    makeItem('staart_garanties', 'Garanties:', 2, 9002),
-    makeItem('staart_wvpm', 'Werkvoorbereiding & projectmanagement', 2, 9003),
-    makeItem('staart_risico', 'Risico:', 3, 9004),
-    makeItem('staart_winst', 'Winst:', 5, 9005),
-    makeItem('staart_verzekering', 'Verzekering:', 0.5, 9006),
-    makeItem('staart_btw_laag', 'Btw laag:', 9, 9007),
-    makeItem('staart_btw', 'Btw hoog:', 21, 9008),
+    makeItem('staart_ak_oa', 'Algemene kosten over onderaanneming:', '9', 9000),
+    makeItem('staart_abk', 'Algemene bedrijfskosten:', '6', 9001),
+    makeItem('staart_garanties', 'Garanties:', '2', 9002),
+    makeItem('staart_wvpm', 'Werkvoorbereiding & projectmanagement', '2', 9003),
+    makeItem('staart_risico', 'Risico:', '3', 9004),
+    makeItem('staart_winst', 'Winst:', '5', 9005),
+    makeItem('staart_verzekering', 'Verzekering:', '0.5', 9006),
+    makeItem('staart_btw_laag', 'Btw laag:', '9', 9007),
+    makeItem('staart_btw', 'Btw hoog:', '21', 9008),
     makeItem('staart_afronding', 'Afronding', null, 9009),
   ];
 }

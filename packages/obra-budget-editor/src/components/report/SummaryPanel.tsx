@@ -3,7 +3,10 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppStore } from '@/state/appStore';
 import { getKostprijs, getStaartBreakdown, getGrandTotal } from '@/services/calculation/calculator';
-import { formatCurrency } from '@/utils/formatting';
+import { formatCurrency, formatDecimal } from '@/utils/formatting';
+import { dec } from '@/utils/decimal';
+import { CTRL_BUILD } from '@/services/buildFlags';
+import { BudgetTotalsPanel } from './BudgetTotalsPanel';
 
 export const SummaryPanel: React.FC = () => {
   const { t } = useTranslation();
@@ -49,13 +52,15 @@ export const SummaryPanel: React.FC = () => {
           </div>
         </div>
 
-        {hasStaart && (
+        {CTRL_BUILD && <BudgetTotalsPanel />}
+
+        {!CTRL_BUILD && hasStaart && (
           <div className="summary-section">
             <h3 className="summary-section-title">{t('surcharges')}</h3>
-            {breakdown.ukkPercentage > 0 && (
+            {dec(breakdown.ukkPercentage).gt(0) && (
               <>
                 <div className="summary-row">
-                  <span>UKK ({breakdown.ukkPercentage}%)</span>
+                  <span>UKK ({formatDecimal(breakdown.ukkPercentage)}%)</span>
                   <span>{formatCurrency(breakdown.ukkAmount)}</span>
                 </div>
                 <div className="summary-row summary-row-subtotal">
@@ -64,10 +69,10 @@ export const SummaryPanel: React.FC = () => {
                 </div>
               </>
             )}
-            {breakdown.akPercentage > 0 && (
+            {dec(breakdown.akPercentage).gt(0) && (
               <>
                 <div className="summary-row">
-                  <span>AK ({breakdown.akPercentage}%)</span>
+                  <span>AK ({formatDecimal(breakdown.akPercentage)}%)</span>
                   <span>{formatCurrency(breakdown.akAmount)}</span>
                 </div>
                 <div className="summary-row summary-row-subtotal">
@@ -76,13 +81,13 @@ export const SummaryPanel: React.FC = () => {
                 </div>
               </>
             )}
-            {breakdown.wrPercentage > 0 && (
+            {dec(breakdown.wrPercentage).gt(0) && (
               <div className="summary-row">
-                <span>W&amp;R ({breakdown.wrPercentage}%)</span>
+                <span>W&amp;R ({formatDecimal(breakdown.wrPercentage)}%)</span>
                 <span>{formatCurrency(breakdown.wrAmount)}</span>
               </div>
             )}
-            {breakdown.afronding !== 0 && (
+            {!dec(breakdown.afronding).isZero() && (
               <div className="summary-row">
                 <span>{t('rounding')}</span>
                 <span>{formatCurrency(breakdown.afronding)}</span>
@@ -90,12 +95,12 @@ export const SummaryPanel: React.FC = () => {
             )}
             <div className="summary-row summary-row-total summary-row-grand">
               <span>{t('contractSumExclVat')}</span>
-              <span>{formatCurrency(breakdown.aanneemsomAfgerond || breakdown.aanneemsom)}</span>
+              <span>{formatCurrency(dec(breakdown.aanneemsomAfgerond).isZero() ? breakdown.aanneemsom : breakdown.aanneemsomAfgerond)}</span>
             </div>
           </div>
         )}
 
-        {!hasStaart && (
+        {!CTRL_BUILD && !hasStaart && (
           <div className="summary-section">
             <div className="summary-row summary-row-total summary-row-grand">
               <span>{t('totalExclVat')}</span>

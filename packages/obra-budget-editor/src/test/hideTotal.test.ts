@@ -23,7 +23,7 @@ function postMetEnkelKind() {
 describe('Totaal-kolom verbergen op containerrijen', () => {
   it('uitgeklapt: verbergen, want het kind toont hetzelfde bedrag eronder', () => {
     const { post } = postMetEnkelKind();
-    expect(s().items.find(i => i.id === post)!.total).toBe(200);
+    expect(s().items.find(i => i.id === post)!.total).toBe('200');
     expect(computeHideTotalSet(s().items).has(post)).toBe(true);
   });
 

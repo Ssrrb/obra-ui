@@ -1,7 +1,10 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useAppStore } from "../../state/appStore";
-import { formatCurrency, formatNumber } from "../../utils/formatting";
+import { formatCurrency, formatNumber, type DecimalLike } from "../../utils/formatting";
+import { Dec } from "../../utils/decimal";
+import { CTRL_BUILD } from "../../services/buildFlags";
+import { budgetTotals } from "../../services/totals/budgetTotals";
 import { getGrandTotal } from "../../services/calculation/calculator";
 import { getColumnsForView } from "../grid/gridConstants";
 import { summarizeCellSelection, needsResourceTotals } from "../../services/grid/cellValue";
@@ -135,7 +138,7 @@ function SelectionSummary() {
   }, [items, gridView, branchesEnabled, cellSelectionStart, cellSelectionEnd, getGridRows]);
 
   if (!summary) return null;
-  const fmt = (n: number) => (summary.currency ? formatCurrency(n) : formatNumber(n));
+  const fmt = (n: DecimalLike) => (summary.currency ? formatCurrency(n) : formatNumber(n));
 
   return (
     <>
@@ -151,7 +154,7 @@ function SelectionSummary() {
       <div className="status-separator" />
       <div className="status-item status-selection">
         <span className="status-item-label">{t('statusBar.avg')}</span>
-        <span className="status-item-value">{fmt(summary.sum / summary.count)}</span>
+        <span className="status-item-value">{fmt(new Dec(summary.sum).div(summary.count))}</span>
       </div>
       <div className="status-separator" />
     </>
@@ -183,7 +186,7 @@ function UiZoomControl() {
 export default function StatusBar() {
   const { t } = useTranslation();
   const { items, activeRow, activeCol, schedule, setActiveBranch } = useAppStore();
-  const grandTotal = getGrandTotal(items);
+  const grandTotal = CTRL_BUILD ? budgetTotals(schedule, items).contractTotal : getGrandTotal(items);
   const branchesEnabled = schedule.branchesEnabled ?? false;
   const branches = schedule.branches ?? [];
   const activeBranchId = schedule.activeBranchId;

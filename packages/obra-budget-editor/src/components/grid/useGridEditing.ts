@@ -2,11 +2,11 @@ import { useCallback } from 'react';
 import i18next from 'i18next';
 import { useAppStore } from '@/state/appStore';
 import { getColumnsForView } from './gridConstants';
-import { parseNumericInput } from '@/utils/numericInput';
+import { parseDecimalInput } from '@/utils/numericInput';
 import type { CostItem, CostUnit } from '@/types/costModel';
 
 export function useGridEditing() {
-  const { updateItem, pushHistory, items, gridView, prorateUrenForChapter, schedule } = useAppStore();
+  const { updateItem, pushHistory, items, gridView, prorateUrenForChapter, schedule, setInputError } = useAppStore();
 
   // Mét branchesEnabled: anders schuiven alle kolomindices één op zodra de
   // branch-kolom zichtbaar is en schrijft een commit naar het verkeerde veld.
@@ -20,8 +20,11 @@ export function useGridEditing() {
       // WPCalc: de uren-som op de hoofdstuk-FOOTERRIJ bewerken herrekent alle
       // regel-normen in dat hoofdstuk naar rato.
       if (item.id.startsWith('footer:') && col.key === 'hoeveelheid') {
-        const newTotal = parseNumericInput(value);
-        if (newTotal != null && !isNaN(newTotal)) {
+        const parsed = parseDecimalInput(value);
+        if (!parsed.ok) { setInputError(parsed.message); return; }
+        setInputError(null);
+        const newTotal = parsed.value;
+        if (newTotal != null) {
           pushHistory(items, i18next.t('grid:undo.chapterHoursProrate'));
           prorateUrenForChapter(item.id.replace('footer:', ''), newTotal);
         }
@@ -33,12 +36,22 @@ export function useGridEditing() {
       // Afronding-staartregel: het ingevulde bedrag wordt een vaste
       // sluitpost; leegmaken schakelt terug naar automatisch afronden.
       if (item.rowType === 'staart_afronding' && col.key === 'total') {
-        const parsed = parseNumericInput(value);
-        if (parsed === null && value.trim() !== '') return;
+        const parsed = parseDecimalInput(value);
+        if (!parsed.ok) { setInputError(parsed.message); return; }
+        setInputError(null);
         pushHistory(items, i18next.t('grid:undo.fillRounding'));
         updateItem(item.id, 'staartDoelbedrag', null);
-        updateItem(item.id, 'staartVastBedrag', parsed);
+        updateItem(item.id, 'staartVastBedrag', parsed.value);
         return;
+      }
+
+      // Number cells: parse first, so rejected input neither edits nor adds an undo entry.
+      let parsedNumber: string | null = null;
+      if (col.type === 'number' || col.type === 'currency') {
+        const parsed = parseDecimalInput(value);
+        if (!parsed.ok) { setInputError(parsed.message); return; }
+        setInputError(null);
+        parsedNumber = parsed.value;
       }
 
       pushHistory(items, i18next.t('grid:undo.editCell', { column: col.key }));
@@ -61,16 +74,10 @@ export function useGridEditing() {
           break;
         case 'number':
         case 'currency': {
-          // Accepteert ook formules: "=12,2*2,22" of "12.2*2.2"
-          const ruw = parseNumericInput(value);
-          // Ongeldige (niet-lege) invoer wist de waarde niet
-          if (ruw === null && value.trim() !== '') break;
-          // Bedragen krijgen hoogstens twee decimalen — ook als er een
-          // formule is ingevuld die meer oplevert (=10/3). Aantallen en
-          // normen houden hun precisie; daar is meer nauwkeurigheid zinvol.
-          const parsed = (col.type === 'currency' && ruw !== null)
-            ? Math.round(ruw * 100) / 100
-            : ruw;
+          // Formulas accepted ("=12,2*2,22", "12.2*2.2"). Schema 2: the
+          // typed value is stored exactly (no silent rounding to cents); the
+          // engine quantizes line amounts to two decimals.
+          const parsed = parsedNumber;
           // Post-prijs: de Prijs-kolom is dé eigen prijs van een
           // (bewakings)post. Een geïmporteerd materiaal-/loonbedrag wissen
           // we mee, anders telt de oude prijs dubbel op bij de nieuwe.
@@ -93,7 +100,7 @@ export function useGridEditing() {
           break;
       }
     },
-    [columns, updateItem, pushHistory, items, gridView, prorateUrenForChapter]
+    [columns, updateItem, pushHistory, items, gridView, prorateUrenForChapter, setInputError]
   );
 
   return { commitEdit };

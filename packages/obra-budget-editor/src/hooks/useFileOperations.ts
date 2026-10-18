@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppStore } from '@/state/appStore';
-import { serializeProject, deserializeProject } from '@/services/file/fileService';
+import { serializeProjectForFile, deserializeProject } from "@/services/file/fileService";
 import {
   isTauriEnvironment,
   openFileNative,
@@ -103,7 +103,7 @@ export function useFileOperations() {
     if (!doc) return;
 
     const scheduleWithProjectInfo = { ...state.schedule, projectInfo: state.projectInfo };
-    const json = serializeProject(scheduleWithProjectInfo, state.items, state.companyInfo, state.subSheets, state.offerte);
+    const json = serializeProjectForFile(scheduleWithProjectInfo, state.items, state.companyInfo, state.subSheets, state.offerte);
 
     if (doc.filePath && isNativeSavePath(doc.filePath) && isTauriEnvironment()) {
       try {
@@ -147,7 +147,7 @@ export function useFileOperations() {
     if (!doc) return;
 
     const scheduleWithProjectInfo = { ...state.schedule, projectInfo: state.projectInfo };
-    const json = serializeProject(scheduleWithProjectInfo, state.items, state.companyInfo, state.subSheets, state.offerte);
+    const json = serializeProjectForFile(scheduleWithProjectInfo, state.items, state.companyInfo, state.subSheets, state.offerte);
     // Prefer the active tab's folder + filename, but always with .ifcCalc als
     // standaardformaat — ook als het document uit een import (.xls/.xtb/…)
     // komt. Opslaan-als schrijft immers altijd het native OCS-formaat.

@@ -2,6 +2,8 @@ import type { CostItem, CostSchedule, OfferteDocument, OfferteSectionItem } from
 import { createDefaultProjectProperties } from '@/types/costModel';
 import { getGrandTotal } from '@/services/calculation/calculator';
 import { encodeStepString, formatStepFloat, generateIfcGuid, isoTimestamp } from './ifcHelpers';
+import type { DecimalString } from '@ctrlmas/budget-engine';
+import { dec, isZeroDec } from '@/utils/decimal';
 
 interface StepLine {
   id: number;
@@ -103,8 +105,8 @@ export function generateIfcCostFile(schedule: CostSchedule, items: CostItem[], o
         metricPropIds.push(pvId);
 
         // Calculated price/unit
-        if (prop.value > 0 && grandTotal > 0) {
-          const pricePerUnit = grandTotal / prop.value;
+        if (prop.value > 0 && dec(grandTotal).gt(0)) {
+          const pricePerUnit = dec(grandTotal).div(String(prop.value));
           const pricePropName = `PricePer_${encodeStepString(prop.name.replace(/\s+/g, ''))}`;
           const ppId = getId();
           lines.push({
@@ -249,8 +251,8 @@ export function generateIfcCostFile(schedule: CostSchedule, items: CostItem[], o
     });
 
     if (item.rowType !== 'chapter') {
-      const hasMaterial = item.materialPrice !== null && item.materialPrice !== 0;
-      const hasLabor = item.laborPrice !== null && item.laborPrice !== 0;
+      const hasMaterial = item.materialPrice !== null && !isZeroDec(item.materialPrice);
+      const hasLabor = item.laborPrice !== null && !isZeroDec(item.laborPrice);
 
       if (hasMaterial && hasLabor) {
         // IfcCostValue with ArithmeticOperator ADD and Components for both material+labor
@@ -266,7 +268,7 @@ export function generateIfcCostFile(schedule: CostSchedule, items: CostItem[], o
           entity: `IFCCOSTVALUE($,$,$,'LABOR',$,IFCMONETARYMEASURE(${formatStepFloat(item.laborPrice!)}),$,$)`,
         });
 
-        const totalUnitPrice = (item.materialPrice ?? 0) + (item.laborPrice ?? 0);
+        const totalUnitPrice = dec(item.materialPrice).plus(dec(item.laborPrice));
         const cvTotalId = getId();
         lines.push({
           id: cvTotalId,
@@ -291,7 +293,7 @@ export function generateIfcCostFile(schedule: CostSchedule, items: CostItem[], o
       }
 
       // Quantity
-      if (item.quantity !== null && item.quantity !== 0) {
+      if (item.quantity !== null && !isZeroDec(item.quantity)) {
         const qtyId = getId();
         const qtyEntity = getQuantityEntity(item.unit, item.quantity, item.description);
         lines.push({ id: qtyId, entity: qtyEntity });
@@ -465,7 +467,7 @@ export function generateIfcCostFile(schedule: CostSchedule, items: CostItem[], o
   return `${header}\n${dataLines}\nENDSEC;\nEND-ISO-10303-21;`;
 }
 
-function getQuantityEntity(unit: string, quantity: number, name: string): string {
+function getQuantityEntity(unit: string, quantity: DecimalString, name: string): string {
   const desc = encodeStepString(name);
   const val = formatStepFloat(quantity);
   switch (unit) {

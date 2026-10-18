@@ -1,4 +1,5 @@
 import * as XLSX from 'xlsx';
+import { fromNumber } from '@/utils/decimal';
 import type { CostItem, CostSchedule, RowType, CompanyInfo, ResourceType } from '@/types/costModel';
 import { makeCostItem, normalizeUnit, genId, genIfcGuid } from './core';
 
@@ -399,9 +400,9 @@ export function importBasCalcFile(arrayBuffer: ArrayBuffer): { schedule: CostSch
     client: client || '',
     author: author || '',
     ifcGuid: genIfcGuid(),
-    uitvoeringskosten,
-    algemeneKosten,
-    winstRisico,
+    uitvoeringskosten: fromNumber(uitvoeringskosten) ?? '0',
+    algemeneKosten: fromNumber(algemeneKosten) ?? '0',
+    winstRisico: fromNumber(winstRisico) ?? '0',
   };
 
   return { schedule, items, companyInfo };

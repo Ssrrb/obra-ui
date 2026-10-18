@@ -38,9 +38,9 @@ describe('Generieke Excel/CSV-import', () => {
 
     const post = result.items.find((i) => i.code === '01.01');
     expect(post?.rowType).toBe('begrotingspost');
-    expect(post?.quantity).toBe(100);
-    expect(post?.unitPrice).toBe(12.5); // "12,50" NL-decimaal
-    expect(post?.total).toBe(1250);
+    expect(post?.quantity).toBe('100');
+    expect(post?.unitPrice).toBe('12.5'); // "12,50" NL-decimaal
+    expect(post?.total).toBe('1250');
     expect(post?.parentId).toBe(chapter?.id);
   });
 
@@ -51,10 +51,10 @@ describe('Generieke Excel/CSV-import', () => {
     );
     const result = buildFromMapping(data, autoDetectMapping(data.headers));
     const post = result.items[0];
-    expect(post.materialPrice).toBe(20);
-    expect(post.laborPrice).toBe(30);
-    expect(post.unitPrice).toBe(50);
-    expect(post.total).toBe(500);
+    expect(post.materialPrice).toBe('20');
+    expect(post.laborPrice).toBe('30');
+    expect(post.unitPrice).toBe('50');
+    expect(post.total).toBe('500');
   });
 
   it('bedragen overleven de herberekening (kale begrotingspost)', () => {
@@ -64,8 +64,8 @@ describe('Generieke Excel/CSV-import', () => {
     const data = parseCsv(['Omschrijving;Hoeveelheid;Eenheidsprijs', 'Ontgraven;100;12,50'].join('\n'), 'x');
     const recalced = recalculateItems(buildFromMapping(data, autoDetectMapping(data.headers)).items);
     const post = recalced.find((i) => i.rowType === 'begrotingspost');
-    expect(post?.unitPrice).toBe(12.5);
-    expect(post?.total).toBe(1250);
+    expect(post?.unitPrice).toBe('12.5');
+    expect(post?.total).toBe('1250');
   });
 });
 
@@ -89,7 +89,7 @@ describe('BMEcat/DICO prijsdata-import', () => {
     const a = r.resources.find((x) => x.code === 'ART-1');
     expect(a?.description).toBe('Buis PVC 110mm');
     expect(a?.unit).toBe('m');
-    expect(a?.defaultUnitPrice).toBe(4.75);
+    expect(a?.defaultUnitPrice).toBe('4.75');
     expect(a?.resourceType).toBe('materiaal');
     const b = r.resources.find((x) => x.code === 'ART-2');
     expect(b?.unit).toBe('st'); // "stuk" → st

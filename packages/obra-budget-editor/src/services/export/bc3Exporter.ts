@@ -21,6 +21,8 @@
  */
 import type { CostItem, CostSchedule } from '@/types/costModel';
 import { encodeWindows1252, fitsWindows1252 } from '@/services/importers/windows1252';
+import type { DecimalString } from '@ctrlmas/budget-engine';
+import { Dec, dec, sumDec } from '@/utils/decimal';
 
 /**
  * Getal als BC3-tekst: punt als decimaalteken, geen exponentnotatie, geen
@@ -32,15 +34,11 @@ import { encodeWindows1252, fitsWindows1252 } from '@/services/importers/windows
  * pesetabedragen in de miljoenen de rijtotalen met meer dan 0,01 — maar op
  * 15 significante cijfers, zodat de ruis van de 16e/17e digit wegvalt.
  */
-const num = (n: number | null | undefined): string => {
-  const v = n ?? 0;
-  if (!Number.isFinite(v) || v === 0) return '0';
-  const six = Math.round(v * 1e6) / 1e6;
-  const clean = Math.abs(six - v) <= 1e-9 * Math.abs(v) ? six : Number(v.toPrecision(15));
-  const s = String(clean);
-  if (!/e/i.test(s)) return s === '-0' ? '0' : s;
-  const fixed = clean.toFixed(20).replace(/\.?0+$/, '');
-  return fixed === '' || fixed === '-0' ? '0' : fixed;
+const num = (n: Dec | DecimalString | null | undefined): string => {
+  // Schema 2: the stored decimal text as is (no float noise to clean up);
+  // computed values (derived yields, per-unit prices) capped at 12 decimals.
+  const v = n instanceof Dec ? n : dec(n);
+  return v.isZero() ? '0' : v.toDecimalPlaces(12).toFixed();
 };
 
 /** Veldtekst veiligmaken: |, ~ en \ zijn structuurtekens in BC3. */
@@ -61,7 +59,7 @@ const TYPE_BY_RESOURCE: Record<string, string> = {
 };
 
 /** Afgeronde prijs zoals hij in het bestand komt — de basis voor gelijkheid. */
-const money = (n: number): number => Math.round(n * 1e6) / 1e6;
+const money = (n: Dec | DecimalString): Dec => (n instanceof Dec ? n : dec(n)).toDecimalPlaces(6);
 
 /** Scheidingsteken in handtekeningen van concepten (komt in geen veld voor). */
 const SEP = String.fromCharCode(1);
@@ -104,7 +102,7 @@ export function buildBc3(schedule: CostSchedule, items: CostItem[], charset: Bc3
     return code;
   };
 
-  const conceptLine = (code: string, unit: string, summary: string, price: number, type: string): string =>
+  const conceptLine = (code: string, unit: string, summary: string, price: Dec | DecimalString, type: string): string =>
     `~C|${code}|${esc(unit)}|${esc(summary)}|${num(price)}||${type}|`;
   const textRecord = (code: string, text: string | null | undefined): void => {
     const t = escText(text);
@@ -136,15 +134,15 @@ export function buildBc3(schedule: CostSchedule, items: CostItem[], charset: Bc3
   const withParts = new Set<string>();
   const fromRegel = new Set<string>();   // concepten aangemaakt door een rekenregel
   const fromPost = new Set<string>();    // concepten (ook) gebruikt door een kale post
-  const catalog = new Map<string, number>(); // ~C-prijs als die van een middel komt
+  const catalog = new Map<string, Dec>(); // ~C-prijs als die van een middel komt
   const byBase = new Map<string, string[]>(); // kop zonder prijs → codes
-  const concept = (it: CostItem, unit: string, price: number, type: string, parts: string[]): string => {
+  const concept = (it: CostItem, unit: string, price: Dec, type: string, parts: string[]): string => {
     const isRegel = it.rowType === 'regel';
     const base = [it.code, unit, esc(it.description), escText(it.notes)].join(SEP);
     const head = [base, num(price)].join(SEP);
     const sig = parts.length > 0 ? [head, ...parts].join(SEP) : head;
     let known = bySignature.get(sig);
-    if (known && parts.length === 0 && !isRegel && catalog.has(known) && catalog.get(known) !== price) {
+    if (known && parts.length === 0 && !isRegel && catalog.has(known) && !catalog.get(known)!.eq(price)) {
       known = undefined; // kale post: eigen prijs moet de ~C-prijs blijven
     }
     if (!known) {
@@ -159,7 +157,7 @@ export function buildBc3(schedule: CostSchedule, items: CostItem[], charset: Bc3
         if (candidate) {
           dRecords.push(`~D|${candidate}|${parts.join('\\')}\\|`);
           withParts.add(candidate);
-          if (candidate !== byHead) catalog.set(candidate, Number(cLines[lineOf.get(candidate)!].split('|')[4]));
+          if (candidate !== byHead) catalog.set(candidate, new Dec(cLines[lineOf.get(candidate)!].split('|')[4]));
           bySignature.set(sig, candidate);
           known = candidate;
         }
@@ -205,11 +203,11 @@ export function buildBc3(schedule: CostSchedule, items: CostItem[], charset: Bc3
    * Prijs per eenheid van het middel, zoals de calculator hem rekent:
    * norm-model → prijs/middel; direct-model (loon of geen norm) → prijs + loon.
    */
-  const regelPrice = (k: CostItem): number => {
-    const nup = k.normUnitPrice ?? 0;
-    const lab = k.laborPrice ?? 0;
-    const norm = k.normQuantity ?? 0;
-    return money(lab > 0 || norm === 0 ? nup + lab : nup);
+  const regelPrice = (k: CostItem): Dec => {
+    const nup = dec(k.normUnitPrice);
+    const lab = dec(k.laborPrice);
+    const norm = dec(k.normQuantity);
+    return money(lab.gt(0) || norm.isZero() ? nup.plus(lab) : nup);
   };
 
   /**
@@ -219,14 +217,16 @@ export function buildBc3(schedule: CostSchedule, items: CostItem[], charset: Bc3
    * direct-model van de calculator en een afwijkend aantal op de regel ook
    * goed in het bestand komen.
    */
-  const regelYield = (k: CostItem, postQty: number, price: number): number => {
-    const norm = k.normQuantity ?? 0;
-    const lab = k.laborPrice ?? 0;
-    const own = lab > 0 || norm === 0 ? 1 : norm / (k.normFactor || 1);
-    if (postQty === 0) return own;
-    const expected = own * price * postQty;
-    if (Math.abs(expected - k.total) <= 1e-9 * Math.max(1, Math.abs(k.total))) return own;
-    return price !== 0 ? (k.total / postQty) / price : 0;
+  const regelYield = (k: CostItem, postQty: Dec, price: Dec): Dec => {
+    const norm = dec(k.normQuantity);
+    const lab = dec(k.laborPrice);
+    const cap = dec(k.normFactor).isZero() ? new Dec(1) : dec(k.normFactor);
+    const own = lab.gt(0) || norm.isZero() ? new Dec(1) : norm.div(cap);
+    if (postQty.isZero()) return own;
+    const total = dec(k.total);
+    // The line amount is quantized to cents: own reproduces it within half a cent.
+    if (own.times(price).times(postQty).minus(total).abs().lte('0.005')) return own;
+    return !price.isZero() ? total.div(postQty).div(price) : new Dec(0);
   };
 
   /**
@@ -237,10 +237,10 @@ export function buildBc3(schedule: CostSchedule, items: CostItem[], charset: Bc3
    * eenheid heeft rekent norm × prijs en blijft een gewone regel. Geeft de
    * grondslag terug, of null.
    */
-  const percentageBase = (k: CostItem, running: number, labour: number): number | null => {
-    if (k.unit !== '%' || (k.laborPrice ?? 0) !== 0) return null;
-    const nup = k.normUnitPrice ?? 0;
-    const near = (b: number): boolean => Math.abs(nup - b) <= 0.005 * Math.max(1, Math.abs(b));
+  const percentageBase = (k: CostItem, running: Dec, labour: Dec): Dec | null => {
+    if (k.unit !== '%' || !dec(k.laborPrice).isZero()) return null;
+    const nup = dec(k.normUnitPrice);
+    const near = (b: Dec): boolean => nup.minus(b).abs().lte(Dec.max(1, b.abs()).times('0.005'));
     if (near(running)) return running;
     if (near(labour)) return labour;
     return null;
@@ -248,38 +248,38 @@ export function buildBc3(schedule: CostSchedule, items: CostItem[], charset: Bc3
 
   // ── Samengestelde concepten (posten, geneste bewakingsposten) ────────────
 
-  interface Composition { parts: string[]; unitCost: number; }
+  interface Composition { parts: string[]; unitCost: Dec; }
 
   /**
    * Decompositie van een post: rekenregels en geneste bewakingsposten, elk
    * met rendement per eenheid van de post. Een geneste bewakingspost wordt
    * een hulpconcept (prijs per eenheid van de ouder, rendement 1).
    */
-  const compose = (post: CostItem, postQty: number): Composition => {
+  const compose = (post: CostItem, postQty: Dec): Composition => {
     const parts: string[] = [];
-    let unitCost = 0;
-    let labour = 0;
+    let unitCost = new Dec(0);
+    let labour = new Dec(0);
     for (const k of byParent.get(post.id) ?? []) {
       if (k.rowType === 'regel') {
         const base = percentageBase(k, unitCost, labour);
         if (base != null) {
           // Percentage-concept: prijs 0 in ~C (de grondslag is per partida
           // anders en hoort niet bij het concept), de fractie in ~D.
-          const pct = k.normQuantity ?? 0;
-          parts.push(`${concept(k, '%', 0, '0', [])}\\1\\${num(pct)}`);
-          unitCost += base * pct;
+          const pct = dec(k.normQuantity);
+          parts.push(`${concept(k, '%', new Dec(0), '0', [])}\\1\\${num(pct)}`);
+          unitCost = unitCost.plus(base.times(pct));
           continue;
         }
         const price = regelPrice(k);
         const rend = regelYield(k, postQty, price);
         parts.push(`${concept(k, k.unit, price, TYPE_BY_RESOURCE[k.resourceType ?? ''] ?? '0', [])}\\1\\${num(rend)}`);
-        unitCost += rend * price;
-        if (k.resourceType === 'arbeid') labour += rend * price;
+        unitCost = unitCost.plus(rend.times(price));
+        if (k.resourceType === 'arbeid') labour = labour.plus(rend.times(price));
       } else if (k.rowType === 'bewakingspost' || k.rowType === 'begrotingspost') {
-        const perUnit = postQty !== 0 ? k.total / postQty : k.total;
-        const { parts: sub } = compose(k, postQty !== 0 ? postQty : 1);
+        const perUnit = !postQty.isZero() ? dec(k.total).div(postQty) : dec(k.total);
+        const { parts: sub } = compose(k, !postQty.isZero() ? postQty : new Dec(1));
         parts.push(`${concept(k, k.unit, money(perUnit), '0', sub)}\\1\\1`);
-        unitCost += perUnit;
+        unitCost = unitCost.plus(perUnit);
       }
     }
     return { parts, unitCost: money(unitCost) };
@@ -287,7 +287,7 @@ export function buildBc3(schedule: CostSchedule, items: CostItem[], charset: Bc3
 
   /** Partida: concept (gedeeld bij gelijke inhoud) plus een eigen ~M per voorkomen. */
   const writePost = (it: CostItem, parentCode: string, path: number[]): string => {
-    const qty = it.quantity ?? 0;
+    const qty = dec(it.quantity);
     const { parts, unitCost } = compose(it, qty);
     const price = parts.length > 0 ? unitCost : money(it.unitPrice);
     const code = concept(it, it.unit, price, '0', parts);
@@ -342,7 +342,7 @@ export function buildBc3(schedule: CostSchedule, items: CostItem[], charset: Bc3
   const rootCode = 'OCS##';
   used.add('OCS');
   const top = structural(null);
-  const rootTotal = top.reduce((s, i) => s + i.total, 0);
+  const rootTotal = sumDec(top.map((i) => i.total));
   cLines.push(conceptLine(rootCode, '', projectName, rootTotal, '0'));
   textRecord(rootCode, schedule.description);
   writeBranch(rootCode, top, []);

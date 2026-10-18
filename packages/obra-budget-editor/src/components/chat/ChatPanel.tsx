@@ -187,7 +187,7 @@ Staartkosten: ${staartItems.map(s => `${s.description} ${s.staartPercentage ?? '
     setInput('');
 
     try {
-      const raw = await computeAnswer(text, historyText, chatHistory, contextBlock, chapters, bvo);
+      const raw = await computeAnswer(text, historyText, chatHistory, contextBlock, chapters.map((c) => ({ ...c, total: Number(c.total) })), bvo) // chat (off in ctrl): rounded text summary only;
       const { acties, cleanText } = parseActies(raw);
       let resultaten: string[] = [];
       if (acties.length) {

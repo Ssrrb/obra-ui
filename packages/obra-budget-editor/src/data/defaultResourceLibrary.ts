@@ -1,4 +1,5 @@
 import type { ResourceLibraryItem, ResourceType } from '@/types/costModel';
+import { fromNumber } from '@/utils/decimal';
 
 let _id = 0;
 function rid(): string {
@@ -9,7 +10,7 @@ function res(
   code: string, desc: string, unit: ResourceLibraryItem['unit'],
   resourceType: ResourceType, price: number | null, category: string,
 ): ResourceLibraryItem {
-  return { id: rid(), code, description: desc, unit, resourceType, defaultUnitPrice: price, category };
+  return { id: rid(), code, description: desc, unit, resourceType, defaultUnitPrice: price == null ? null : fromNumber(price), category };
 }
 
 export function createDefaultResourceLibrary(): ResourceLibraryItem[] {

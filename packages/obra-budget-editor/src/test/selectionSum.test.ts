@@ -35,9 +35,9 @@ describe('som van een celselectie (statusbalk)', () => {
 
     const sum = summarizeCellSelection(rows, columns, { row: r1, col: c }, { row: r3, col: c });
     expect(sum.count).toBe(3);
-    expect(sum.sum).toBe(600);
-    expect(sum.min).toBe(100);
-    expect(sum.max).toBe(300);
+    expect(sum.sum).toBe('600');
+    expect(sum.min).toBe('100');
+    expect(sum.max).toBe('300');
     expect(sum.currency).toBe(true);
   });
 
@@ -49,7 +49,7 @@ describe('som van een celselectie (statusbalk)', () => {
     // Selecteer het hele blok inclusief hoofdstukrij én footerrij
     const sum = summarizeCellSelection(rows, columns, { row: 0, col: c }, { row: rows.length - 1, col: c });
     // hoofdstuk (600) + 3 posten (600) = 1200; de footer telt NIET mee
-    expect(sum.sum).toBe(1200);
+    expect(sum.sum).toBe('1200');
     expect(rows.some((r) => r.id === `footer:${ch}`)).toBe(true);
     expect(posten).toHaveLength(3);
   });
@@ -63,7 +63,7 @@ describe('som van een celselectie (statusbalk)', () => {
     const c = colIdx('description');
     const sum = summarizeCellSelection(rows, columns, { row: 0, col: c }, { row: rows.length - 1, col: c });
     expect(sum.count).toBe(0);
-    expect(sum.sum).toBe(0);
+    expect(sum.sum).toBe('0');
   });
 
   it('een gemengde selectie (aantal + bedrag) wordt niet als valuta opgemaakt', () => {
@@ -78,7 +78,7 @@ describe('som van een celselectie (statusbalk)', () => {
       { row: r3, col: colIdx('normUnitPrice') }
     );
     // 3× aantal 1 + 3× prijs (100/200/300)
-    expect(sum.sum).toBe(603);
+    expect(sum.sum).toBe('603');
     expect(sum.currency).toBe(false);
   });
 });

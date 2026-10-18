@@ -1,4 +1,5 @@
 import { parseXml, getText, normalizeUnit } from './xmlHelpers';
+import { fromNumber } from '@/utils/decimal';
 import { genId } from './core';
 import type { ResourceLibraryItem, ResourceType } from '@/types/costModel';
 
@@ -92,7 +93,7 @@ export function importBmecat(xml: string): PriceImportResult {
       description,
       unit,
       resourceType: guessType(`${description} ${keywords}`),
-      defaultUnitPrice: Number.isFinite(priceEn) ? priceEn : null,
+      defaultUnitPrice: fromNumber(priceEn),
       category: featSys || 'BMEcat',
     });
   }

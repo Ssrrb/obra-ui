@@ -39,7 +39,11 @@ export default defineConfig({
   // Geen kopie van public/ (fonts, voorbeelddata, icoon): die horen bij de app.
   publicDir: false,
   resolve: {
-    alias: { '@': path.resolve(__dirname, './src') },
+    alias: {
+      // The engine's ported OpenCalc calculator (not re-exported by its index).
+      '@ctrlmas/budget-engine/opencalc': path.resolve(__dirname, 'node_modules/@ctrlmas/budget-engine/src/opencalc'),
+      '@': path.resolve(__dirname, './src'),
+    },
   },
   define: {
     global: 'globalThis',

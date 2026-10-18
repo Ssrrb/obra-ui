@@ -34,7 +34,7 @@
  * als ze ingevuld zijn, hun inhoud.
  */
 import { parseLiteXml, childElement, childElements, textContent, type XElement } from './liteXml';
-import { makeCostItem } from './core';
+import { makeCostItem, type ItemDraft } from './core';
 import type { ImportResult, ImportWarningCode } from './types';
 import type { CostItem, CostSchedule, CostUnit } from '@/types/costModel';
 
@@ -214,7 +214,7 @@ export function importOnlv(xml: string): ImportResult {
     priced: false,
   };
 
-  const add = (partial: Partial<CostItem> & { rowType: CostItem['rowType'] }): CostItem => {
+  const add = (partial: ItemDraft): CostItem => {
     const item = makeCostItem({ sortOrder: ctx.sort++, ...partial });
     ctx.items.push(item);
     return item;

@@ -54,8 +54,9 @@ describe('FIEBDC-3 (.bc3) export', () => {
       { normQuantity: 2.5, normUnitPrice: 100 },
     ]));
     expect(text).toContain('\\1\\0.0025\\');
-    expect(text).toContain('\\1\\0.02999999932945\\');
-    expect(text).toContain('\\1\\0.119760479041916\\');
+    // Schema 2 holds at most 12 decimals: these doubles enter as 12-decimal text.
+    expect(text).toContain('\\1\\0.029999999329\\');   // upstream: 0.02999999932945
+    expect(text).toContain('\\1\\0.119760479042\\');   // upstream: 0.119760479041916
     expect(text).toContain('|434687.42649||');
     expect(text).toContain('\\1\\2.5\\');
     expect(text).toContain('|100||');
@@ -63,8 +64,8 @@ describe('FIEBDC-3 (.bc3) export', () => {
     // Nergens een 16e/17e ruisdigit (kostprijs van post en hoofdstuk).
     expect(text).not.toMatch(/\d\.\d{16,}/);
     expect(text).not.toMatch(/\d{7,}\.\d{10,}/);
-    expect(getKostprijs(second)).toBeCloseTo(getKostprijs(first), 6);
-    expect(second.map((i) => i.total.toFixed(2))).toEqual(first.map((i) => i.total.toFixed(2)));
+    expect(getKostprijs(second)).toBe(getKostprijs(first));
+    expect(second.map((i) => i.total)).toEqual(first.map((i) => i.total));
   });
 
   it('schrijft geen exponentnotatie voor heel kleine of heel grote getallen', () => {
@@ -114,7 +115,7 @@ describe('FIEBDC-3 (.bc3) export', () => {
     expect(text.match(/~C\|P\|/g)).toHaveLength(1);
     expect(text).toContain('~M|01#\\P|1\\1\\|3||');
     expect(text).toContain('~M|01#\\P|1\\2\\|5||');
-    expect(second.filter((i) => i.code === 'P').map((i) => i.quantity)).toEqual([3, 5]);
+    expect(second.filter((i) => i.code === 'P').map((i) => i.quantity)).toEqual(['3', '5']);
     expect(getKostprijs(second)).toBeCloseTo(80, 2);
   });
 
@@ -217,9 +218,11 @@ describe('FIEBDC-3 (.bc3) export', () => {
     expect(text).not.toContain('DEXZANJAT_1');
     const second = recalculateItems(importBc3(text).items);
     expect(second.map((i) => i.code)).toEqual(first.map((i) => i.code));
-    expect(second.map((i) => i.total.toFixed(6))).toEqual(first.map((i) => i.total.toFixed(6)));
+    expect(second.map((i) => i.total)).toEqual(first.map((i) => i.total));
     // De post rekent bottom-up (0,025 × 12,70 + 0,1 × 26,48 = 2,9655), het middel met 3,06.
-    expect(second.find((i) => i.rowType === 'begrotingspost' && i.code === 'DEXZANJAT')!.unitPrice).toBeCloseTo(2.9655, 6);
+    // Money policy: the post amount is quantized (209,85 × 2,9655 = 622,310175 → 622,31),
+    // so its derived unit price is 622,31 / 209,85 (upstream: exactly 2,9655).
+    expect(second.find((i) => i.rowType === 'begrotingspost' && i.code === 'DEXZANJAT')!.unitPrice).toBe('2.965499166071');
     expect(second.find((i) => i.rowType === 'regel' && i.code === 'DEXZANJAT')!.normUnitPrice).toBeCloseTo(3.06, 6);
   });
 
@@ -259,7 +262,7 @@ describe('FIEBDC-3 (.bc3) export', () => {
     expect(text).toContain('~C|A%NAAC|%|Despeses auxiliars|0||0|');
     expect(text).toContain('A1\\1\\1\\B1\\1\\1\\A%NAAC\\1\\0.04\\|');
     const second = recalculateItems(importBc3(text).items);
-    expect(getKostprijs(second)).toBeCloseTo(getKostprijs(first), 6);
+    expect(getKostprijs(second)).toBe(getKostprijs(first));
     expect(second.find((i) => i.code === 'A%NAAC')!.resourceType).toBe('overig');
   });
 

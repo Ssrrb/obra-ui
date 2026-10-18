@@ -1,4 +1,5 @@
 import { parseXml, getText, getNumber, children, normalizeUnit } from './xmlHelpers';
+import { fromNumber } from '@/utils/decimal';
 import type { ResourceLibraryItem, ResourceType } from '@/types/costModel';
 
 export interface ZsxImportResult {
@@ -61,7 +62,7 @@ export function importZsx(xml: string): ZsxImportResult {
       description: naam,
       unit,
       resourceType,
-      defaultUnitPrice: Number.isFinite(price) ? price : null,
+      defaultUnitPrice: fromNumber(price),
       category: m.getAttribute('categorie') ?? '',
     });
   });

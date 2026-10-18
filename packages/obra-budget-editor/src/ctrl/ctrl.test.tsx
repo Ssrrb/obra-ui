@@ -193,7 +193,7 @@ describe('bridge controller', () => {
 		const other = base.items.find((i) => i.description === 'Relleno compactado')!;
 
 		// User edit; the embed's 300 ms debounce has not fired yet.
-		useAppStore.getState().updateItem(target.id, 'quantity', 99);
+		useAppStore.getState().updateItem(target.id, 'quantity', '99');
 		const remote = makeDoc((d) => {
 			d.items = base.items.map((i) => (i.id === other.id ? { ...i, description: 'Remoto' } : i));
 		});
@@ -203,7 +203,7 @@ describe('bridge controller', () => {
 		expect(order).toEqual(['post:before-remote']);
 		const msg = posted[0] as Extract<WebviewToHost, { type: 'changed' }>;
 		expect(msg.seq).toBe(5);
-		expect(msg.document.items.find((i) => i.id === target.id)!.quantity).toBe(99);
+		expect(msg.document.items.find((i) => i.id === target.id)!.quantity).toBe('99');
 		expect(useAppStore.getState().items.find((i) => i.id === other.id)!.description).toBe('Remoto');
 
 		// The stale debounce then fires: nothing more is posted.
@@ -238,7 +238,7 @@ describe('Excel import', () => {
 		const result = buildFromMapping(data, autoDetectMapping(data.headers));
 		const descriptions = result.items.map((i) => i.description);
 		expect(descriptions).toEqual(expect.arrayContaining(['Movimiento de suelo', 'Excavación', 'Relleno compactado']));
-		expect(result.items.find((i) => i.description === 'Excavación')!.quantity).toBe(12);
+		expect(result.items.find((i) => i.description === 'Excavación')!.quantity).toBe('12');
 	});
 
 	it('an import replaces the host document instead of opening a second tab, and is posted', () => {

@@ -13,6 +13,11 @@ import type { CostItem, CostSchedule, CompanyInfo } from '@/types/costModel';
 import { getStaartBreakdown } from '@/services/calculation/calculator';
 import { isStagartRowType } from '@/types/costModel';
 import { makeReportContext, type ReportContext } from '@/i18n/reportI18n';
+import type { DecimalString } from '@ctrlmas/budget-engine';
+import { CTRL_BUILD } from '@/services/buildFlags';
+import { Dec, dec } from '@/utils/decimal';
+import { formatDecimal, makeDecimalFormatter, type DecimalLike } from '@/utils/formatting';
+import { ivaTotalsRows } from './ivaTotals';
 
 function esc(text: string): string {
   return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -23,22 +28,26 @@ interface Bouw1Fmt {
   ctx: ReportContext;
   t: ReportContext['t'];
   /** Leeg bij 0/null; anders twee decimalen in de rapporttaal. */
-  num: (value: number | null) => string;
+  num: (value: DecimalLike) => string;
   /** Altijd een getal (ook 0), twee decimalen. */
-  force: (value: number) => string;
+  force: (value: DecimalLike) => string;
   /** Normen: drie decimalen, leeg bij 0/null. */
-  norm: (value: number | null) => string;
+  norm: (value: DecimalLike) => string;
+  /** Exact decimal formatter with a scale (IVA totals block). */
+  decimal: (value: DecimalLike, scale?: number) => string;
 }
 
+/** Report numbers from the decimal text (no float), HALF_UP; es-PY in the ctrl build. */
 function makeBouw1Fmt(ctx: ReportContext): Bouw1Fmt {
-  const nf2 = new Intl.NumberFormat(ctx.intlLocale, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  const nf3 = new Intl.NumberFormat(ctx.intlLocale, { minimumFractionDigits: 3, maximumFractionDigits: 3 });
+  const fmt = makeDecimalFormatter(ctx.intlLocale, CTRL_BUILD);
+  const empty = (value: DecimalLike) => value == null || dec(String(value)).isZero();
   return {
     ctx,
     t: ctx.t,
-    num: (value) => (value === null || value === undefined || value === 0 ? '' : nf2.format(value)),
-    force: (value) => nf2.format(value),
-    norm: (value) => (value === null || value === undefined || value === 0 ? '' : nf3.format(value)),
+    num: (value) => (empty(value) ? '' : fmt(value, 2)),
+    force: (value) => fmt(value, 2),
+    norm: (value) => (empty(value) ? '' : fmt(value, 3)),
+    decimal: fmt,
   };
 }
 
@@ -52,19 +61,23 @@ interface Bouw1Row {
   hst: string;
   par: string;
   nr: string;
-  loon: number;
-  materiaal: number;
-  materieel: number;
-  stelpost: number;
-  ondaann: number;
-  uren: number;
-  tarief: number;
-  kostenEh: number;
-  subtotaal: number;
+  loon: Dec;
+  materiaal: Dec;
+  materieel: Dec;
+  stelpost: Dec;
+  ondaann: Dec;
+  uren: Dec;
+  tarief: Dec;
+  kostenEh: Dec;
+  subtotaal: Dec;
 }
 
+type Breakdown = { loon: Dec; materiaal: Dec; materieel: Dec; stelpost: Dec; ondaann: Dec; uren: Dec };
+const ZERO = new Dec(0);
+const zeroBreakdown = (): Breakdown => ({ loon: ZERO, materiaal: ZERO, materieel: ZERO, stelpost: ZERO, ondaann: ZERO, uren: ZERO });
+
 function computeBouw1Rows(items: CostItem[], schedule: CostSchedule): Bouw1Row[] {
-  const tarieven = schedule.tarieven ?? { A: 64, B: 43, C: 82 };
+  const tarieven: Record<string, DecimalString> = schedule.tarieven ?? { A: '64', B: '43', C: '82' };
 
   // Build a map of item -> its direct children
   const childrenMap = new Map<string | null, CostItem[]>();
@@ -76,95 +89,87 @@ function computeBouw1Rows(items: CostItem[], schedule: CostSchedule): Bouw1Row[]
   }
 
   // Compute breakdown per item (bottom-up)
-  const breakdownMap = new Map<string, { loon: number; materiaal: number; materieel: number; stelpost: number; ondaann: number; uren: number }>();
+  const breakdownMap = new Map<string, Breakdown>();
 
-  function computeBreakdown(item: CostItem): { loon: number; materiaal: number; materieel: number; stelpost: number; ondaann: number; uren: number } {
+  function computeBreakdown(item: CostItem): Breakdown {
     const cached = breakdownMap.get(item.id);
     if (cached) return cached;
 
     const children = childrenMap.get(item.id) ?? [];
     if (children.length > 0) {
       // Sum children
-      let loon = 0, materiaal = 0, materieel = 0, stelpost = 0, ondaann = 0, uren = 0;
+      const result = zeroBreakdown();
       for (const child of children) {
         const cb = computeBreakdown(child);
-        loon += cb.loon;
-        materiaal += cb.materiaal;
-        materieel += cb.materieel;
-        stelpost += cb.stelpost;
-        ondaann += cb.ondaann;
-        uren += cb.uren;
+        for (const k of Object.keys(result) as (keyof Breakdown)[]) result[k] = result[k].plus(cb[k]);
       }
-      const result = { loon, materiaal, materieel, stelpost, ondaann, uren };
       breakdownMap.set(item.id, result);
       return result;
     }
 
     // Leaf node (regel or begrotingspost without children)
-    const total = item.total;
+    const total = dec(item.total);
     const rt = item.resourceType;
-    let loon = 0, materiaal = 0, materieel = 0, stelpost = 0, ondaann = 0, uren = 0;
+    const r = zeroBreakdown();
 
     if (item.rowType === 'regel') {
       // Uren volgens de canonieke normformule: aantal × norm / capaciteit
       // (zoals calculator.ts en urenProrate.ts — normFactor is een deler).
-      uren = (item.quantity ?? 0) * (item.normQuantity ?? 0);
-      if (item.normFactor != null && item.normFactor !== 0) uren /= item.normFactor;
-      if (item.normDivisor != null && item.normDivisor !== 0) uren /= item.normDivisor;
+      let uren = dec(item.quantity).times(dec(item.normQuantity));
+      if (item.normFactor != null && !dec(item.normFactor).isZero()) uren = uren.div(dec(item.normFactor));
+      if (item.normDivisor != null && !dec(item.normDivisor).isZero()) uren = uren.div(dec(item.normDivisor));
+      r.uren = uren;
 
       // Get tarief for this row
       const tg = item.tariefGroep ?? 'A';
-      const tarief = tarieven[tg] ?? 64;
+      const tarief = dec(tarieven[tg] ?? '64');
 
       if (rt === 'arbeid') {
-        loon = total;
+        r.loon = total;
       } else if (rt === 'materiaal') {
-        materiaal = total;
+        r.materiaal = total;
       } else if (rt === 'materieel') {
-        materieel = total;
+        r.materieel = total;
       } else if (rt === 'onderaannemer') {
-        ondaann = total;
+        r.ondaann = total;
       } else if (rt === 'overig') {
-        stelpost = total;
+        r.stelpost = total;
       } else {
         // No resource type set: if has normUnitPrice, try to figure from pricing
-        if (item.normUnitPrice != null && item.normUnitPrice > 0) {
+        if (item.normUnitPrice != null && dec(item.normUnitPrice).gt(0)) {
           // Has a unit price set: materiaal-like
-          const laborPart = uren * tarief;
-          if (laborPart > 0) {
-            loon = laborPart;
-            materiaal = total - laborPart;
-            if (materiaal < 0) { loon = total; materiaal = 0; }
+          const laborPart = uren.times(tarief);
+          if (laborPart.gt(0)) {
+            r.loon = laborPart;
+            r.materiaal = total.minus(laborPart);
+            if (r.materiaal.lt(0)) { r.loon = total; r.materiaal = ZERO; }
           } else {
-            materiaal = total;
+            r.materiaal = total;
           }
-        } else if (uren > 0) {
-          loon = uren * tarief;
-          if (total > loon) {
-            materiaal = total - loon;
+        } else if (uren.gt(0)) {
+          r.loon = uren.times(tarief);
+          if (total.gt(r.loon)) {
+            r.materiaal = total.minus(r.loon);
           } else {
-            loon = total;
+            r.loon = total;
           }
         } else {
           // Default: put in onderaanneming if it looks like a subcontract, else materiaal
-          materiaal = total;
+          r.materiaal = total;
         }
       }
     } else if (item.rowType === 'begrotingspost') {
       // Standalone begrotingspost without children
-      if (rt === 'arbeid') loon = total;
-      else if (rt === 'materiaal') materiaal = total;
-      else if (rt === 'materieel') materieel = total;
-      else if (rt === 'onderaannemer') ondaann = total;
-      else if (rt === 'overig') stelpost = total;
-      else ondaann = total; // default: onderaanneming for standalone posts
-    } else if (item.rowType === 'tekstregel') {
-      // No values
+      if (rt === 'arbeid') r.loon = total;
+      else if (rt === 'materiaal') r.materiaal = total;
+      else if (rt === 'materieel') r.materieel = total;
+      else if (rt === 'onderaannemer') r.ondaann = total;
+      else if (rt === 'overig') r.stelpost = total;
+      else r.ondaann = total; // default: onderaanneming for standalone posts
     }
 
-    const result = { loon, materiaal, materieel, stelpost, ondaann, uren };
-    breakdownMap.set(item.id, result);
-    return result;
+    breakdownMap.set(item.id, r);
+    return r;
   }
 
   // Build output rows
@@ -185,58 +190,29 @@ function computeBouw1Rows(items: CostItem[], schedule: CostSchedule): Bouw1Row[]
 
     // Determine tarief
     const tg = item.tariefGroep ?? 'A';
-    const tarief = tarieven[tg] ?? 64;
+    const tarief = dec(tarieven[tg] ?? '64');
 
     // Kosten/eh
-    let kostenEh = 0;
-    if (item.quantity && item.quantity > 0 && item.total > 0) {
-      kostenEh = item.total / item.quantity;
-    }
+    const qty = dec(item.quantity);
+    const kostenEh = qty.gt(0) && dec(item.total).gt(0) ? dec(item.total).div(qty) : ZERO;
 
-    rows.push({
-      item,
-      hst,
-      par,
-      nr,
-      loon: bd.loon,
-      materiaal: bd.materiaal,
-      materieel: bd.materieel,
-      stelpost: bd.stelpost,
-      ondaann: bd.ondaann,
-      uren: bd.uren,
-      tarief,
-      kostenEh,
-      subtotaal: item.total,
-    });
+    rows.push({ item, hst, par, nr, ...bd, tarief, kostenEh, subtotaal: dec(item.total) });
   }
 
   return rows;
 }
 
 /** Column totals for summary page */
-interface ColumnTotals {
-  uren: number;
-  loon: number;
-  materiaal: number;
-  materieel: number;
-  stelpost: number;
-  ondaann: number;
-}
+type ColumnTotals = Breakdown;
 
 function computeColumnTotals(items: CostItem[], schedule: CostSchedule): ColumnTotals {
   const rows = computeBouw1Rows(items, schedule);
   // Only sum top-level chapters
-  const topLevelRows = rows.filter(r => r.item.parentId === null && r.item.rowType === 'chapter');
-  let uren = 0, loon = 0, materiaal = 0, materieel = 0, stelpost = 0, ondaann = 0;
-  for (const r of topLevelRows) {
-    uren += r.uren;
-    loon += r.loon;
-    materiaal += r.materiaal;
-    materieel += r.materieel;
-    stelpost += r.stelpost;
-    ondaann += r.ondaann;
+  const totals = zeroBreakdown();
+  for (const r of rows.filter(r => r.item.parentId === null && r.item.rowType === 'chapter')) {
+    for (const k of Object.keys(totals) as (keyof Breakdown)[]) totals[k] = totals[k].plus(r[k]);
   }
-  return { uren, loon, materiaal, materieel, stelpost, ondaann };
+  return totals;
 }
 
 export function buildBouw1Html(
@@ -306,7 +282,16 @@ export function buildBouw1Html(
   }
 
   // Summary section
-  let summaryHtml = buildSummarySection(colTotals, breakdown, hasStaart, fx);
+  // ctrl: IVA and contract total from the money policy (as in the editor), not the Dutch btw rows.
+  const ivaRows = CTRL_BUILD
+    ? ivaTotalsRows(schedule, items, fx.decimal, (label, amount, cls) => `
+      <tr class="${cls === 'total-row' ? 'summary-total grand-total' : cls === 'subtotal-row' ? 'summary-total' : ''}">
+        <td>${esc(label)}</td>
+        <td></td>
+        <td colspan="8" class="num total-amount">${esc(amount)}</td>
+      </tr>`)
+    : undefined;
+  let summaryHtml = buildSummarySection(colTotals, breakdown, hasStaart, fx, ivaRows);
 
   const actionsHtml = includeActions
     ? `<div class="print-actions">
@@ -423,9 +408,9 @@ function buildDataRow(dr: Bouw1Row, fx: Bouw1Fmt): string {
   const unit = fx.ctx.unit(item.unit);
 
   // Price column: normUnitPrice or unitPrice
-  const price = item.normUnitPrice != null && item.normUnitPrice > 0
+  const price = item.normUnitPrice != null && dec(item.normUnitPrice).gt(0)
     ? fmtNL(item.normUnitPrice)
-    : (item.unitPrice > 0 ? fmtNL(item.unitPrice) : '');
+    : (dec(item.unitPrice).gt(0) ? fmtNL(item.unitPrice) : '');
 
   // Norm column
   const norm = fmtNorm(item.normFactor);
@@ -475,12 +460,15 @@ function buildSummarySection(
   breakdown: ReturnType<typeof getStaartBreakdown> | null,
   hasStaart: boolean,
   fx: Bouw1Fmt,
+  ivaRows?: string,
 ): string {
   const { t } = fx;
   const fmtNLForce = fx.force;
   const lbl = (key: string) => esc(t(key));
-  const kostprijs = breakdown?.kostprijs ?? (colTotals.loon + colTotals.materiaal + colTotals.materieel + colTotals.stelpost + colTotals.ondaann);
-  const akBasis = colTotals.loon + colTotals.materiaal + colTotals.materieel;
+  const pctText = (v: DecimalString) => formatDecimal(v);
+  const pctOf = (base: Dec, pct: DecimalString) => base.times(dec(pct)).div(100);
+  const kostprijs = breakdown ? dec(breakdown.kostprijs) : colTotals.loon.plus(colTotals.materiaal).plus(colTotals.materieel).plus(colTotals.stelpost).plus(colTotals.ondaann);
+  const akBasis = colTotals.loon.plus(colTotals.materiaal).plus(colTotals.materieel);
 
   // Opslag-percentages én -bedragen komen uit de staart-breakdown: die is
   // afgeleid uit de daadwerkelijke staart-items (dus inclusief door de
@@ -488,34 +476,35 @@ function buildSummarySection(
   // (breakdown === null) vallen we terug op de standaard-percentages.
 
   // AK over onderaanneming
-  const akOndPct = breakdown?.akOaPercentage ?? 9;
-  const akOndAmount = breakdown?.akOaAmount ?? colTotals.ondaann * (akOndPct / 100);
+  const akOndPct = breakdown?.akOaPercentage ?? '9';
+  const akOndAmount = breakdown ? dec(breakdown.akOaAmount) : pctOf(colTotals.ondaann, akOndPct);
 
   // Algemene bedrijfskosten (over loon + materiaal + materieel)
-  const akPct = breakdown?.abkPercentage ?? 6;
-  const akAmount = breakdown?.abkAmount ?? akBasis * (akPct / 100);
+  const akPct = breakdown?.abkPercentage ?? '6';
+  const akAmount = breakdown ? dec(breakdown.abkAmount) : pctOf(akBasis, akPct);
 
   // Garanties
-  const garantiePct = breakdown?.garantiesPercentage ?? 2;
-  const garantieAmount = breakdown?.garantiesAmount ?? akBasis * (garantiePct / 100);
+  const garantiePct = breakdown?.garantiesPercentage ?? '2';
+  const garantieAmount = breakdown ? dec(breakdown.garantiesAmount) : pctOf(akBasis, garantiePct);
 
   // Werkvoorbereiding & projectmanagement
-  const wvPct = breakdown?.wvpmPercentage ?? 2;
-  const wvAmount = breakdown?.wvpmAmount ?? akBasis * (wvPct / 100);
+  const wvPct = breakdown?.wvpmPercentage ?? '2';
+  const wvAmount = breakdown ? dec(breakdown.wvpmAmount) : pctOf(akBasis, wvPct);
 
-  const totaalKostprijs = breakdown?.kostprijsBouw1 ?? (kostprijs + akOndAmount + akAmount + garantieAmount + wvAmount);
+  const totaalKostprijs = breakdown ? dec(breakdown.kostprijsBouw1) : kostprijs.plus(akOndAmount).plus(akAmount).plus(garantieAmount).plus(wvAmount);
 
   // Risico, winst, verzekering
-  const risicoPct = breakdown?.risicoPercentage ?? 3;
-  const winstPct = breakdown?.winstPercentage ?? 5;
-  const verzekeringPct = breakdown?.verzekeringPercentage ?? 0.5;
+  const risicoPct = breakdown?.risicoPercentage ?? '3';
+  const winstPct = breakdown?.winstPercentage ?? '5';
+  const verzekeringPct = breakdown?.verzekeringPercentage ?? '0.5';
 
-  const risico = breakdown?.risicoAmount ?? totaalKostprijs * (risicoPct / 100);
-  const winst = breakdown?.winstAmount ?? totaalKostprijs * (winstPct / 100);
-  const verzekering = breakdown?.verzekeringAmount ?? totaalKostprijs * (verzekeringPct / 100);
+  const risico = breakdown ? dec(breakdown.risicoAmount) : pctOf(totaalKostprijs, risicoPct);
+  const winst = breakdown ? dec(breakdown.winstAmount) : pctOf(totaalKostprijs, winstPct);
+  const verzekering = breakdown ? dec(breakdown.verzekeringAmount) : pctOf(totaalKostprijs, verzekeringPct);
 
-  const totaalExclBtw = breakdown?.aanneemsomExcl ?? (totaalKostprijs + risico + winst + verzekering);
-  const btwPct = breakdown?.btwPercentage ?? 21;
+  const totaalExclBtw = breakdown ? dec(breakdown.aanneemsomExcl) : totaalKostprijs.plus(risico).plus(winst).plus(verzekering);
+  const btwPct = breakdown?.btwPercentage ?? '21';
+  const opslagFactor = dec(akPct).plus(dec(garantiePct)).plus(dec(wvPct)).div(100).plus(1);
 
   return `
   <div class="summary-section">
@@ -552,7 +541,7 @@ function buildSummarySection(
 
       <tr>
         <td>${lbl('summary.overheadSubcontract')}</td>
-        <td class="num">${akOndPct} %</td>
+        <td class="num">${pctText(akOndPct)} %</td>
         <td></td><td></td><td></td><td></td>
         <td class="num">${fmtNLForce(akOndAmount)}</td>
         <td></td>
@@ -562,10 +551,10 @@ function buildSummarySection(
 
       <tr>
         <td>${lbl('summary.generalOverhead')}</td>
-        <td class="num">${akPct} %</td>
-        <td class="num">${fmtNLForce(colTotals.loon * akPct / 100)}</td>
-        <td class="num">${fmtNLForce(colTotals.materiaal * akPct / 100)}</td>
-        <td class="num">${fmtNLForce(colTotals.materieel * akPct / 100)}</td>
+        <td class="num">${pctText(akPct)} %</td>
+        <td class="num">${fmtNLForce(pctOf(colTotals.loon, akPct))}</td>
+        <td class="num">${fmtNLForce(pctOf(colTotals.materiaal, akPct))}</td>
+        <td class="num">${fmtNLForce(pctOf(colTotals.materieel, akPct))}</td>
         <td></td><td></td>
         <td class="num">${fmtNLForce(akAmount)}</td>
         <td></td>
@@ -574,10 +563,10 @@ function buildSummarySection(
 
       <tr>
         <td>${lbl('summary.guarantees')}</td>
-        <td class="num">${garantiePct} %</td>
-        <td class="num">${fmtNLForce(colTotals.loon * garantiePct / 100)}</td>
-        <td class="num">${fmtNLForce(colTotals.materiaal * garantiePct / 100)}</td>
-        <td class="num">${fmtNLForce(colTotals.materieel * garantiePct / 100)}</td>
+        <td class="num">${pctText(garantiePct)} %</td>
+        <td class="num">${fmtNLForce(pctOf(colTotals.loon, garantiePct))}</td>
+        <td class="num">${fmtNLForce(pctOf(colTotals.materiaal, garantiePct))}</td>
+        <td class="num">${fmtNLForce(pctOf(colTotals.materieel, garantiePct))}</td>
         <td></td><td></td>
         <td class="num">${fmtNLForce(garantieAmount)}</td>
         <td></td>
@@ -586,10 +575,10 @@ function buildSummarySection(
 
       <tr>
         <td>${lbl('summary.preparation')}</td>
-        <td class="num">${wvPct} %</td>
-        <td class="num">${fmtNLForce(colTotals.loon * wvPct / 100)}</td>
-        <td class="num">${fmtNLForce(colTotals.materiaal * wvPct / 100)}</td>
-        <td class="num">${fmtNLForce(colTotals.materieel * wvPct / 100)}</td>
+        <td class="num">${pctText(wvPct)} %</td>
+        <td class="num">${fmtNLForce(pctOf(colTotals.loon, wvPct))}</td>
+        <td class="num">${fmtNLForce(pctOf(colTotals.materiaal, wvPct))}</td>
+        <td class="num">${fmtNLForce(pctOf(colTotals.materieel, wvPct))}</td>
         <td></td><td></td>
         <td class="num">${fmtNLForce(wvAmount)}</td>
         <td></td>
@@ -599,11 +588,11 @@ function buildSummarySection(
       <tr class="summary-kostprijs">
         <td>${lbl('summary.totalCostPrice')}</td>
         <td></td>
-        <td class="num">${fmtNLForce(colTotals.loon * (1 + akPct / 100 + garantiePct / 100 + wvPct / 100))}</td>
-        <td class="num">${fmtNLForce(colTotals.materiaal * (1 + akPct / 100 + garantiePct / 100 + wvPct / 100))}</td>
-        <td class="num">${fmtNLForce(colTotals.materieel * (1 + akPct / 100 + garantiePct / 100 + wvPct / 100))}</td>
+        <td class="num">${fmtNLForce(colTotals.loon.times(opslagFactor))}</td>
+        <td class="num">${fmtNLForce(colTotals.materiaal.times(opslagFactor))}</td>
+        <td class="num">${fmtNLForce(colTotals.materieel.times(opslagFactor))}</td>
         <td class="num">${fmtNLForce(colTotals.stelpost)}</td>
-        <td class="num">${fmtNLForce(colTotals.ondaann + akOndAmount)}</td>
+        <td class="num">${fmtNLForce(colTotals.ondaann.plus(akOndAmount))}</td>
         <td></td>
         <td></td>
         <td></td>
@@ -611,7 +600,7 @@ function buildSummarySection(
 
       <tr>
         <td>${lbl('summary.risk')}</td>
-        <td class="num">${risicoPct} %</td>
+        <td class="num">${pctText(risicoPct)} %</td>
         <td colspan="4"></td>
         <td></td>
         <td class="num">${fmtNLForce(totaalKostprijs)}</td>
@@ -621,7 +610,7 @@ function buildSummarySection(
 
       <tr>
         <td>${lbl('summary.profit')}</td>
-        <td class="num">${winstPct} %</td>
+        <td class="num">${pctText(winstPct)} %</td>
         <td colspan="4"></td>
         <td></td>
         <td class="num">${fmtNLForce(totaalKostprijs)}</td>
@@ -631,7 +620,7 @@ function buildSummarySection(
 
       <tr>
         <td>${lbl('summary.insurance')}</td>
-        <td class="num">${verzekeringPct} %</td>
+        <td class="num">${pctText(verzekeringPct)} %</td>
         <td colspan="4"></td>
         <td></td>
         <td class="num">${fmtNLForce(totaalKostprijs)}</td>
@@ -639,21 +628,21 @@ function buildSummarySection(
         <td></td>
       </tr>
 
-      ${(() => {
+      ${ivaRows !== undefined ? ivaRows : (() => {
         // Excl-eindbedrag (incl. afronding); btw uit de breakdown zodat de
         // hoog/laag-verdeling van de staart-items 1-op-1 wordt overgenomen.
         const exclEind = hasStaart && breakdown
-          ? breakdown.aanneemsomExcl + breakdown.afronding
+          ? dec(breakdown.aanneemsomExcl).plus(dec(breakdown.afronding))
           : totaalExclBtw;
-        const btwLaagGrondslag = breakdown?.btwLaagGrondslag ?? 0;
-        const btwLaagPct = breakdown?.btwLaagPercentage ?? 9;
-        const btwLaag = breakdown?.btwLaagAmount ?? 0;
-        const btwGrondslag = hasStaart && breakdown ? breakdown.btwGrondslag : exclEind;
-        const btwHoog = hasStaart && breakdown ? breakdown.btwAmount : exclEind * btwPct / 100;
-        const btwLaagRow = btwLaagGrondslag > 0 ? `
+        const btwLaagGrondslag = dec(breakdown?.btwLaagGrondslag);
+        const btwLaagPct = breakdown?.btwLaagPercentage ?? '9';
+        const btwLaag = dec(breakdown?.btwLaagAmount);
+        const btwGrondslag = hasStaart && breakdown ? dec(breakdown.btwGrondslag) : exclEind;
+        const btwHoog = hasStaart && breakdown ? dec(breakdown.btwAmount) : pctOf(exclEind, btwPct);
+        const btwLaagRow = btwLaagGrondslag.gt(0) ? `
       <tr>
         <td>${lbl('summary.vatLow')}</td>
-        <td class="num">${btwLaagPct} %</td>
+        <td class="num">${pctText(btwLaagPct)} %</td>
         <td colspan="5"></td>
         <td class="num">${fmtNLForce(btwLaagGrondslag)}</td>
         <td class="num">${fmtNLForce(btwLaag)}</td>
@@ -668,7 +657,7 @@ function buildSummarySection(
       ${btwLaagRow}
       <tr>
         <td>${lbl('summary.vatHigh')}</td>
-        <td class="num">${btwPct} %</td>
+        <td class="num">${pctText(btwPct)} %</td>
         <td colspan="5"></td>
         <td class="num">${fmtNLForce(btwGrondslag)}</td>
         <td class="num">${fmtNLForce(btwHoog)}</td>
@@ -678,7 +667,7 @@ function buildSummarySection(
       <tr class="summary-total grand-total">
         <td>${lbl('summary.totalInclVat')}</td>
         <td></td>
-        <td colspan="8" class="num total-amount">${fmtNLForce(exclEind + btwHoog + btwLaag)}</td>
+        <td colspan="8" class="num total-amount">${fmtNLForce(exclEind.plus(btwHoog).plus(btwLaag))}</td>
       </tr>`;
       })()}
     </table>

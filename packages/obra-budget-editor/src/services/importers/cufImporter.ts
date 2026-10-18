@@ -1,3 +1,4 @@
+import { fromNumber } from '@/utils/decimal';
 import {
   parseXml,
   getText,
@@ -188,7 +189,7 @@ function importStandardCuf(doc: Document): ImportResult {
   if (items.length === 0) warnings.push('CUF-bestand bevat geen posten of regels.');
 
   const schedule = uurtarief > 0
-    ? { name, projectName: name, tarieven: { A: uurtarief } }
+    ? { name, projectName: name, tarieven: { A: fromNumber(uurtarief) ?? '0' } }
     : { name, projectName: name };
   return { schedule, items, warnings, format: 'cuf' };
 }

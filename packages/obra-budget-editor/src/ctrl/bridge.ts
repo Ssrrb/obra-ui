@@ -1,23 +1,9 @@
 import type { ProjectFile } from '../types/costModel';
+import type { BudgetStatus, HostToWebview } from '@ctrlmas/budget-engine';
 
-// Copied verbatim from ctrl `obra-budget-engine/src/contracts.ts` (branch feat/budgets-slice, unchanged through 99fce38efb3); do not change here.
-export const BRIDGE_PROTOCOL_VERSION = 1;
-
-export type BudgetStatus = 'loading' | 'saved' | 'pending' | 'reconnecting' | 'conflict' | 'revoked' | 'error';
-
-/**
- * `seq` orders the documents the host posts. `changed` names the last `seq`
- * the webview applied, so the host takes only the user's edits relative to
- * that document and never reverts a remote change still in flight.
- */
-export type HostToWebview =
-	| { readonly v: 1; readonly type: 'load'; readonly seq: number; readonly revision: number; readonly document: ProjectFile; readonly title: string }
-	| { readonly v: 1; readonly type: 'remote'; readonly seq: number; readonly revision: number; readonly document: ProjectFile }
-	| { readonly v: 1; readonly type: 'status'; readonly status: BudgetStatus; readonly message?: string };
-
-export type WebviewToHost =
-	| { readonly v: 1; readonly type: 'ready' }
-	| { readonly v: 1; readonly type: 'changed'; readonly seq: number; readonly document: ProjectFile };
+// Protocol 1, unchanged; the types come from the engine's contracts (schema 2 documents).
+export { BRIDGE_PROTOCOL_VERSION } from '@ctrlmas/budget-engine';
+export type { BudgetStatus, HostToWebview, WebviewToHost } from '@ctrlmas/budget-engine';
 
 // ── Validation (webview side) ────────────────────────────────────────────
 

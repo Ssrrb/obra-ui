@@ -22,7 +22,7 @@ describe('TRADXML importer', () => {
     expect(result.schedule.name).toBe('IBIS Test');
     expect(result.items.filter((i) => i.rowType === 'chapter')).toHaveLength(2);
     const activity = result.items.find((i) => i.description === 'Beton storten');
-    expect(activity?.quantity).toBe(25);
+    expect(activity?.quantity).toBe('25');
     expect(activity?.unit).toBe('m³');
     expect(activity?.unitPrice).toBeCloseTo(120);
     expect(activity?.total).toBeCloseTo(3000);

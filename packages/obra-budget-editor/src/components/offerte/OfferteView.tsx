@@ -7,6 +7,7 @@ import type { OfferteSectionItem, OfferteSectionType, LayerFunction } from '@/ty
 import { ProjectInfoEditor } from './ProjectInfoEditor';
 import { ImageUploader } from './ImageUploader';
 import './OfferteView.css';
+import { Dec, fromNumber } from '@/utils/decimal';
 
 export function OfferteView() {
   const { t } = useTranslation('common');
@@ -512,7 +513,7 @@ export function OfferteView() {
                   {t("offerte.meerwerkSelected")}: {formatCurrency(
                     activeSection.items
                       .filter(i => i.isSelected && i.pricePerUnit != null)
-                      .reduce((sum, i) => sum + (i.pricePerUnit ?? 0), 0)
+                      .reduce((sum, i) => sum.plus(fromNumber(i.pricePerUnit ?? 0) ?? 0), new Dec(0))
                   )}
                 </div>
                 <button className="add-item-btn" onClick={() => addSectionItem(activeSection.id)}>{t("offerte.addItem")}</button>

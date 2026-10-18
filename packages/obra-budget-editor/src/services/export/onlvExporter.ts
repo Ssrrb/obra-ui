@@ -33,6 +33,7 @@ import { buildXml, type XmlNode } from '@/services/exporters/xmlBuilder';
 import type { ExportInput, ExportResult } from '@/services/exporters/types';
 import { computeKostprijsBreakdown } from '@/services/calculation/calculator';
 import { POSART_MARKERS } from '@/services/importers/onlvImporter';
+import { Dec, dec } from '@/utils/decimal';
 
 export const A2063_NAMESPACE = 'http://www.oenorm.at/schema/A2063/2021-03-01';
 
@@ -55,11 +56,12 @@ export function a2063UnitOf(unit: string): { unit: string; known: boolean } {
 
 // ── Formattering ────────────────────────────────────────────────────────────
 
-const round2 = (n: number): number => Math.round((n + Number.EPSILON) * 100) / 100;
+/** Two decimals HALF_UP on the decimal value (schema 2: no float). */
+const round2 = (n: Dec | number): Dec => (n instanceof Dec ? n : new Dec(n)).toDecimalPlaces(2);
 /** betrag.type / lvmenge.type: 2 decimalen, punt als scheidingsteken. */
-const money = (n: number): string => {
-  const v = round2(Number.isFinite(n) ? n : 0);
-  return (Object.is(v, -0) ? 0 : v).toFixed(2);
+const money = (n: Dec | number): string => {
+  const v = round2(n);
+  return (v.isZero() ? new Dec(0) : v).toFixed(2);
 };
 
 const pad2 = (n: number): string => String(n).padStart(2, '0');
@@ -283,27 +285,27 @@ export function buildOnlv(schedule: CostSchedule, items: CostItem[], opts: OnlvB
 
   // ── Prijzen ──
 
-  interface Price { pa1: number; pa2: number; gesamt: number }
+  interface Price { pa1: Dec; pa2: Dec; gesamt: Dec }
 
   /** Prijs/EH als Lohn (pa1) + Sonstiges (pa2), afgerond op 2 decimalen. */
   const priceOf = (it: CostItem): Price => {
-    const qty = it.quantity ?? 0;
+    const qty = dec(it.quantity);
     const regels = regelsUnder(it.id);
     const hasChildren = (byParent.get(it.id) ?? []).length > 0;
-    let pa1: number;
-    let unit: number;
+    let pa1: Dec;
+    let unit: Dec;
     if (hasChildren) {
       foldedRegels += regels.length;
-      unit = qty !== 0 ? it.total / qty : it.unitPrice;
-      const loon = computeKostprijsBreakdown(regels).loon;
-      pa1 = qty !== 0 ? loon / qty : 0;
+      unit = !qty.isZero() ? dec(it.total).div(qty) : dec(it.unitPrice);
+      const loon = dec(computeKostprijsBreakdown(regels).loon);
+      pa1 = !qty.isZero() ? loon.div(qty) : new Dec(0);
     } else {
-      pa1 = it.laborPrice ?? 0;
-      unit = (it.normUnitPrice ?? 0) + (it.materialPrice ?? 0) + pa1;
+      pa1 = dec(it.laborPrice);
+      unit = dec(it.normUnitPrice).plus(dec(it.materialPrice)).plus(pa1);
     }
     const gesamt = round2(unit);
     const pa1r = round2(pa1);
-    return { pa1: pa1r, pa2: round2(gesamt - pa1r), gesamt };
+    return { pa1: pa1r, pa2: round2(gesamt.minus(pa1r)), gesamt };
   };
 
   const priceCache = new Map<string, Price>();
@@ -319,20 +321,20 @@ export function buildOnlv(schedule: CostSchedule, items: CostItem[], opts: OnlvB
     g.groups.forEach(collect);
   };
   roots.forEach(collect);
-  const priced = allPositions.some((it) => price(it).gesamt !== 0);
+  const priced = allPositions.some((it) => !price(it).gesamt.isZero());
   const lvType: OnlvBuildResult['lvType'] = priced ? 'kostenschaetzungs-lv' : 'ausschreibungs-lv';
 
   // ── Posities ──
 
-  interface Sum { pa1: number; gesamt: number }
-  const addSum = (a: Sum, b: Sum): Sum => ({ pa1: round2(a.pa1 + b.pa1), gesamt: round2(a.gesamt + b.gesamt) });
-  const ZERO: Sum = { pa1: 0, gesamt: 0 };
+  interface Sum { pa1: Dec; gesamt: Dec }
+  const addSum = (a: Sum, b: Sum): Sum => ({ pa1: round2(a.pa1.plus(b.pa1)), gesamt: round2(a.gesamt.plus(b.gesamt)) });
+  const ZERO: Sum = { pa1: new Dec(0), gesamt: new Dec(0) };
 
   let truncated = 0;
   let unknownUnits = 0;
 
   const betrag = (tag: string, s: Sum): XmlNode =>
-    el(tag, [text('preisanteil1', money(s.pa1)), text('preisanteil2', money(s.gesamt - s.pa1)), text('gesamt', money(s.gesamt))]);
+    el(tag, [text('preisanteil1', money(s.pa1)), text('preisanteil2', money(s.gesamt.minus(s.pa1))), text('gesamt', money(s.gesamt))]);
 
   const gruppensumme = (tag: string, s: Sum): XmlNode => el(tag, [betrag('summe', s), betrag('summe-inkl-na', s)]);
 
@@ -371,12 +373,12 @@ export function buildOnlv(schedule: CostSchedule, items: CostItem[], opts: OnlvB
 
     const u = a2063UnitOf(it.unit);
     if (!u.known) unknownUnits++;
-    const qty = it.quantity ?? 0;
+    const qty = dec(it.quantity);
     const pr = price(it);
     // Verrekenbaar 'N' (of de markering van de importer) → Eventualposition:
     // telt in ÖNORM niet mee in de LV-som.
     const eventual = optional || it.verrekenbaar === 'N';
-    const pospreis = round2(qty * pr.gesamt);
+    const pospreis = round2(qty.times(pr.gesamt));
     children.push(
       text('einheit', u.unit),
       el('pzzv', [el(eventual ? 'eventualposition' : 'normalposition')]),
@@ -391,7 +393,7 @@ export function buildOnlv(schedule: CostSchedule, items: CostItem[], opts: OnlvB
     } else {
       children.push(el('nichtangeboten'));
     }
-    const sum: Sum = eventual ? ZERO : { pa1: round2(qty * pr.pa1), gesamt: pospreis };
+    const sum: Sum = eventual ? ZERO : { pa1: round2(qty.times(pr.pa1)), gesamt: pospreis };
     return { node: el('pos-eigenschaften', children), sum };
   };
 
@@ -556,14 +558,15 @@ export function buildOnlv(schedule: CostSchedule, items: CostItem[], opts: OnlvB
     body.push(gruppensumme('lv-summe', lvSum));
     // Angebotspreis incl. USt: het btw-percentage van de staart, anders het Oostenrijkse normaaltarief.
     const btw = items.find((i) => i.rowType === 'staart_btw');
-    const ustsatz = btw?.staartPercentage != null && btw.staartPercentage > 0 && btw.staartPercentage < 100 ? btw.staartPercentage : 20;
-    const ustbetrag = round2(lvSum.gesamt * ustsatz / 100);
+    const pct = dec(btw?.staartPercentage);
+    const ustsatz = pct.gt(0) && pct.lt(100) ? pct : new Dec(20);
+    const ustbetrag = round2(lvSum.gesamt.times(ustsatz).div(100));
     body.push(el('summenormalausfuehrung', [
       text('summe-des-lv', money(lvSum.gesamt)),
       text('summe-nachlaesse', money(0)),
       text('gesamtpreis', money(lvSum.gesamt)),
       el('ust', [text('ustsatz', money(ustsatz)), text('ustbetrag', money(ustbetrag))]),
-      text('angebotspreis', money(lvSum.gesamt + ustbetrag)),
+      text('angebotspreis', money(lvSum.gesamt.plus(ustbetrag))),
     ]));
   }
 

@@ -114,9 +114,9 @@ export function parseIfcCostFile(content: string): { schedule: CostSchedule; ite
     client: '',
     author: '',
     ifcGuid: schedArgs[0] ? extractString(schedArgs[0]) : generateIfcGuid(),
-    uitvoeringskosten: 6,
-    algemeneKosten: 9,
-    winstRisico: 5,
+    uitvoeringskosten: '6',
+    algemeneKosten: '9',
+    winstRisico: '5',
   };
 
   // Find IfcProject for project name
@@ -142,8 +142,8 @@ export function parseIfcCostFile(content: string): { schedule: CostSchedule; ite
       quantity: null,
       materialPrice: null,
       laborPrice: null,
-      unitPrice: 0,
-      total: 0,
+      unitPrice: '0',
+      total: '0',
       isCollapsed: false,
       depth: 0,
       notes: '',

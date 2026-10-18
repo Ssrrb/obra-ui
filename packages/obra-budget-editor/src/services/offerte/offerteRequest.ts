@@ -4,6 +4,7 @@
  * zodat beide dezelfde PDF opleveren.
  */
 import { useAppStore } from '@/state/appStore';
+import { toNumber } from '@/utils/decimal';
 
 type Store = ReturnType<typeof useAppStore.getState>;
 
@@ -63,8 +64,9 @@ export function buildOfferteRequest(store: Store = useAppStore.getState()) {
       author: store.schedule?.author || '',
       description: store.schedule?.description || '',
       status: store.schedule?.status || '',
-      algemeneKosten: store.schedule?.algemeneKosten ?? 6,
-      winstRisico: store.schedule?.winstRisico ?? 2,
+      // Rust offerte generator takes f64.
+      algemeneKosten: toNumber(store.schedule?.algemeneKosten ?? '6'),
+      winstRisico: toNumber(store.schedule?.winstRisico ?? '2'),
     },
     items: store.items.map(i => ({
       id: i.id,
@@ -72,13 +74,13 @@ export function buildOfferteRequest(store: Store = useAppStore.getState()) {
       description: i.description || '',
       nr: i.nr,
       rowType: i.rowType,
-      quantity: i.quantity,
+      quantity: i.quantity == null ? null : toNumber(i.quantity),
       unit: i.unit || '',
-      unitPrice: i.unitPrice ?? 0,
-      total: i.total ?? 0,
+      unitPrice: toNumber(i.unitPrice),
+      total: toNumber(i.total),
       depth: i.depth ?? 0,
       parentId: i.parentId,
-      staartPercentage: i.staartPercentage,
+      staartPercentage: i.staartPercentage == null ? null : toNumber(i.staartPercentage),
     })),
     briefhoofdPath: null as string | null,
   };

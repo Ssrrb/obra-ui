@@ -1,3 +1,5 @@
+import type { DecimalString } from '@ctrlmas/budget-engine';
+import { Dec, dec } from '@/utils/decimal';
 export type XmlAttrs = Record<string, string | number | undefined>;
 
 export interface XmlNode {
@@ -47,8 +49,10 @@ function escapeXml(s: string): string {
     .replace(/"/g, '&quot;').replace(/'/g, '&apos;');
 }
 
-export function formatDutch(n: number, decimals = 2): string {
-  return n.toFixed(decimals).replace('.', ',');
+/** Decimal (or number) → Dutch text with fixed decimals, HALF_UP on the decimal value. */
+export function formatDutch(n: number | DecimalString | null | undefined, decimals = 2): string {
+  const d = typeof n === 'number' ? new Dec(String(n)) : dec(n);
+  return d.toFixed(decimals).replace('.', ',');
 }
 
 export function denormalizeUnit(unit: string): string {

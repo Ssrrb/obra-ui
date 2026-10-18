@@ -8,7 +8,9 @@ export interface CostScheduleSlice {
   schedule: CostSchedule;
   setSchedule: (schedule: Partial<CostSchedule>) => void;
   resetSchedule: () => void;
-  updateTarieven: (tarieven: Record<string, number>) => void;
+  updateTarieven: (tarieven: Record<string, import("@ctrlmas/budget-engine").DecimalString>) => void;
+  /** Schema 2: whether the budget's prices include IVA. */
+  setIvaMode: (mode: import("@ctrlmas/budget-engine").IvaMode) => void;
   updateProjectProperty: (id: string, field: keyof ProjectProperty, value: any) => void;
   addProjectProperty: () => void;
   removeProjectProperty: (id: string) => void;
@@ -154,6 +156,13 @@ export const createCostScheduleSlice: StateCreator<CostScheduleSlice> = (set, ge
     set((state) => ({
       schedule: { ...state.schedule, activeBranchId: id },
     })),
+  setIvaMode: (ivaMode) => {
+    const state = get() as any;
+    set({ schedule: { ...state.schedule, ivaMode } } as any);
+    if (state.activeDocumentId && state.updateDocument) {
+      state.updateDocument(state.activeDocumentId, { isModified: true });
+    }
+  },
   updateTarieven: (tarieven) => {
     const state = get() as any;
     const newSchedule = { ...state.schedule, tarieven };

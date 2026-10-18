@@ -34,7 +34,7 @@ describe('FIEBDC-3 (.bc3) import', () => {
     const posten = result.items.filter(i => i.rowType === 'begrotingspost');
     expect(posten.map(p => p.code)).toEqual(['PART1', 'PART2']);
     expect(posten[0].parentId).toBe(chapter.id);
-    expect(posten[0].quantity).toBe(10);
+    expect(posten[0].quantity).toBe('10');
     expect(posten[0].notes).toContain('terreno compacto');
 
     const regels = result.items.filter(i => i.rowType === 'regel');
@@ -42,9 +42,9 @@ describe('FIEBDC-3 (.bc3) import', () => {
     const mo = regels.find(r => r.code === 'MO001')!;
     expect(mo.resourceType).toBe('arbeid');
     expect(mo.unit).toBe('uur');
-    expect(mo.quantity).toBe(10);      // partida-meting
-    expect(mo.normQuantity).toBe(0.5); // rendimiento
-    expect(mo.normUnitPrice).toBe(15.5);
+    expect(mo.quantity).toBe('10');      // partida-meting
+    expect(mo.normQuantity).toBe('0.5'); // rendimiento
+    expect(mo.normUnitPrice).toBe('15.5');
     const mat = regels.find(r => r.code === 'MAT01')!;
     expect(mat.resourceType).toBe('materiaal');
   });
@@ -87,7 +87,7 @@ describe('FIEBDC-3 (.bc3) import', () => {
     const result = importBc3(zonderPrijzen);
     expect(result.warnings.some(w => w.includes('geen prijzen'))).toBe(true);
     // De structuur en hoeveelheden komen wél gewoon binnen.
-    expect(result.items.find(i => i.code === 'P001')?.quantity).toBe(25);
+    expect(result.items.find(i => i.code === 'P001')?.quantity).toBe('25');
   });
 
   it('meldt niets over prijzen wanneer die er wél zijn', () => {

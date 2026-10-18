@@ -13,8 +13,8 @@ function makeItem(overrides: Partial<CostItem> = {}): CostItem {
     quantity: null,
     materialPrice: null,
     laborPrice: null,
-    unitPrice: 0,
-    total: 0,
+    unitPrice: '0',
+    total: '0',
     isCollapsed: false,
     depth: 0,
     notes: '',
@@ -55,9 +55,9 @@ describe('normalizeItemOrder (kern-invariant: array = hiërarchie)', () => {
     const ch21 = makeItem({ id: 'ch21', rowType: 'chapter', code: '21', description: 'Betonwerk' });
     const ch25 = makeItem({ id: 'ch25', rowType: 'chapter', code: '25', description: 'Staal' });
     const post21 = makeItem({ id: 'p21', parentId: 'ch21', description: 'Drijflichaam' });
-    const regel21 = makeItem({ id: 'r21', parentId: 'p21', rowType: 'regel', description: 'Betonbak', quantity: 12, normUnitPrice: 19350 });
+    const regel21 = makeItem({ id: 'r21', parentId: 'p21', rowType: 'regel', description: 'Betonbak', quantity: '12', normUnitPrice: '19350' });
     const post25 = makeItem({ id: 'p25', parentId: 'ch25', description: 'Constructiestaal' });
-    const regel25 = makeItem({ id: 'r25', parentId: 'p25', rowType: 'regel', description: 'Staal', quantity: 10000, normUnitPrice: 2 });
+    const regel25 = makeItem({ id: 'r25', parentId: 'p25', rowType: 'regel', description: 'Staal', quantity: '10000', normUnitPrice: '2' });
 
     // Gescrambeld zoals MCP/import het achterlaat: kinderen achteraan, los van ouders
     const scrambled = [ch21, ch25, post25, regel21, post21, regel25];
@@ -100,7 +100,7 @@ describe('normalizeItemOrder (kern-invariant: array = hiërarchie)', () => {
   it('laat wezen nooit verdwijnen en zet staart achteraan', () => {
     const ch = makeItem({ id: 'ch', rowType: 'chapter' });
     const wees = makeItem({ id: 'w', parentId: 'bestaat-niet', description: 'Wees' });
-    const staart = makeItem({ id: 's', rowType: 'staart_btw', staartPercentage: 21 });
+    const staart = makeItem({ id: 's', rowType: 'staart_btw', staartPercentage: '21' });
     const result = normalizeItemOrder([staart, wees, ch].map(i => ({ ...i })));
     expect(result).toHaveLength(3);
     expect(result.map(i => i.id)).toEqual(['ch', 'w', 's']);
@@ -116,20 +116,20 @@ describe('normalizeItemOrder (kern-invariant: array = hiërarchie)', () => {
   it('verandert totalen niet door de herordening', () => {
     const ch = makeItem({ id: 'ch', rowType: 'chapter' });
     const p = makeItem({ id: 'p', parentId: 'ch' });
-    const r1 = makeItem({ id: 'r1', parentId: 'p', rowType: 'regel', quantity: 2, normUnitPrice: 100 });
-    const r2 = makeItem({ id: 'r2', parentId: 'p', rowType: 'regel', quantity: 3, normUnitPrice: 50 });
+    const r1 = makeItem({ id: 'r1', parentId: 'p', rowType: 'regel', quantity: '2', normUnitPrice: '100' });
+    const r2 = makeItem({ id: 'r2', parentId: 'p', rowType: 'regel', quantity: '3', normUnitPrice: '50' });
     const ordered = recalculateItems([ch, p, r1, r2]);
     const scrambled = recalculateItems([r2, ch, r1, p]);
     const total = (arr: CostItem[]) => arr.find(i => i.id === 'ch')!.total;
     expect(total(scrambled)).toBe(total(ordered));
-    expect(total(ordered)).toBe(2 * 100 + 3 * 50);
+    expect(total(ordered)).toBe('350'); // 2 * 100 + 3 * 50
   });
 
   it('nummert hiërarchisch volgens de genormaliseerde volgorde', () => {
     const ch = makeItem({ id: 'ch', rowType: 'chapter', code: '21' });
     const p1 = makeItem({ id: 'p1', parentId: 'ch' });
     const p2 = makeItem({ id: 'p2', parentId: 'ch' });
-    const r = makeItem({ id: 'r', parentId: 'p2', rowType: 'regel', quantity: 1, normUnitPrice: 1 });
+    const r = makeItem({ id: 'r', parentId: 'p2', rowType: 'regel', quantity: '1', normUnitPrice: '1' });
     // p2 vóór p1 in de array → p2 = 21.01, p1 = 21.02
     const result = recalculateItems([ch, p2, r, p1]);
     const byId = new Map(result.map(i => [i.id, i]));

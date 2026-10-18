@@ -33,7 +33,7 @@ interface Props {
   rowHeight: number;
   columns: GridColumn[];
   columnWidths: number[];
-  resourceTotals?: Record<string, number>;
+  resourceTotals?: Record<string, import('@ctrlmas/budget-engine').DecimalString>;
   cellSelectionMinRow?: number;
   cellSelectionMaxRow?: number;
   cellSelectionMinCol?: number;

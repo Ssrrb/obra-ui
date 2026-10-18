@@ -21,6 +21,6 @@ describe('RSX importer', () => {
     const post = result.items.find((i) => i.code === '01.01.01');
     expect(post?.description).toBe('Opruimwerkzaamheden');
     expect(post?.unit).toBe('st');
-    expect(post?.quantity).toBe(1);
+    expect(post?.quantity).toBe('1');
   });
 });

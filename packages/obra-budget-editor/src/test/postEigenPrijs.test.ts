@@ -14,7 +14,7 @@ describe('eigen prijs op een (bewakings)post telt door', () => {
     const post = s().addItem(ch);
     s().updateItem(post, 'quantity', 1);
     s().updateItem(post, 'normUnitPrice', 550);
-    expect(s().items.find(i => i.id === post)!.total).toBe(550);
+    expect(s().items.find(i => i.id === post)!.total).toBe('550');
   });
 
   it('post met lege bewakingspost en tekstregel eronder: eigen prijs blijft tellen', () => {
@@ -27,8 +27,8 @@ describe('eigen prijs op een (bewakings)post telt door', () => {
     s().updateItem(post, 'normUnitPrice', 550);
     s().addBewakingspost(post);
     s().addTekstregel(post);
-    expect(s().items.find(i => i.id === post)!.total).toBe(550);
-    expect(s().items.find(i => i.id === ch)!.total).toBe(550);
+    expect(s().items.find(i => i.id === post)!.total).toBe('550');
+    expect(s().items.find(i => i.id === ch)!.total).toBe('550');
   });
 
   it('zodra kinderen rekenen, winnen de kinderen', () => {
@@ -40,7 +40,7 @@ describe('eigen prijs op een (bewakings)post telt door', () => {
     const regel = s().addRegel(bw);
     s().updateItem(regel, 'quantity', 2);
     s().updateItem(regel, 'normUnitPrice', 100);
-    expect(s().items.find(i => i.id === post)!.total).toBe(200);
+    expect(s().items.find(i => i.id === post)!.total).toBe('200');
   });
 
   it('kale bewakingspost met eigen prijs rekent ook', () => {
@@ -49,8 +49,8 @@ describe('eigen prijs op een (bewakings)post telt door', () => {
     const bw = s().addBewakingspost(post);
     s().updateItem(bw, 'quantity', 3);
     s().updateItem(bw, 'normUnitPrice', 50);
-    expect(s().items.find(i => i.id === bw)!.total).toBe(150);
-    expect(s().items.find(i => i.id === post)!.total).toBe(150);
+    expect(s().items.find(i => i.id === bw)!.total).toBe('150');
+    expect(s().items.find(i => i.id === post)!.total).toBe('150');
   });
 
   it('BasCalc-import: postprijs gepind in materialPrice telt door', () => {
@@ -76,7 +76,7 @@ describe('eigen prijs op een (bewakings)post telt door', () => {
     s().updateItem(post, 'materialPrice', null);
     s().updateItem(post, 'normUnitPrice', 16);
     const p = s().items.find(i => i.id === post)!;
-    expect(p.total).toBe(81 * 16);
+    expect(p.total).toBe(String(81 * 16));
     expect(p.materialPrice).toBeNull();
   });
 });

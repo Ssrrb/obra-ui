@@ -114,8 +114,8 @@ export const createAccountsSlice: StateCreator<AccountsSlice> = (set, get) => ({
 
   cloudUploadCurrent: async (path?: string[], fileName?: string) => {
     const s = get() as any;
-    const { serializeProject } = await import('@/services/file/fileService');
-    const content = serializeProject(s.schedule, s.items, s.companyInfo, s.subSheets, s.offerte);
+    const { serializeProjectForFile } = await import('@/services/file/fileService');
+    const content = serializeProjectForFile(s.schedule, s.items, s.companyInfo, s.subSheets, s.offerte);
     const base = (fileName?.trim() || s.schedule?.name || s.schedule?.projectName || 'begroting') as string;
     const cleanBase = `${base.replace(/\.(ifcCalc|ocs|json)$/i, '')}.ifcCalc`;
     // Mappen via "/"-prefix — werkt zodra het platform paden in namen toestaat.

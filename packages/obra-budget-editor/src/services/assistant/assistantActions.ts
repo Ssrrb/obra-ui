@@ -1,5 +1,8 @@
 import type { CostItem, CostSchedule, RowType } from '@/types/costModel';
 import { useAppStore } from '@/state/appStore';
+import type { DecimalString } from '@ctrlmas/budget-engine';
+import { dec, str, sumDec } from '@/utils/decimal';
+import { parseDecimal, parseDecimalOrNull } from '@/services/importers/core';
 
 /**
  * Calculatieassistent — de brug tussen het taalmodel en het geopende document.
@@ -21,14 +24,12 @@ import { useAppStore } from '@/state/appStore';
 const MAX_CONTEXT_REGELS = 2000;
 
 export function buildBudgetContext(schedule: CostSchedule, items: CostItem[]): string {
-  const tarieven = schedule.tarieven ?? { A: 66, B: 46, C: 82 };
+  const tarieven = schedule.tarieven ?? { A: '66', B: '46', C: '82' };
   const zichtbaar = items.filter((i) => !i.rowType.startsWith('staart_'));
-  const kostprijs = zichtbaar
-    .filter((i) => i.parentId === null)
-    .reduce((s, i) => s + (i.total ?? 0), 0);
+  const kostprijs = sumDec(zichtbaar.filter((i) => i.parentId === null).map((i) => i.total));
 
-  const fmt = (v: number | null | undefined) =>
-    v == null || v === 0 ? '' : String(Math.round(v * 100) / 100);
+  const fmt = (v: DecimalString | null | undefined) =>
+    v == null || dec(v).isZero() ? '' : dec(v).toDecimalPlaces(2).toFixed();
 
   const regels = zichtbaar.slice(0, MAX_CONTEXT_REGELS).map((i) => {
     const kolommen = [
@@ -46,7 +47,7 @@ export function buildBudgetContext(schedule: CostSchedule, items: CostItem[]): s
 
   return [
     `Project: ${schedule.projectName || schedule.name || '(naamloos)'}`,
-    `Kostprijs (excl. staart/btw): ${Math.round(kostprijs)}`,
+    `Kostprijs (excl. staart/btw): ${kostprijs.toDecimalPlaces(0).toFixed()}`,
     `Tarieven per uur: A=${tarieven.A} B=${tarieven.B} C=${tarieven.C}`,
     '',
     'Begrotingsregels (Nr | type | omschrijving | hoeveelheid | details | totaal):',
@@ -105,6 +106,7 @@ const VELD_MAP: Record<string, keyof CostItem> = {
 };
 
 function nieuwItem(rowType: RowType, parentId: string | null, overrides: Partial<CostItem>): CostItem {
+  // Assistant values arrive as JSON numbers or text: see parseDecimalOrNull.
   return {
     id: crypto.randomUUID(),
     parentId,
@@ -115,8 +117,8 @@ function nieuwItem(rowType: RowType, parentId: string | null, overrides: Partial
     quantity: null,
     materialPrice: null,
     laborPrice: null,
-    unitPrice: 0,
-    total: 0,
+    unitPrice: '0',
+    total: '0',
     isCollapsed: false,
     depth: 0,
     notes: '',
@@ -144,7 +146,7 @@ export function applyActies(acties: AssistantActie[]): string[] {
   const store = useAppStore.getState();
   store.pushHistory(store.items, 'Calculatieassistent');
 
-  const tarieven = store.schedule.tarieven ?? { A: 66, B: 46, C: 82 };
+  const tarieven: Record<string, DecimalString> = store.schedule.tarieven ?? { A: '66', B: '46', C: '82' };
   const vindOpNr = (nr: unknown): CostItem | undefined =>
     useAppStore.getState().items.find((i) => i.nr === String(nr ?? '').trim());
 
@@ -179,7 +181,7 @@ export function applyActies(acties: AssistantActie[]): string[] {
           if (!ouder) throw new Error(`onderNr ${actie.onderNr} niet gevonden`);
           const item = nieuwItem('begrotingspost', ouder.id, {
             description: String(actie.omschrijving ?? 'Nieuwe post'),
-            quantity: actie.aantal != null ? Number(actie.aantal) : null,
+            quantity: parseDecimalOrNull(actie.aantal as string | number | null | undefined),
             unit: (actie.eenheid as CostItem['unit']) ?? 'st',
           });
           useAppStore.getState().setItems([...useAppStore.getState().items, item]);
@@ -197,21 +199,21 @@ export function applyActies(acties: AssistantActie[]): string[] {
           // materiaalkolom.
           const item = nieuwItem('regel', ouder.id, {
             description: String(actie.omschrijving ?? 'Nieuwe regel'),
-            quantity: actie.aantal != null ? Number(actie.aantal) : null,
+            quantity: parseDecimalOrNull(actie.aantal as string | number | null | undefined),
             unit: eenheid as CostItem['unit'],
             ...(isUren
               ? {
-                  normQuantity: 1,
+                  normQuantity: '1',
                   tariefGroep: groep,
-                  laborPrice: tarieven[groep] ?? 66,
+                  laborPrice: tarieven[groep] ?? '66',
                   normUnitPrice: null,
                   resourceType: 'arbeid',
                 }
               : {
-                  normUnitPrice: actie.prijs != null ? Number(actie.prijs) : null,
-                  normQuantity: actie.norm != null ? Number(actie.norm) : null,
+                  normUnitPrice: parseDecimalOrNull(actie.prijs as string | number | null | undefined),
+                  normQuantity: parseDecimalOrNull(actie.norm as string | number | null | undefined),
                   tariefGroep: actie.tariefgroep != null ? groep : null,
-                  laborPrice: actie.norm != null && actie.tariefgroep != null ? (tarieven[groep] ?? 66) * Number(actie.norm) : null,
+                  laborPrice: actie.norm != null && actie.tariefgroep != null ? str(dec(tarieven[groep] ?? '66').times(dec(parseDecimal(actie.norm as string | number)))) : null,
                   resourceType: (actie.resourceType as CostItem['resourceType']) ?? null,
                 }),
           });

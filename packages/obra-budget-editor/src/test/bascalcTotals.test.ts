@@ -64,8 +64,8 @@ describe('BasCalc bron-getrouwe bedragen', () => {
 
   it('consistente normvelden blijven behouden (kraan: 8 × €130)', () => {
     const kraan = recalced.find((i) => i.code === '30105');
-    expect(kraan?.normUnitPrice).toBe(130);
-    expect(kraan?.quantity).toBe(8);
+    expect(kraan?.normUnitPrice).toBe('130');
+    expect(kraan?.quantity).toBe('8');
     expect(Math.round((kraan?.total ?? 0) * 100) / 100).toBe(1040);
   });
 
@@ -85,7 +85,7 @@ describe('BasCalc bron-getrouwe bedragen', () => {
     expect(staart).toBeTruthy();
     const kinderen = recalced.filter((i) => i.parentId === staart!.id);
     expect(kinderen.length).toBe(0);
-    expect(staart!.staartPercentage).toBe(6);
+    expect(staart!.staartPercentage).toBe('6');
   });
 
   it('staart rekent vlak (BasCalc): elk percentage over de kostprijs', () => {

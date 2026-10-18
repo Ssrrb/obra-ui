@@ -17,6 +17,8 @@
     "test:ctrl": "vitest run src/ctrl"
   },
   "dependencies": {
+    "7z-wasm": "^1.2.0",
+    "@ctrlmas/budget-engine": "link:/Users/sebastian/Desktop/obra-studio/worktrees/ctrl-budgets-decimal/obra-budget-engine",
     "@tauri-apps/api": "^2.10.1",
     "@tauri-apps/plugin-dialog": "^2.6.0",
     "@tauri-apps/plugin-fs": "^2.4.5",
@@ -27,7 +29,6 @@
     "@thatopen/components-front": "^3.4.1",
     "@thatopen/fragments": "^3.4.1",
     "@types/three": "^0.184.0",
-    "7z-wasm": "^1.2.0",
     "buffer": "^6.0.3",
     "i18next": "^25.8.18",
     "i18next-browser-languagedetector": "^8.2.1",

@@ -2,6 +2,7 @@ import type { ProjectFile, CostSchedule, CostItem, CompanyInfo, SubSheet, Spread
 import { defaultCompanyInfo } from '@/state/slices/companySlice';
 import { createDefaultProjectInfo } from '@/types/costModel';
 import { synthesizeStaartItems, ensureBtwLaagItem } from '@/services/calculation/staartDefaults';
+import { downgradeForExport, upgradeDocument, upgradeDocumentText } from '@ctrlmas/budget-engine';
 
 /**
  * Huidige versie van het .ifcCalc-bestandsformaat (major.minor.patch).
@@ -48,6 +49,32 @@ export function serializeProject(
   return JSON.stringify(createProjectFile(schedule, items, companyInfo, spreadsheets, offerte, snapshots), null, 2);
 }
 
+/**
+ * Schedule and items with money as numbers, for the desktop (Tauri/Rust)
+ * report generators that read f64 — the same downgrade as native files.
+ */
+export function numbersForRust(schedule: CostSchedule, items: CostItem[]): { schedule: CostSchedule; items: CostItem[] } {
+  return downgradeForExport({ schedule, items } as ProjectFile) as { schedule: CostSchedule; items: CostItem[] };
+}
+
+/**
+ * A native `.ifcCalc`/`.ocs` file: money written back as JSON numbers
+ * (engine downgradeForExport), so upstream Open Calc Studio keeps reading
+ * it; schema 2 is not imposed on those files. A number holds 15–17
+ * significant digits: longer values are rounded to the nearest double here.
+ * ivaRate/ivaMode stay as extra keys. The ctrl bridge uses serializeProject.
+ */
+export function serializeProjectForFile(
+  schedule: CostSchedule,
+  items: CostItem[],
+  companyInfo?: CompanyInfo,
+  spreadsheets?: SpreadsheetsData | SubSheet[],
+  offerte?: OfferteDocument,
+  snapshots?: ProjectSnapshot[],
+): string {
+  return JSON.stringify(downgradeForExport(createProjectFile(schedule, items, companyInfo, spreadsheets, offerte, snapshots)), null, 2);
+}
+
 /** Migrate a v1 item (with isChapter, resources, rowType='normal') to v2 format */
 function migrateItemV1toV2(item: any): CostItem {
   let rowType: RowType;
@@ -91,37 +118,49 @@ function migrateItemV1toV2(item: any): CostItem {
   };
 }
 
+/**
+ * Reads a native file or a host document into schema 2. Money values keep
+ * their original JSON literal (engine upgradeDocumentText, lossless-json):
+ * `123456789012345678.123456` survives although no double holds it.
+ * Values beyond 24 integer / 12 fraction digits are rejected with a message.
+ * Legacy v1 / versionless files are migrated first, then upgraded from the
+ * parsed numbers (their shortest round-trip text).
+ */
 export function deserializeProject(json: string): ProjectFile {
-  const parsed = JSON.parse(json);
-  if (!parsed.schedule || !Array.isArray(parsed.items)) {
+  const raw = JSON.parse(json);
+  if (!raw?.schedule || !Array.isArray(raw.items)) {
     throw new Error('Invalid file format');
   }
+  const legacy = !raw.version || String(raw.version).startsWith('1.');
 
   // Legacy files without version (e.g. raw schedule+items exports)
-  if (!parsed.version) {
-    parsed.version = '2.0.0';
-    parsed.resourceLibrary = parsed.resourceLibrary ?? [];
-    parsed.items = parsed.items.map(migrateItemV1toV2);
+  if (!raw.version) {
+    raw.version = '2.0.0';
+    raw.resourceLibrary = raw.resourceLibrary ?? [];
+    raw.items = raw.items.map(migrateItemV1toV2);
   }
 
   // Nieuwer-dan-deze-app: een hogere MAJOR betekent breaking wijzigingen die
   // deze app niet kent — weiger met een duidelijke melding in plaats van het
   // bestand half/fout te interpreteren (en bij opslaan stilletjes te slopen).
-  const fileMajor = parseInt(String(parsed.version).split('.')[0], 10);
+  const fileMajor = parseInt(String(raw.version).split('.')[0], 10);
   const appMajor = parseInt(FILE_FORMAT_VERSION.split('.')[0], 10);
   if (!isNaN(fileMajor) && fileMajor > appMajor) {
     throw new Error(
-      `Dit bestand gebruikt een nieuwer .ifcCalc-formaat (${parsed.version}) dan deze app ondersteunt (t/m ${FILE_FORMAT_VERSION}). Werk Open Calc Studio bij om het te openen.`
+      `Dit bestand gebruikt een nieuwer .ifcCalc-formaat (${raw.version}) dan deze app ondersteunt (t/m ${FILE_FORMAT_VERSION}). Werk Open Calc Studio bij om het te openen.`
     );
   }
 
   // Migrate v1 files to v2
-  const isV1 = parsed.version.startsWith('1.');
+  const isV1 = raw.version.startsWith('1.');
   if (isV1) {
-    parsed.version = '2.0.0';
-    parsed.items = parsed.items.map(migrateItemV1toV2);
-    parsed.resourceLibrary = parsed.resourceLibrary ?? [];
+    raw.version = '2.0.0';
+    raw.items = raw.items.map(migrateItemV1toV2);
+    raw.resourceLibrary = raw.resourceLibrary ?? [];
   }
+
+  // Schema 2: money as decimal text, from the literals when the text is usable as is.
+  const parsed: any = legacy ? upgradeDocument(raw) : upgradeDocumentText(json);
 
   // Backward compatibility: ensure offerte section items have v2 fields
   if (parsed.offerte?.secties) {

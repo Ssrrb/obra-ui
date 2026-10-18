@@ -87,7 +87,7 @@ describe('staart editability', () => {
     useAppStore.setState({ items: [baseItem] } as any);
     (useAppStore.getState() as any).updateItem('ukk', 'quantity', 7);
     const item: any = useAppStore.getState().items.find((it: any) => it.id === 'ukk');
-    expect(item.quantity).toBe(7);
-    expect(item.staartPercentage).toBe(7);
+    expect(item.quantity).toBe('7');
+    expect(item.staartPercentage).toBe('7');
   });
 });

@@ -4,6 +4,7 @@ import { useAppStore } from '@/state/appStore';
 import { formatCurrency, formatNumber, parseNlNumber } from '@/utils/formatting';
 import { getStaartBreakdown } from '@/services/calculation/calculator';
 import { createDefaultProjectProperties } from '@/types/costModel';
+import { dec, fromNumber } from '@/utils/decimal';
 
 /**
  * Projectgegevens (naam/nummer/opdrachtgever/rapportdatum) + projectkengetallen.
@@ -27,7 +28,7 @@ const EditableNumberCell: React.FC<{ value: number | null; onChange: (v: number 
   return (
     <div onClick={() => { setText(value != null ? String(value).replace('.', ',') : ''); setEditing(true); }}
       style={{ cursor: 'pointer', padding: '2px 4px', minHeight: 18, color: value != null ? 'var(--theme-editable-text, var(--theme-text))' : 'var(--theme-text-secondary)', borderBottom: '1px dashed var(--theme-border)' }}>
-      {value != null ? formatNumber(value) : (placeholder ?? '-')}
+      {value != null ? formatNumber(fromNumber(value)) : (placeholder ?? '-')}
     </div>
   );
 };
@@ -113,8 +114,9 @@ export const ProjectInfoSettings: React.FC = () => {
           <tbody>
             {projectProperties.map((prop) => {
               const hasVal = prop.value != null && prop.value > 0;
-              const perExcl = hasVal && totalExcl > 0 ? totalExcl / prop.value! : null;
-              const perIncl = hasVal && totalIncl > 0 ? totalIncl / prop.value! : null;
+              // Project properties (m², m³) stay numbers; their shortest text joins the decimal division.
+              const perExcl = hasVal && dec(totalExcl).gt(0) ? dec(totalExcl).div(String(prop.value)) : null;
+              const perIncl = hasVal && dec(totalIncl).gt(0) ? dec(totalIncl).div(String(prop.value)) : null;
               return (
                 <tr key={prop.id}>
                   <td>{prop.isDefault ? <span>{prop.name}</span> : <EditableTextCell value={prop.name} onChange={(v) => updateProjectProperty(prop.id, 'name', v)} placeholder={t('projectInfo.namePlaceholder')} />}</td>

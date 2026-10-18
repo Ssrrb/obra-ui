@@ -1,3 +1,5 @@
+import type { DecimalString } from '@ctrlmas/budget-engine';
+import { Dec } from '@/utils/decimal';
 export function generateIfcGuid(): string {
   const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_$';
   let result = '';
@@ -38,8 +40,9 @@ export function decodeStepString(str: string): string {
   return result;
 }
 
-export function formatStepFloat(value: number): string {
-  const s = value.toString();
+/** STEP real: a stored decimal is written as its exact text; a computed Dec capped at 12 decimals. */
+export function formatStepFloat(value: number | DecimalString | Dec): string {
+  const s = value instanceof Dec ? value.toDecimalPlaces(12).toFixed() : value.toString();
   if (!s.includes('.')) return s + '.';
   return s;
 }

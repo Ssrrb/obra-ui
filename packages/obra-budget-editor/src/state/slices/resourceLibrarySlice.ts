@@ -1,4 +1,5 @@
 import type { StateCreator } from 'zustand';
+import { fromNumber } from '@/utils/decimal';
 import { CTRL_BUILD } from '@/services/buildFlags';
 import type { ResourceLibraryItem, ResourceType, CostUnit } from '@/types/costModel';
 import { createDefaultResourceLibrary } from '@/data/defaultResourceLibrary';
@@ -60,7 +61,7 @@ function parseLibraryJson(json: unknown): ResourceLibraryItem[] {
     description: String(r.description ?? ''),
     unit: mapLibraryUnit(String(r.unit ?? 'st')),
     resourceType: mapCategoryToResourceType(String(r.category ?? '')),
-    defaultUnitPrice: typeof r.defaultUnitPrice === 'number' ? r.defaultUnitPrice : null,
+    defaultUnitPrice: typeof r.defaultUnitPrice === 'number' ? fromNumber(r.defaultUnitPrice) : null,
     category: r.subCategory ? String(r.subCategory) : String(r.category ?? ''),
   }));
 }

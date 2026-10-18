@@ -1,5 +1,7 @@
 import type { CostItem, CostUnit, RowType } from '@/types/costModel';
 import { registerWizard, type WizardResult } from './wizardRegistry';
+import type { DecimalString } from '@ctrlmas/budget-engine';
+import { fromNumber } from '@/utils/decimal';
 
 let _idCounter = 0;
 function wizId(): string {
@@ -12,8 +14,16 @@ function wizGuid(): string {
   return s;
 }
 
+/** Wizard quantities and prices are computed as doubles; stored as their shortest decimal text. */
+type Num = number | null | undefined;
+const num = (v: Num): DecimalString | null => (v == null ? null : fromNumber(v));
+type WizardOverrides = Omit<Partial<CostItem>, 'quantity' | 'materialPrice' | 'laborPrice' | 'unitPrice' | 'total' | 'normQuantity' | 'normFactor' | 'normDivisor' | 'normUnitPrice'> & {
+  quantity?: Num; materialPrice?: Num; laborPrice?: Num; unitPrice?: Num; total?: Num;
+  normQuantity?: Num; normFactor?: Num; normDivisor?: Num; normUnitPrice?: Num;
+};
+
 function makeItem(
-  overrides: Partial<CostItem> & { description: string; rowType: RowType; parentId: string | null; sortOrder: number; depth: number },
+  overrides: WizardOverrides & { description: string; rowType: RowType; parentId: string | null; sortOrder: number; depth: number },
 ): CostItem {
   return {
     id: overrides.id ?? wizId(),
@@ -22,11 +32,11 @@ function makeItem(
     code: overrides.code ?? '',
     description: overrides.description,
     unit: overrides.unit ?? 'st',
-    quantity: overrides.quantity ?? null,
-    materialPrice: overrides.materialPrice ?? null,
-    laborPrice: overrides.laborPrice ?? null,
-    unitPrice: overrides.unitPrice ?? 0,
-    total: overrides.total ?? 0,
+    quantity: num(overrides.quantity),
+    materialPrice: num(overrides.materialPrice),
+    laborPrice: num(overrides.laborPrice),
+    unitPrice: num(overrides.unitPrice) ?? '0',
+    total: num(overrides.total) ?? '0',
     isCollapsed: false,
     depth: overrides.depth,
     notes: '',
@@ -34,10 +44,10 @@ function makeItem(
     rowType: overrides.rowType,
     staartPercentage: null,
     nr: '',
-    normQuantity: overrides.normQuantity ?? null,
-    normFactor: overrides.normFactor ?? null,
-    normDivisor: overrides.normDivisor ?? null,
-    normUnitPrice: overrides.normUnitPrice ?? null,
+    normQuantity: num(overrides.normQuantity),
+    normFactor: num(overrides.normFactor),
+    normDivisor: num(overrides.normDivisor),
+    normUnitPrice: num(overrides.normUnitPrice),
     resourceType: overrides.resourceType ?? null,
     resourceLibraryId: null,
     verrekenbaar: overrides.rowType === 'chapter' ? 'V' : null,

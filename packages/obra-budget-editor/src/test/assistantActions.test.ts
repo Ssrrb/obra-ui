@@ -46,8 +46,8 @@ describe('applyActies', () => {
     const res = applyActies([{ type: 'update', nr: '21.01.01', veld: 'aantal', waarde: 14 }]);
     expect(res[0]).toContain('✔');
     const r1 = useAppStore.getState().items.find(i => i.id === 'r1')!;
-    expect(r1.quantity).toBe(14);
-    expect(r1.total).toBe(14 * 19350);
+    expect(r1.quantity).toBe('14');
+    expect(r1.total).toBe(String(14 * 19350));
   });
 
   it('add_regel met eenheid uur volgt de loonregels (norm 1, tarief, geen materiaalprijs)', () => {
@@ -56,9 +56,9 @@ describe('applyActies', () => {
     const items = useAppStore.getState().items;
     const montage = items.find(i => i.description === 'Montage')!;
     expect(montage.parentId).toBe('post');
-    expect(montage.normQuantity).toBe(1);
+    expect(montage.normQuantity).toBe('1');
     expect(montage.tariefGroep).toBe('B');
-    expect(montage.laborPrice).toBeGreaterThan(0);
+    expect(Number(montage.laborPrice)).toBeGreaterThan(0);
     expect(montage.normUnitPrice).toBeNull();
     expect(montage.resourceType).toBe('arbeid');
     // genormaliseerd: direct onder zijn ouder in de array
@@ -88,7 +88,7 @@ describe('applyActies', () => {
     ]);
     expect(res[0]).toContain('✖');
     expect(res[1]).toContain('✔');
-    expect(useAppStore.getState().items.find(i => i.id === 'r1')!.quantity).toBe(5);
+    expect(useAppStore.getState().items.find(i => i.id === 'r1')!.quantity).toBe('5');
   });
 });
 

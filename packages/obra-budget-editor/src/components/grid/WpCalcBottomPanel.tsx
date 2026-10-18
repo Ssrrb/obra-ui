@@ -1,9 +1,24 @@
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppStore } from '@/state/appStore';
-import { formatCurrency, formatNumber, formatNumberForEdit } from '@/utils/formatting';
-import { parseNumericInput } from '@/utils/numericInput';
+import { formatCurrency, formatDecimal, formatNumber, formatNumberForEdit } from '@/utils/formatting';
+import { parseDecimalInput } from '@/utils/numericInput';
 import { computeBtwLaagDirect } from '@/services/calculation/calculator';
+import { CTRL_BUILD } from '@/services/buildFlags';
+import type { DecimalString } from '@ctrlmas/budget-engine';
+import { Dec, dec, sumDec } from '@/utils/decimal';
+import { regelHours } from '@/services/grid/cellValue';
+import { InputErrorBanner } from './InputErrorBanner';
+
+/** Parse a panel input; a rejected value shows the message and returns undefined. */
+function parsePanelInput(value: string): DecimalString | null | undefined {
+  const r = parseDecimalInput(value);
+  useAppStore.getState().setInputError(r.ok ? null : r.message);
+  return r.ok ? r.value : undefined;
+}
+
+/** Amount as editor text, rounded to cents (display of a computed amount). */
+const amountForEdit = (v: DecimalString | Dec): string => formatNumberForEdit(dec(String(v)).toDecimalPlaces(2));
 
 /**
  * Full-content view for the "Uren & Staart" bottom-nav tab: the hours
@@ -12,6 +27,7 @@ import { computeBtwLaagDirect } from '@/services/calculation/calculator';
 export function UrenStaartView() {
   return (
     <div className="urenstaart-view">
+      <InputErrorBanner />
       <UrenFullScreen />
       <StaartFullScreen />
     </div>
@@ -26,36 +42,33 @@ function UrenFullScreen() {
   const prorateUrenByTariefGroep = useAppStore((s) => s.prorateUrenByTariefGroep);
   const prorateUrenTotal = useAppStore((s) => s.prorateUrenTotal);
   const pushHistory = useAppStore((s) => s.pushHistory);
-  const tarieven = schedule.tarieven ?? { A: 64, B: 43, C: 82 };
+  const tarieven: Record<string, DecimalString> = schedule.tarieven ?? { A: '64', B: '43', C: '82' };
 
   const urenData = useMemo(() => {
-    const groups: Record<string, { uren: number; tarief: number }> = {};
+    const groups: Record<string, { uren: Dec; tarief: Dec }> = {};
     for (const item of items) {
       if (item.rowType !== 'regel') continue;
       const groep = item.tariefGroep || '-';
       if (!groups[groep]) {
-        groups[groep] = { uren: 0, tarief: tarieven[groep] || 0 };
+        groups[groep] = { uren: new Dec(0), tarief: dec(tarieven[groep]) };
       }
-      const qty = item.quantity ?? 0;
-      const norm = item.normQuantity ?? 0;
-      const cap = item.normFactor ?? 1;
-      groups[groep].uren += qty * norm / (cap || 1);
+      groups[groep].uren = groups[groep].uren.plus(regelHours(item) ?? 0);
     }
     return groups;
   }, [items, tarieven]);
 
   const handleTariefChange = (groep: string, value: string) => {
-    const num = parseFloat(value.replace(',', '.'));
-    if (isNaN(num)) return;
+    const num = parsePanelInput(value);
+    if (num == null) return;
     updateTarieven({ ...tarieven, [groep]: num });
   };
 
   /** Commit a new total uren for a tariefgroep — rescales norm naar rato. */
-  const handleUrenChange = (groep: string, value: string, currentUren: number) => {
-    const num = parseFloat(value.replace(',', '.'));
-    if (isNaN(num) || num < 0) return;
+  const handleUrenChange = (groep: string, value: string, currentUren: Dec) => {
+    const num = parsePanelInput(value);
+    if (num == null || dec(num).lt(0)) return;
     // No-op if unchanged (avoid clobbering precision)
-    if (Math.abs(num - currentUren) < 0.001) return;
+    if (dec(num).minus(currentUren).abs().lt('0.001')) return;
     // Only A/B/C tariefgroepen are valid rescale targets; '-' (no group) is read-only
     if (groep !== 'A' && groep !== 'B' && groep !== 'C') return;
     pushHistory(items, t('grid:undo.hoursGroupProrate', { group: groep }));
@@ -63,17 +76,17 @@ function UrenFullScreen() {
   };
 
   /** Commit a new GRAND total uren — rescales all regels naar rato. */
-  const handleTotaalUrenChange = (value: string, currentTotal: number) => {
-    const num = parseFloat(value.replace(',', '.'));
-    if (isNaN(num) || num < 0) return;
-    if (Math.abs(num - currentTotal) < 0.001) return;
+  const handleTotaalUrenChange = (value: string, currentTotal: Dec) => {
+    const num = parsePanelInput(value);
+    if (num == null || dec(num).lt(0)) return;
+    if (dec(num).minus(currentTotal).abs().lt('0.001')) return;
     pushHistory(items, t('grid:undo.totalHoursProrate'));
     prorateUrenTotal(num);
   };
 
   const entries = Object.entries(urenData).sort(([a], [b]) => a.localeCompare(b));
-  const totaalUren = entries.reduce((s, [, v]) => s + v.uren, 0);
-  const totaalBedrag = entries.reduce((s, [, v]) => s + v.uren * v.tarief, 0);
+  const totaalUren = entries.reduce((s, [, v]) => s.plus(v.uren), new Dec(0));
+  const totaalBedrag = entries.reduce((s, [, v]) => s.plus(v.uren.times(v.tarief)), new Dec(0));
 
   return (
     <div className="wpcalc-fullscreen-panel">
@@ -94,7 +107,7 @@ function UrenFullScreen() {
               <td style={{ textAlign: 'right' }}>
                 {groep !== '-' ? (
                   <input
-                    key={`uren-${groep}-${val.uren}`}
+                    key={`uren-${groep}-${val.uren.toFixed()}`}
                     type="text"
                     className="uren-input"
                     defaultValue={formatNumber(val.uren)}
@@ -127,7 +140,7 @@ function UrenFullScreen() {
                   <input
                     type="text"
                     className="tarief-input"
-                    defaultValue={val.tarief.toFixed(2)}
+                    defaultValue={formatNumberForEdit(val.tarief)}
                     onBlur={(e) => handleTariefChange(groep, e.target.value)}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') {
@@ -151,14 +164,14 @@ function UrenFullScreen() {
                   formatCurrency(val.tarief)
                 )}
               </td>
-              <td style={{ textAlign: 'right' }}>{formatCurrency(val.uren * val.tarief)}</td>
+              <td style={{ textAlign: 'right' }}>{formatCurrency(val.uren.times(val.tarief))}</td>
             </tr>
           ))}
           <tr className="wpcalc-bottom-total">
             <td>{t('wpcalc.headerTotal')}</td>
             <td style={{ textAlign: 'right' }}>
               <input
-                key={`totaal-uren-${totaalUren}`}
+                key={`totaal-uren-${totaalUren.toFixed()}`}
                 type="text"
                 className="uren-input uren-input-total"
                 defaultValue={formatNumber(totaalUren)}
@@ -203,13 +216,14 @@ function StaartFullScreen() {
   // Build staart display from staart_* items in the items array
   const { staartRows } = useMemo(() => {
     const staartItems = items.filter(i => i.rowType.startsWith('staart_'));
-    const kp = items
+    const kp = sumDec(items
       .filter(i => i.parentId === null && !i.rowType.startsWith('staart_'))
-      .reduce((s, i) => s + i.total, 0);
+      .map(i => i.total));
+    const totalOf = (types: string[]) => sumDec(staartItems.filter(i => types.includes(i.rowType)).map(i => i.total));
 
     // If we have staart_* items, build rows from them
     if (staartItems.length > 0) {
-      const rows: Array<{ id: string; label: string; percentage: number | null; total: number; rowType: string; isBold: boolean }> = [];
+      const rows: Array<{ id: string; label: string; percentage: DecimalString | null; total: Dec; rowType: string; isBold: boolean }> = [];
 
       // Totaal kolommen header
       rows.push({ id: '', label: t('grid:staart.totalColumns'), percentage: null, total: kp, rowType: '', isBold: true });
@@ -218,50 +232,49 @@ function StaartFullScreen() {
       const phase1Types = ['staart_ak_oa', 'staart_abk', 'staart_garanties', 'staart_wvpm'];
       for (const rt of phase1Types) {
         const item = staartItems.find(i => i.rowType === rt);
-        if (item) rows.push({ id: item.id, label: item.description, percentage: item.staartPercentage, total: item.total, rowType: rt, isBold: false });
+        if (item) rows.push({ id: item.id, label: item.description, percentage: item.staartPercentage, total: dec(item.total), rowType: rt, isBold: false });
       }
 
       // Kostprijs subtotaal
-      const kostprijsBouw1 = kp + staartItems.filter(i => phase1Types.includes(i.rowType)).reduce((s, i) => s + i.total, 0);
+      const kostprijsBouw1 = kp.plus(totalOf(phase1Types));
       rows.push({ id: '', label: t('grid:staart.totalCostPrice'), percentage: null, total: kostprijsBouw1, rowType: '', isBold: true });
 
       // Phase 2: over kostprijs
       const phase2Types = ['staart_risico', 'staart_winst', 'staart_verzekering'];
       for (const rt of phase2Types) {
         const item = staartItems.find(i => i.rowType === rt);
-        if (item) rows.push({ id: item.id, label: item.description, percentage: item.staartPercentage, total: item.total, rowType: rt, isBold: false });
+        if (item) rows.push({ id: item.id, label: item.description, percentage: item.staartPercentage, total: dec(item.total), rowType: rt, isBold: false });
       }
 
       // Legacy types (ukk/ak/wr) horen ín de excl.-btw-cascade, niet erachter
       const legacyTypes = ['staart_ukk', 'staart_ak', 'staart_wr'];
       for (const rt of legacyTypes) {
         const item = staartItems.find(i => i.rowType === rt);
-        if (item) rows.push({ id: item.id, label: item.description, percentage: item.staartPercentage, total: item.total, rowType: rt, isBold: false });
+        if (item) rows.push({ id: item.id, label: item.description, percentage: item.staartPercentage, total: dec(item.total), rowType: rt, isBold: false });
       }
 
       // Afronding hoort ín het excl.-blok (vóór het excl.-subtotaal); het
       // bedrag is invulbaar als vaste sluitpost.
       const afrItem = staartItems.find(i => i.rowType === 'staart_afronding');
-      if (afrItem) rows.push({ id: afrItem.id, label: afrItem.description || t('grid:staart.rounding'), percentage: null, total: afrItem.total, rowType: 'staart_afronding', isBold: false });
+      if (afrItem) rows.push({ id: afrItem.id, label: afrItem.description || t('grid:staart.rounding'), percentage: null, total: dec(afrItem.total), rowType: 'staart_afronding', isBold: false });
 
       // Totaal excl. btw = kostprijs + opslagen + afronding. Dit is hét
       // invulbare eindbedrag: typ het gewenste bedrag (excl. btw, incl.
       // opslagen) en de afronding wordt automatisch het verschil.
-      const aanneemsomExcl = kostprijsBouw1 + staartItems
-        .filter(i => phase2Types.includes(i.rowType) || legacyTypes.includes(i.rowType))
-        .reduce((s, i) => s + i.total, 0) + (afrItem?.total ?? 0);
+      const aanneemsomExcl = kostprijsBouw1.plus(totalOf([...phase2Types, ...legacyTypes])).plus(dec(afrItem?.total));
       rows.push({ id: afrItem?.id ?? '', label: t('grid:staart.totalExclVatInclMarkups'), percentage: null, total: aanneemsomExcl, rowType: 'excl_doel', isBold: true });
 
       // BTW (over het afgeronde excl-bedrag): laag tarief over de ingevulde
       // grondslag, hoog tarief over de rest.
-      const btwLaagItem = staartItems.find(i => i.rowType === 'staart_btw_laag');
-      if (btwLaagItem) rows.push({ id: btwLaagItem.id, label: btwLaagItem.description, percentage: btwLaagItem.staartPercentage, total: btwLaagItem.total, rowType: 'staart_btw_laag', isBold: false });
-      const btwItem = staartItems.find(i => i.rowType === 'staart_btw');
-      if (btwItem) rows.push({ id: btwItem.id, label: btwItem.description, percentage: btwItem.staartPercentage, total: btwItem.total, rowType: 'staart_btw', isBold: false });
+      // ctrl: Dutch VAT rows are hidden; IVA comes from ivaRate/ivaMode (totals panel).
+      const btwLaagItem = CTRL_BUILD ? undefined : staartItems.find(i => i.rowType === 'staart_btw_laag');
+      if (btwLaagItem) rows.push({ id: btwLaagItem.id, label: btwLaagItem.description, percentage: btwLaagItem.staartPercentage, total: dec(btwLaagItem.total), rowType: 'staart_btw_laag', isBold: false });
+      const btwItem = CTRL_BUILD ? undefined : staartItems.find(i => i.rowType === 'staart_btw');
+      if (btwItem) rows.push({ id: btwItem.id, label: btwItem.description, percentage: btwItem.staartPercentage, total: dec(btwItem.total), rowType: 'staart_btw', isBold: false });
 
       // Eindtotaal incl. btw (alleen tonen als er een btw-regel is)
       if (btwItem || btwLaagItem) {
-        rows.push({ id: '', label: t('grid:staart.totalInclVat'), percentage: null, total: aanneemsomExcl + (btwItem?.total ?? 0) + (btwLaagItem?.total ?? 0), rowType: '', isBold: true });
+        rows.push({ id: '', label: t('grid:staart.totalInclVat'), percentage: null, total: aanneemsomExcl.plus(dec(btwItem?.total)).plus(dec(btwLaagItem?.total)), rowType: '', isBold: true });
       }
 
       return { staartRows: rows, kostprijs: kp, aanneemsom: aanneemsomExcl };
@@ -271,19 +284,19 @@ function StaartFullScreen() {
     if (schedule.staartRows && schedule.staartRows.length > 0) {
       return {
         staartRows: schedule.staartRows.map(r => ({
-          id: '', label: r.label, percentage: r.percentage, total: r.totaal ?? 0,
+          id: '', label: r.label, percentage: r.percentage, total: dec(r.totaal),
           rowType: '', isBold: [32, 4, 64, 128].includes(r.itemtype),
         })),
         kostprijs: kp, aanneemsom: kp,
       };
     }
 
-    return { staartRows: [{ id: '', label: t('grid:staart.noTailCosts'), percentage: null, total: 0, rowType: '', isBold: false }], kostprijs: kp, aanneemsom: kp };
+    return { staartRows: [{ id: '', label: t('grid:staart.noTailCosts'), percentage: null, total: new Dec(0), rowType: '', isBold: false }], kostprijs: kp, aanneemsom: kp };
   }, [items, schedule, t]);
 
   const handlePercentageChange = (id: string, value: string) => {
-    const num = parseFloat(value.replace(',', '.'));
-    if (!isNaN(num) && id) {
+    const num = parsePanelInput(value);
+    if (num != null && id) {
       pushHistory(items, t('grid:undo.tailPercentage'));
       updateItem(id, 'staartPercentage', num);
       updateItem(id, 'quantity', num);
@@ -302,8 +315,8 @@ function StaartFullScreen() {
       updateItem(id, 'staartDoelbedrag', null);
       return;
     }
-    const num = parseNumericInput(value);
-    if (num === null) return;
+    const num = parsePanelInput(value);
+    if (num == null) return;
     pushHistory(items, t('grid:undo.fillRounding'));
     updateItem(id, 'staartDoelbedrag', null);
     updateItem(id, 'staartVastBedrag', num);
@@ -319,8 +332,8 @@ function StaartFullScreen() {
       updateItem(id, 'staartBtwBasis', null);
       return;
     }
-    const num = parseNumericInput(value);
-    if (num === null) return;
+    const num = parsePanelInput(value);
+    if (num == null) return;
     pushHistory(items, t('grid:undo.vatBaseSet'));
     updateItem(id, 'staartBtwBasis', num);
   };
@@ -336,8 +349,8 @@ function StaartFullScreen() {
       updateItem(id, 'staartDoelbedrag', null);
       return;
     }
-    const num = parseNumericInput(value);
-    if (num === null) return;
+    const num = parsePanelInput(value);
+    if (num == null) return;
     pushHistory(items, t('grid:undo.finalAmountSet'));
     updateItem(id, 'staartVastBedrag', null);
     updateItem(id, 'staartDoelbedrag', num);
@@ -362,13 +375,13 @@ function StaartFullScreen() {
                 {r.id && r.percentage != null ? (
                   <input
                     type="text"
-                    defaultValue={String(r.percentage)}
+                    defaultValue={formatNumberForEdit(r.percentage)}
                     onBlur={e => handlePercentageChange(r.id, e.target.value)}
                     onKeyDown={e => { if (e.key === 'Enter') { handlePercentageChange(r.id, (e.target as HTMLInputElement).value); (e.target as HTMLInputElement).blur(); } }}
                     style={{ width: 50, textAlign: 'right', border: '1px solid var(--theme-border)', borderRadius: 3, padding: '1px 4px', background: 'var(--theme-bg)', color: 'var(--theme-editable-text, var(--theme-text))', fontSize: 'inherit', fontFamily: 'inherit' }}
                   />
                 ) : (
-                  r.percentage != null ? `${r.percentage}%` : ''
+                  r.percentage != null ? `${formatDecimal(r.percentage)}%` : ''
                 )}
               </td>
               <td style={{ textAlign: 'right' }}>
@@ -379,7 +392,7 @@ function StaartFullScreen() {
                       title={t('grid:staart.roundingStepTitle')}
                       onChange={e => {
                         pushHistory(items, t('grid:undo.roundingStep'));
-                        updateItem(r.id, 'staartAfrondingStap', parseFloat(e.target.value));
+                        updateItem(r.id, 'staartAfrondingStap', e.target.value);
                       }}
                       style={{ border: '1px solid var(--theme-border)', borderRadius: 3, padding: '1px 2px', background: 'var(--theme-bg)', color: 'var(--theme-text)', fontSize: 10, fontFamily: 'inherit' }}
                     >
@@ -390,13 +403,13 @@ function StaartFullScreen() {
                       <option value="1000">{t('grid:staart.roundTo1000')}</option>
                     </select>
                     <input
-                      key={`afr-${formatNumberForEdit(Math.round(r.total * 100) / 100)}`}
+                      key={`afr-${amountForEdit(r.total)}`}
                       type="text"
-                      defaultValue={formatNumberForEdit(Math.round(r.total * 100) / 100)}
+                      defaultValue={amountForEdit(r.total)}
                       placeholder={t('grid:staart.autoPlaceholder')}
                       title={t('grid:staart.roundingAmountTitle')}
-                      onBlur={e => handleAfrondingChange(r.id, e.target.value, formatNumberForEdit(Math.round(r.total * 100) / 100))}
-                      onKeyDown={e => { if (e.key === 'Enter') { handleAfrondingChange(r.id, (e.target as HTMLInputElement).value, formatNumberForEdit(Math.round(r.total * 100) / 100)); (e.target as HTMLInputElement).blur(); } }}
+                      onBlur={e => handleAfrondingChange(r.id, e.target.value, amountForEdit(r.total))}
+                      onKeyDown={e => { if (e.key === 'Enter') { handleAfrondingChange(r.id, (e.target as HTMLInputElement).value, amountForEdit(r.total)); (e.target as HTMLInputElement).blur(); } }}
                       style={{ width: 80, textAlign: 'right', border: '1px solid var(--theme-border)', borderRadius: 3, padding: '1px 4px', background: 'var(--theme-bg)', color: 'var(--theme-editable-text, var(--theme-text))', fontSize: 'inherit', fontFamily: 'inherit' }}
                     />
                   </span>
@@ -404,12 +417,12 @@ function StaartFullScreen() {
                   const laagItem = items.find(i => i.id === r.id);
                   // Per-onderdeel markering (btwTarief) actief? Dan is de
                   // grondslag berekend en niet handmatig aanpasbaar.
-                  const markeringActief = computeBtwLaagDirect(items) > 0;
-                  const berekend = laagItem?.staartItemBreakdown?.bedrag ?? 0;
+                  const markeringActief = dec(computeBtwLaagDirect(items)).gt(0);
+                  const berekend = laagItem?.staartItemBreakdown?.bedrag ?? '0';
                   const basisStr = markeringActief
-                    ? formatNumberForEdit(Math.round(berekend * 100) / 100)
-                    : (laagItem?.staartBtwBasis != null && laagItem.staartBtwBasis !== 0
-                        ? formatNumberForEdit(Math.round(laagItem.staartBtwBasis * 100) / 100)
+                    ? amountForEdit(berekend)
+                    : (laagItem?.staartBtwBasis != null && !dec(laagItem.staartBtwBasis).isZero()
+                        ? amountForEdit(laagItem.staartBtwBasis)
                         : '');
                   return (
                     <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}>
@@ -427,21 +440,21 @@ function StaartFullScreen() {
                         onKeyDown={e => { if (e.key === 'Enter') { handleGrondslagChange(r.id, (e.target as HTMLInputElement).value, basisStr); (e.target as HTMLInputElement).blur(); } }}
                         style={{ width: 80, textAlign: 'right', border: '1px solid var(--theme-border)', borderRadius: 3, padding: '1px 4px', background: 'var(--theme-bg)', color: 'var(--theme-editable-text, var(--theme-text))', fontSize: 'inherit', fontFamily: 'inherit', opacity: markeringActief ? 0.7 : 1 }}
                       />
-                      <span style={{ minWidth: 70, display: 'inline-block', textAlign: 'right' }}>{r.total !== 0 ? formatCurrency(r.total) : ''}</span>
+                      <span style={{ minWidth: 70, display: 'inline-block', textAlign: 'right' }}>{formatCurrency(r.total)}</span>
                     </span>
                   );
                 })() : r.rowType === 'excl_doel' && r.id ? (
                   <input
-                    key={`eind-${formatNumberForEdit(Math.round(r.total * 100) / 100)}`}
+                    key={`eind-${amountForEdit(r.total)}`}
                     type="text"
-                    defaultValue={formatNumberForEdit(Math.round(r.total * 100) / 100)}
+                    defaultValue={amountForEdit(r.total)}
                     title={t('grid:staart.finalAmountTitle')}
-                    onBlur={e => handleEindbedragChange(r.id, e.target.value, formatNumberForEdit(Math.round(r.total * 100) / 100))}
-                    onKeyDown={e => { if (e.key === 'Enter') { handleEindbedragChange(r.id, (e.target as HTMLInputElement).value, formatNumberForEdit(Math.round(r.total * 100) / 100)); (e.target as HTMLInputElement).blur(); } }}
+                    onBlur={e => handleEindbedragChange(r.id, e.target.value, amountForEdit(r.total))}
+                    onKeyDown={e => { if (e.key === 'Enter') { handleEindbedragChange(r.id, (e.target as HTMLInputElement).value, amountForEdit(r.total)); (e.target as HTMLInputElement).blur(); } }}
                     style={{ width: 90, textAlign: 'right', fontWeight: 700, border: '1px solid var(--theme-border)', borderRadius: 3, padding: '1px 4px', background: 'var(--theme-bg)', color: 'var(--theme-editable-text, var(--theme-text))', fontSize: 'inherit', fontFamily: 'inherit' }}
                   />
                 ) : (
-                  r.total !== 0 ? formatCurrency(r.total) : ''
+                  formatCurrency(r.total)
                 )}
               </td>
             </tr>

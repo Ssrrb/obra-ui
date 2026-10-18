@@ -115,9 +115,9 @@ export const FileTabBar: React.FC = () => {
         try { await mkdir(dir, { recursive: true }); } catch { /* exists */ }
         filePath = `${dir}/${doc.fileName || 'begroting'}.ifcx`;
         const store = useAppStore.getState();
-        const { serializeProject } = await import('@/services/file/fileService');
+        const { serializeProjectForFile } = await import('@/services/file/fileService');
         const scheduleWithProjectInfo = { ...store.schedule, projectInfo: store.projectInfo };
-        const json = serializeProject(scheduleWithProjectInfo, store.items, store.companyInfo, store.subSheets, store.offerte);
+        const json = serializeProjectForFile(scheduleWithProjectInfo, store.items, store.companyInfo, store.subSheets, store.offerte);
         await writeTextFile(filePath, json);
       } catch (err) {
         console.error('[FileTabBar] Failed to save temp file:', err);

@@ -1,4 +1,5 @@
 import type { CostItem } from '@/types/costModel';
+import { dec } from '@/utils/decimal';
 
 /**
  * Op welke containerrijen verbergen we de Totaal-kolom?
@@ -27,7 +28,7 @@ export function computeHideTotalSet(items: CostItem[]): Set<string> {
     if (item.isCollapsed) continue;
     const children = (childrenMap.get(item.id) ?? [])
       .filter(c => c.rowType !== 'tekstregel' && c.rowType !== 'witregel');
-    if (children.length === 1 && Math.abs(children[0].total - item.total) < 0.01) {
+    if (children.length === 1 && dec(children[0].total).minus(dec(item.total)).abs().lt('0.01')) {
       set.add(item.id);
     }
   }

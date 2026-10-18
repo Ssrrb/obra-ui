@@ -7,6 +7,20 @@ import { createDefaultItems } from '@/data/defaultBudget';
 import { appendHistory, shouldTrackField } from '@/services/history/itemHistory';
 import { getCachedOsUsername } from '@/services/system/osUser';
 import { buildGridRows } from '@/services/grid/gridRows';
+import type { DecimalString } from '@ctrlmas/budget-engine';
+import { Dec, dec, str } from '@/utils/decimal';
+import { DECIMAL_ITEM_FIELDS } from '@ctrlmas/budget-engine';
+import { fromNumber } from '@/utils/decimal';
+
+/** Money fields that arrive as numbers (extensions, legacy callers) become decimal text. */
+function decimalFields(item: CostItem): CostItem {
+  let out: Record<string, unknown> | null = null;
+  for (const f of DECIMAL_ITEM_FIELDS) {
+    const v = (item as unknown as Record<string, unknown>)[f];
+    if (typeof v === 'number') (out ??= { ...item })[f] = fromNumber(v);
+  }
+  return (out as unknown as CostItem) ?? item;
+}
 
 function generateId(): string {
   return crypto.randomUUID();
@@ -65,7 +79,7 @@ export interface CostItemsSlice {
    * factor — bv. 1.10 voor +10%. Staart-percentages blijven ongemoeid; de
    * totalen worden herrekend.
    */
-  scaleAllPrices: (factor: number) => void;
+  scaleAllPrices: (factor: number | DecimalString) => void;
   recalculate: () => void;
   /**
    * Proportionally rescale `normQuantity` of all `regel` items with the given
@@ -74,11 +88,11 @@ export interface CostItemsSlice {
    * Used by the WPCalc "Uren" overview where the user can edit a group total
    * to redistribute hours over the underlying regels naar rato.
    */
-  prorateUrenByTariefGroep: (tariefGroep: 'A' | 'B' | 'C' | null, newTotal: number) => void;
+  prorateUrenByTariefGroep: (tariefGroep: 'A' | 'B' | 'C' | null, newTotal: DecimalString) => void;
   /** Rescale normQuantity of ALL regels so the grand-total uren equals newTotal. */
-  prorateUrenTotal: (newTotal: number) => void;
+  prorateUrenTotal: (newTotal: DecimalString) => void;
   /** Rescale normQuantity of all regel descendants in a chapter so its total uren equals newTotal. */
-  prorateUrenForChapter: (chapterId: string, newTotal: number) => void;
+  prorateUrenForChapter: (chapterId: string, newTotal: DecimalString) => void;
   getVisibleItems: () => CostItem[];
   /**
    * De gerenderde grid-rijenlijst: getVisibleItems() minus staart-rijen,
@@ -129,8 +143,8 @@ function createDefaultItem(parentId: string | null, sortOrder: number, depth: nu
     quantity: null,
     materialPrice: null,
     laborPrice: null,
-    unitPrice: 0,
-    total: 0,
+    unitPrice: '0',
+    total: '0',
     isCollapsed: false,
     depth,
     notes: '',
@@ -161,7 +175,7 @@ export const createCostItemsSlice: StateCreator<CostItemsSlice> = (set, get) => 
   return {
   items: recalculateItems(createDefaultItems()),
 
-  setItems: (items) => set({ items: recalculateItems(items) }),
+  setItems: (items) => set({ items: recalculateItems(items.map(decimalFields)) }),
 
   addItem: (parentId, afterIndex) => {
     const state = get();
@@ -323,7 +337,11 @@ export const createCostItemsSlice: StateCreator<CostItemsSlice> = (set, get) => 
     markModified();
   },
 
-  updateItem: (id, field, value) => {
+  updateItem: (id, field, rawValue) => {
+    // Schema 2: a money field never stores a number (extensions, links, old callers).
+    const value = typeof rawValue === 'number' && (DECIMAL_ITEM_FIELDS as readonly string[]).includes(field)
+      ? fromNumber(rawValue)
+      : rawValue;
     // Verrekenbaar only allowed on chapter rows
     if (field === 'verrekenbaar') {
       const item = get().items.find((i) => i.id === id);
@@ -331,7 +349,7 @@ export const createCostItemsSlice: StateCreator<CostItemsSlice> = (set, get) => 
     }
     const state = get() as any;
     const tarieven = (field === 'tariefGroep' || field === 'normQuantity')
-      ? (state.schedule?.tarieven ?? { A: 64, B: 43, C: 82 })
+      ? (state.schedule?.tarieven ?? { A: '64', B: '43', C: '82' })
       : undefined;
     const historyUser = getCachedOsUsername();
     const historyNow = Date.now();
@@ -569,8 +587,9 @@ export const createCostItemsSlice: StateCreator<CostItemsSlice> = (set, get) => 
 
   scaleAllPrices: (factor) => {
     const state = get();
-    if (!Number.isFinite(factor) || factor <= 0) return;
-    const schaal = (v: number | null): number | null => (v == null ? null : v * factor);
+    const f = new Dec(String(factor));
+    if (!f.isFinite() || f.lte(0)) return;
+    const schaal = (v: DecimalString | null): DecimalString | null => (v == null ? null : str(dec(v).times(f)));
     set({
       items: recalculateItems(
         state.items.map((item) => {
@@ -601,7 +620,7 @@ export const createCostItemsSlice: StateCreator<CostItemsSlice> = (set, get) => 
     markModified();
   },
 
-  prorateUrenTotal: (newTotal: number) => {
+  prorateUrenTotal: (newTotal: DecimalString) => {
     set((s: any) => {
       const tarieven = s.schedule?.tarieven ?? { A: 64, B: 43, C: 82 };
       const rescaled = prorateUrenAll(s.items, newTotal);
@@ -610,7 +629,7 @@ export const createCostItemsSlice: StateCreator<CostItemsSlice> = (set, get) => 
     markModified();
   },
 
-  prorateUrenForChapter: (chapterId: string, newTotal: number) => {
+  prorateUrenForChapter: (chapterId: string, newTotal: DecimalString) => {
     set((s: any) => {
       const tarieven = s.schedule?.tarieven ?? { A: 64, B: 43, C: 82 };
       const rescaled = prorateUrenForChapter(s.items, chapterId, newTotal);

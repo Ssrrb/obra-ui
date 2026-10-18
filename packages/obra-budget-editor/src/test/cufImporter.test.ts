@@ -24,7 +24,7 @@ describe('CUF importer', () => {
     expect(chapter?.description).toBe('Grondwerk');
     expect(chapter?.code).toBe('01');
     const post = result.items.find((it) => it.rowType === 'begrotingspost');
-    expect(post?.quantity).toBe(100);
+    expect(post?.quantity).toBe('100');
     expect(post?.unit).toBe('m³');
     expect(post?.unitPrice).toBeCloseTo(15.5);
     expect(post?.total).toBeCloseTo(1550);
@@ -65,7 +65,7 @@ describe('CUF importer', () => {
     expect(arbeid).toBeDefined();
     expect((arbeid as any).resourceType).toBe('arbeid');
     expect((arbeid as any).normFactor).toBeCloseTo(0.8);
-    expect((arbeid as any).normDivisor).toBe(1);
+    expect((arbeid as any).normDivisor).toBe('1');
     const materiaal = middelen.find((m) => m.description === 'Beton C20/25');
     expect((materiaal as any).resourceType).toBe('materiaal');
     expect(result.warnings.some((w) => w.toLowerCase().includes('toeslag'))).toBe(true);

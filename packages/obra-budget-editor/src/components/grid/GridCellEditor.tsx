@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { COST_UNITS, getColumnsForView, isCellEditable } from './gridConstants';
 import { formatUnit } from '@/i18n/formatUnit';
 import { formatNumberForEdit } from '@/utils/formatting';
+import { dec } from '@/utils/decimal';
 import { useAppStore } from '@/state/appStore';
 import { isContainerRowType } from '@/types/costModel';
 import type { CostItem } from '@/types/costModel';
@@ -73,14 +74,14 @@ export const GridCellEditor: React.FC<Props> = ({ item, colIndex, style, onCommi
     if (col.key === 'normUnitPrice'
       && (item.rowType === 'begrotingspost' || item.rowType === 'bewakingspost')
       && (raw === null || raw === undefined)) {
-      const eigen = (item.materialPrice ?? 0) + (item.laborPrice ?? 0);
-      if (eigen !== 0) return formatNumberForEdit(eigen);
+      const eigen = dec(item.materialPrice).plus(dec(item.laborPrice));
+      if (!eigen.isZero()) return formatNumberForEdit(eigen);
     }
     if (raw === null || raw === undefined) return '';
     if (col.type === 'currency' || col.type === 'number' || col.type === 'computed') {
       // NL-notatie (komma), zodat een ongewijzigde commit exact round-tript;
       // "6.66" zou door de NL-parser als 666 gelezen worden.
-      return formatNumberForEdit(raw as number);
+      return formatNumberForEdit(raw as string);
     }
     return String(raw);
   })();

@@ -30,7 +30,7 @@ describe('FIEBDC-3 (.bc3) praktijkafwijkingen', () => {
     const res = importBc3(src);
     expect(res.schedule.projectName).toBe('PROYECTO DE URBANIZACION');
     expect(res.items.map((i) => i.rowType)).toEqual(['chapter', 'begrotingspost']);
-    expect(res.items[1].quantity).toBe(10);
+    expect(res.items[1].quantity).toBe('10');
   });
 
   it('leest UTF-8 ook als het ~V-record ANSI zegt', () => {
@@ -67,7 +67,7 @@ describe('FIEBDC-3 (.bc3) praktijkafwijkingen', () => {
     expect(res.items.map((i) => `${i.rowType}:${i.code}`)).toEqual([
       'chapter:1', 'chapter:1_1', 'begrotingspost:02.001', 'regel:01007',
     ]);
-    expect(res.items[2].quantity).toBe(10);
+    expect(res.items[2].quantity).toBe('10');
   });
 
   it('rekent een percentageregel over de voorgaande regels', () => {
@@ -135,7 +135,7 @@ describe('FIEBDC-3 (.bc3) praktijkafwijkingen', () => {
     const hoofdstukken = items.filter((i) => i.rowType === 'chapter');
     expect(hoofdstukken.map((h) => h.description)).toEqual(['Red eléctrica', 'Alumbrado', 'Fuerza']);
     // De meting hangt aan het positiepad, niet aan de (dubbele) code.
-    expect(items.filter((i) => i.code === '240.001').map((i) => i.quantity)).toEqual([1, 2]);
+    expect(items.filter((i) => i.code === '240.001').map((i) => i.quantity)).toEqual(['1', '2']);
     expect(getKostprijs(items)).toBeCloseTo(30, 2);
   });
 
@@ -151,7 +151,7 @@ describe('FIEBDC-3 (.bc3) praktijkafwijkingen', () => {
       '~M|31\\220.008|1\\2\\|2|',
     ].join('\r\n');
     const items = recalculateItems(importBc3(src).items);
-    expect(items.filter((i) => i.code === '220.008').map((i) => i.quantity)).toEqual([1, 2]);
+    expect(items.filter((i) => i.code === '220.008').map((i) => i.quantity)).toEqual(['1', '2']);
     expect(getKostprijs(items)).toBeCloseTo(300, 2);
   });
 
@@ -213,7 +213,7 @@ describe('FIEBDC-3 (.bc3) praktijkafwijkingen', () => {
       '~M|CAP1.4#\\DCANA1208|1\\4\\1\\|45|',
     ].join('\r\n');
     const items = recalculateItems(importBc3(src).items);
-    expect(items.filter((i) => i.code === 'DCANA1208').map((i) => i.quantity)).toEqual([45, 31.75]);
+    expect(items.filter((i) => i.code === 'DCANA1208').map((i) => i.quantity)).toEqual(['45', '31.75']);
     expect(getKostprijs(items)).toBeCloseTo(9.6 * (45 + 31.75), 2);
   });
 
@@ -236,7 +236,7 @@ describe('FIEBDC-3 (.bc3) praktijkafwijkingen', () => {
     ].join('\r\n');
     const items = recalculateItems(importBc3(src).items);
     expect(items.map((i) => `${i.rowType}:${i.code}`)).toEqual(['chapter:C21', 'begrotingspost:E18GNA020']);
-    expect(items[1].quantity).toBe(7);
+    expect(items[1].quantity).toBe('7');
     expect(getKostprijs(items)).toBeCloseTo(965.3, 2);
   });
 
@@ -263,7 +263,8 @@ describe('FIEBDC-3 (.bc3) praktijkafwijkingen', () => {
     ].join('\r\n');
     const res = importBc3(src);
     const items = recalculateItems(res.items);
-    expect(items.find((i) => i.code === '0191')!.total).toBeCloseTo(16378.29, 2);
+    // Money policy: each line amount is quantized to cents before summing (upstream float sum: 16378.29).
+    expect(items.find((i) => i.code === '0191')!.total).toBe('16378.28');
     expect(items.find((i) => i.code === '03.284')!.resourceType).not.toBe('overig');
     expect(items.find((i) => i.code === '%CI')!.resourceType).toBe('overig');
     expect(res.warnings.some((w) => w.includes('wijkt de som'))).toBe(false);
@@ -292,7 +293,7 @@ describe('FIEBDC-3 (.bc3) praktijkafwijkingen', () => {
     const post = items.find((i) => i.code === 'EE101020')!;
     // 141,80 + 628,50 + 2.625 + 2.900 + 281 = 6.576,30; + 4 % van 770,30 = 6.607,11
     expect(post.unitPrice).toBeCloseTo(6607.11, 2);
-    expect(post.quantity).toBe(25);
+    expect(post.quantity).toBe('25');
     const opslag = items.find((i) => i.code === 'A%NAAC')!;
     expect(opslag.unit).toBe('%');
     expect(opslag.normUnitPrice).toBeCloseTo(770.3, 2);

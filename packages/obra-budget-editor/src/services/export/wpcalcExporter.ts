@@ -11,6 +11,7 @@
 
 import type { CostItem, CostSchedule, CompanyInfo } from '@/types/costModel';
 import { isTauriEnvironment } from '@/services/file/nativeFileService';
+import { toNumber } from '@/utils/decimal';
 
 /**
  * Export the current budget as a WPCalc .calc file.
@@ -64,10 +65,12 @@ function buildExportRequest(
       client: schedule.client || '',
       author: schedule.author || '',
       description: schedule.description || '',
-      algemeneKosten: schedule.algemeneKosten || 0,
-      winstRisico: schedule.winstRisico || 0,
-      tarieven: schedule.tarieven || null,
-      staartRows: schedule.staartRows || null,
+      algemeneKosten: toNumber(schedule.algemeneKosten),
+      winstRisico: toNumber(schedule.winstRisico),
+      tarieven: schedule.tarieven ? Object.fromEntries(Object.entries(schedule.tarieven).map(([k, v]) => [k, toNumber(v)])) : null,
+      staartRows: schedule.staartRows
+        ? schedule.staartRows.map((r) => Object.fromEntries(Object.entries(r).map(([k, v]) => [k, typeof v === "string" ? toNumber(v) : v])))
+        : null,
     },
     items: items
       .filter((item) => !item.rowType.startsWith('staart_'))
@@ -76,19 +79,19 @@ function buildExportRequest(
         code: item.code || '',
         description: item.description || '',
         rowType: item.rowType,
-        quantity: item.quantity,
+        quantity: item.quantity == null ? null : toNumber(item.quantity),
         unit: item.unit || 'st',
-        unitPrice: item.unitPrice || 0,
-        total: item.total || 0,
-        materialPrice: item.materialPrice,
-        laborPrice: item.laborPrice,
+        unitPrice: toNumber(item.unitPrice),
+        total: toNumber(item.total),
+        materialPrice: item.materialPrice == null ? null : toNumber(item.materialPrice),
+        laborPrice: item.laborPrice == null ? null : toNumber(item.laborPrice),
         depth: item.depth || 0,
         parentId: item.parentId,
         sortOrder: item.sortOrder || 0,
         resourceType: item.resourceType,
         tariefGroep: item.tariefGroep,
-        normQuantity: item.normQuantity,
-        normUnitPrice: item.normUnitPrice,
+        normQuantity: item.normQuantity == null ? null : toNumber(item.normQuantity),
+        normUnitPrice: item.normUnitPrice == null ? null : toNumber(item.normUnitPrice),
       })),
     companyInfo: companyInfo
       ? {

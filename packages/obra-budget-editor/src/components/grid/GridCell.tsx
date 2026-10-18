@@ -3,10 +3,14 @@ import { useTranslation } from 'react-i18next';
 import type { CostItem } from '@/types/costModel';
 import type { GridColumn } from '@/types/costModel';
 import { isContainerRowType } from '@/types/costModel';
-import { formatNumber, formatCurrency } from '@/utils/formatting';
+import { formatNumber, formatCurrency, formatDecimal } from '@/utils/formatting';
+import type { DecimalString } from '@ctrlmas/budget-engine';
+import { Dec, dec, sumDec } from '@/utils/decimal';
+import { regelHours, postOwnPrice, postCostPerUnit } from '@/services/grid/cellValue';
 import { isCellEditable } from './gridConstants';
 import { useAppStore } from '@/state/appStore';
 import { formatUnit } from '@/i18n/formatUnit';
+import { CTRL_BUILD } from '@/services/buildFlags';
 
 interface Props {
   item: CostItem;
@@ -19,7 +23,7 @@ interface Props {
   /** Heeft deze rij onderliggende rijen? Bepaalt of de chevron klikbaar is. */
   hasChildren?: boolean;
   isChapterFooter?: boolean;
-  resourceTotals?: Record<string, number>;
+  resourceTotals?: Record<string, DecimalString>;
   /** Cel-niveau wijzigingsmarkering: deze cel is gewijzigd sinds bijhouden aan staat. */
   isChangedCell?: boolean;
   onToggleCollapse?: () => void;
@@ -65,7 +69,7 @@ export const GridCell: React.FC<Props> = React.memo(({ item, column, colWidth, r
         case 'hoeveelheid': {
           // Sum uren from the chapter's children
           const chapterId = item.id.replace('footer:', '');
-          let uren = 0;
+          let uren = new Dec(0);
           for (const it of items) {
             if (it.rowType !== 'regel') continue;
             // Check if item belongs to this chapter
@@ -78,27 +82,22 @@ export const GridCell: React.FC<Props> = React.memo(({ item, column, colWidth, r
               parentId = p.parentId;
             }
             if (!belongs) continue;
-            const qty = it.quantity ?? 0;
-            const norm = it.normQuantity ?? 0;
-            const cap = it.normFactor ?? 1;
-            uren += qty * norm / (cap || 1);
+            uren = uren.plus(regelHours(it) ?? 0);
           }
-          return uren ? formatNumber(uren) : '';
+          return formatNumber(uren);
         }
         case 'arbeidTotal':
         case 'materiaalTotal':
         case 'materieelTotal':
         case 'stelpostTotal':
         case 'onderaannemingTotal': {
-          const val = resourceTotals[column.key];
-          return val ? formatCurrency(val) : '';
+          return formatCurrency(resourceTotals[column.key]);
         }
         case 'unitPrice': {
           // Subtotaal = sum of all resource columns
-          const sum = (resourceTotals.arbeidTotal || 0) + (resourceTotals.materiaalTotal || 0) +
-            (resourceTotals.materieelTotal || 0) + (resourceTotals.stelpostTotal || 0) +
-            (resourceTotals.onderaannemingTotal || 0);
-          return sum ? formatCurrency(sum) : '';
+          const sum = sumDec([resourceTotals.arbeidTotal, resourceTotals.materiaalTotal,
+            resourceTotals.materieelTotal, resourceTotals.stelpostTotal, resourceTotals.onderaannemingTotal]);
+          return formatCurrency(sum);
         }
         case 'total': {
           // Look up chapter's total
@@ -133,7 +132,7 @@ export const GridCell: React.FC<Props> = React.memo(({ item, column, colWidth, r
       case 'rowNumber':
         return item.nr ?? '';
       case 'quantity':
-        if (rt.startsWith('staart_')) return item.quantity != null ? `${item.quantity}%` : '';
+        if (rt.startsWith('staart_')) return item.quantity != null ? `${formatDecimal(item.quantity)}%` : '';
         return (isRegel || isBgr || isBwk) ? formatNumber(item.quantity) : '';
       case 'productienorm':
         return isRegel ? formatNumber(item.normQuantity) : '';
@@ -142,11 +141,7 @@ export const GridCell: React.FC<Props> = React.memo(({ item, column, colWidth, r
       case 'hoeveelheid': {
         if (isRegel) {
           // Berekend: Aantal × Productienorm / Productiecapaciteit
-          const qty = item.quantity ?? 0;
-          const norm = item.normQuantity ?? 0;
-          const cap = item.normFactor ?? 1;
-          if (qty === 0 || norm === 0) return '';
-          return formatNumber(qty * norm / (cap || 1));
+          return formatNumber(regelHours(item));
         }
         // Op begrotingspost/bewakingspost/tekstregel: toon quantity als hoeveelheid
         if (isBgr || isBwk || rt === 'tekstregel') return formatNumber(item.quantity);
@@ -164,8 +159,7 @@ export const GridCell: React.FC<Props> = React.memo(({ item, column, colWidth, r
           // eventueel geïmporteerd materiaal-/loonbedrag (BasCalc pint de
           // postprijs daar) — anders is er wél een totaal maar geen
           // zichtbare eenheidsprijs.
-          const eigen = (item.normUnitPrice ?? 0) + (item.materialPrice ?? 0) + (item.laborPrice ?? 0);
-          return eigen !== 0 ? formatCurrency(eigen) : '';
+          return formatCurrency(postOwnPrice(item));
         }
         return '';
       }
@@ -201,16 +195,11 @@ export const GridCell: React.FC<Props> = React.memo(({ item, column, colWidth, r
       case 'kostenEd': {
         // Kosten per eenheid: kosteneh = normUnitPrice + laborPrice
         if (isRegel) {
-          const nup = item.normUnitPrice ?? 0;
-          const lab = item.laborPrice ?? 0;
-          const kostenEh = nup + lab;
-          return kostenEh ? formatCurrency(kostenEh) : '';
+          return formatCurrency(dec(item.normUnitPrice).plus(dec(item.laborPrice)));
         }
         if (isBgr || isBwk) {
-          // For containers: unitPrice / quantity (per-unit derived)
-          const qty = item.quantity ?? 0;
-          if (qty > 0) return formatCurrency(item.total / qty);
-          return item.unitPrice ? formatCurrency(item.unitPrice) : '';
+          // For containers: total / quantity (per-unit derived)
+          return formatCurrency(postCostPerUnit(item));
         }
         return '';
       }
@@ -220,8 +209,7 @@ export const GridCell: React.FC<Props> = React.memo(({ item, column, colWidth, r
       case 'onderaannemingTotal':
       case 'stelpostTotal': {
         if (!resourceTotals) return '';
-        const val = resourceTotals[column.key];
-        return val ? formatCurrency(val) : '';
+        return formatCurrency(resourceTotals[column.key]);
       }
       default:
         return String(item[column.key as keyof CostItem] ?? '');
@@ -230,8 +218,8 @@ export const GridCell: React.FC<Props> = React.memo(({ item, column, colWidth, r
 
   // Generate cell-specific formula tooltip
   const getCellTooltip = (): string => {
-    const fmtN = (v: number | null) => v != null ? formatNumber(v) : '?';
-    const fmtC = (v: number | null) => v != null ? formatCurrency(v) : '?';
+    const fmtN = (v: DecimalString | Dec | null) => v != null ? (formatNumber(v) || '0') : '?';
+    const fmtC = (v: DecimalString | Dec | null) => v != null ? (formatCurrency(v) || '0,00') : '?';
     const isWpc = gridView === 'wpcalc';
 
     if (isChapterFooter) return '';
@@ -239,10 +227,7 @@ export const GridCell: React.FC<Props> = React.memo(({ item, column, colWidth, r
     switch (column.key) {
       case 'hoeveelheid':
         if (isRegel) {
-          const q = item.quantity ?? 0;
-          const n = item.normQuantity ?? 0;
-          const c = item.normFactor ?? 1;
-          const hv = q * n / (c || 1);
+          const hv = regelHours(item);
           if (isWpc) return t('common:tooltip.hoursFormula', { qty: fmtN(item.quantity), norm: fmtN(item.normQuantity), result: formatNumber(hv) });
           return t('common:tooltip.quantityFormula', { qty: fmtN(item.quantity), norm: fmtN(item.normQuantity), cap: fmtN(item.normFactor), result: formatNumber(hv) });
         }
@@ -253,44 +238,34 @@ export const GridCell: React.FC<Props> = React.memo(({ item, column, colWidth, r
         return isRegel ? t('common:tooltip.resourcePrice', { price: fmtC(item.normUnitPrice) }) : '';
       case 'arbeidTotal': {
         if (!isRegel || !resourceTotals) return '';
-        const lab = item.laborPrice ?? 0;
-        const qty = item.quantity ?? 0;
-        return t('common:tooltip.laborFormula', { laborPrice: fmtC(lab), qty: fmtN(qty), result: fmtC(resourceTotals.arbeidTotal || 0) });
+        return t('common:tooltip.laborFormula', { laborPrice: fmtC(dec(item.laborPrice)), qty: fmtN(dec(item.quantity)), result: fmtC(dec(resourceTotals.arbeidTotal)) });
       }
       case 'materiaalTotal': {
         if (!isRegel || !resourceTotals) return '';
-        const nup = item.normUnitPrice ?? 0;
-        const qty = item.quantity ?? 0;
-        return t('common:tooltip.materialFormula', { price: fmtC(nup), qty: fmtN(qty), result: fmtC(resourceTotals.materiaalTotal || 0) });
+        return t('common:tooltip.materialFormula', { price: fmtC(dec(item.normUnitPrice)), qty: fmtN(dec(item.quantity)), result: fmtC(dec(resourceTotals.materiaalTotal)) });
       }
       case 'materieelTotal':
       case 'stelpostTotal':
       case 'onderaannemingTotal': {
         if (!isRegel || !resourceTotals) return '';
-        const val = resourceTotals[column.key] || 0;
+        const val = dec(resourceTotals[column.key]);
         const label = t(`resourceNames.${column.key}`);
         return t('common:tooltip.resourceCostFormula', { label, result: fmtC(val) });
       }
       case 'kostenEd': {
         if (isRegel) {
-          const nup = item.normUnitPrice ?? 0;
-          const lab = item.laborPrice ?? 0;
-          return t('common:tooltip.costPerUnitFormula', { price: fmtC(nup), labor: fmtC(lab), result: fmtC(nup + lab) });
+          const nup = dec(item.normUnitPrice);
+          const lab = dec(item.laborPrice);
+          return t('common:tooltip.costPerUnitFormula', { price: fmtC(nup), labor: fmtC(lab), result: fmtC(nup.plus(lab)) });
         }
         return '';
       }
       case 'unitPrice':
         if (isRegel) {
           if (isWpc) {
-            const qty = item.quantity ?? 0;
-            const nup = item.normUnitPrice ?? 0;
-            const lab = item.laborPrice ?? 0;
-            return t('common:tooltip.subtotalFormula', { qty: fmtN(qty), costPerUnit: fmtC(nup + lab), result: fmtC(item.unitPrice) });
+            return t('common:tooltip.subtotalFormula', { qty: fmtN(dec(item.quantity)), costPerUnit: fmtC(dec(item.normUnitPrice).plus(dec(item.laborPrice))), result: fmtC(item.unitPrice) });
           }
-          const q = item.quantity ?? 0;
-          const n = item.normQuantity ?? 0;
-          const c = item.normFactor ?? 1;
-          const hv = q * n / (c || 1);
+          const hv = regelHours(item);
           return t('common:tooltip.unitPriceFormula', { qty: formatNumber(hv), resourcePrice: fmtC(item.normUnitPrice), result: fmtC(item.unitPrice) });
         }
         if (isBwk) return t('common:tooltip.unitPriceSumRules', { result: fmtC(item.unitPrice) });
@@ -392,7 +367,15 @@ export const GridCell: React.FC<Props> = React.memo(({ item, column, colWidth, r
       {/* Btw-tarief-markering: klein label achter de omschrijving zodat
           zichtbaar is welke onderdelen laag/hoog belast zijn (rechtermuisknop
           → Btw-tarief). Kinderen zonder eigen markering erven van hun ouder. */}
-      {isDescCol && item.btwTarief && (
+      {/* ctrl: own IVA rate of the row (children without one inherit it). */}
+      {CTRL_BUILD && isDescCol && item.ivaRate && (
+        <span title="Tasa de IVA propia de esta fila (las filas hijas sin tasa la heredan)"
+          style={{ marginLeft: 6, flexShrink: 0, fontSize: 9, lineHeight: '12px', padding: '0 4px', borderRadius: 6,
+            background: 'rgba(59,130,246,0.12)', color: '#1d4ed8', border: '1px solid rgba(29,78,216,0.4)' }}>
+          {item.ivaRate === 'exento' ? 'Exento' : `IVA ${item.ivaRate}%`}
+        </span>
+      )}
+      {!CTRL_BUILD && isDescCol && item.btwTarief && (
         <span
           title={item.btwTarief === 'laag'
             ? t('vat.lowBadgeTitle')

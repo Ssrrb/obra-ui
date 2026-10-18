@@ -13,6 +13,7 @@ import { itemsForReport } from '@/services/print/printService';
 import { getReportRequestLocale } from '@/i18n/reportI18n';
 import { generateIfcCostFile } from '@/services/ifc/ifcCostGenerator';
 import { buildOfferteRequest } from '@/services/offerte/offerteRequest';
+import { numbersForRust } from '@/services/file/fileService';
 
 export type ApiExportAction = 'export_pdf_request' | 'export_ifc_request';
 
@@ -52,8 +53,7 @@ async function exportPdf(data: Record<string, unknown>): Promise<string> {
     return outputPath;
   }
   const request = {
-    schedule,
-    items: itemsForReport(schedule, items),
+    ...numbersForRust(schedule, itemsForReport(schedule, items)),
     reportView,
     pageSize: (data.pageSize as string) || store.pageSize,
     pageOrientation: (data.pageOrientation as string) || store.pageOrientation,

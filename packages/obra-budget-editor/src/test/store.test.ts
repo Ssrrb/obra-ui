@@ -68,7 +68,7 @@ describe('AppStore', () => {
     storeAfterAdd.updateItem(leaf!.id, 'materialPrice', 10);
     useAppStore.getState().updateItem(leaf!.id, 'quantity', 999);
     const updated = useAppStore.getState().items.find(i => i.id === leaf!.id);
-    expect(updated!.quantity).toBe(999);
+    expect(updated!.quantity).toBe('999');
   });
 
   it('toggleCollapse toggles isCollapsed', () => {

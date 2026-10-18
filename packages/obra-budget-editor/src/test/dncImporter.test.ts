@@ -109,8 +109,8 @@ describe('buildDncImport', () => {
       { OMSCHRIJF: 'Winst en risico', WAARDE: '4.00' },
     ];
     const { schedule } = buildDncImport({ KK: [binnendeurKK], KU: binnendeurKU, VU, VT }, { projectName: 'T' });
-    expect(schedule.tarieven).toEqual({ A: 55 });
-    expect(schedule.algemeneKosten).toBe(7);
-    expect(schedule.winstRisico).toBe(4);
+    expect(schedule.tarieven).toEqual({ A: '55' });
+    expect(schedule.algemeneKosten).toBe('7');
+    expect(schedule.winstRisico).toBe('4');
   });
 });

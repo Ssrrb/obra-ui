@@ -15,7 +15,7 @@ const manifest: { file: string; total: number }[] = JSON.parse(
 const expected = (f: string) => manifest.find(m => m.file === f)!.total;
 const read = (f: string) => fs.readFileSync(path.join(DIR, f));
 const chapterSum = (items: any[]) =>
-  recalculateItems(items, undefined).filter(i => i.rowType === 'chapter').reduce((s, i) => s + i.total, 0);
+  recalculateItems(items, undefined).filter(i => i.rowType === 'chapter').reduce((s, i) => s + Number(i.total), 0);
 
 // 7z uitpakken zonder de Vite `?url`-wrapper (werkt direct in node/jsdom).
 async function dncTables(buf: Buffer): Promise<Record<string, any[]>> {
@@ -47,7 +47,7 @@ describe('test-fixtures: alle 10 importeren via de echte importeurs', () => {
     it(`importeert ${f} (.ifcCalc)`, () => {
       const parsed = deserializeProject(read(f).toString('utf8'));
       expect(parsed.items.length).toBeGreaterThan(0);
-      expect(chapterSum(parsed.items)).toBeCloseTo(expected(f), -1); // ±~5
+      expect(Number(chapterSum(parsed.items))).toBeCloseTo(expected(f), -1); // ±~5
     });
   }
 
@@ -55,7 +55,7 @@ describe('test-fixtures: alle 10 importeren via de echte importeurs', () => {
     it(`importeert ${f} (.dnc)`, async () => {
       const { items } = buildDncImport(await dncTables(read(f)), { projectName: f });
       expect(items.filter(i => i.rowType === 'begrotingspost').length).toBeGreaterThan(0);
-      expect(chapterSum(items)).toBeCloseTo(expected(f), -1);
+      expect(Number(chapterSum(items))).toBeCloseTo(expected(f), -1);
     });
   }
 
@@ -76,8 +76,8 @@ describe('test-fixtures: alle 10 importeren via de echte importeurs', () => {
       const posts = items.filter(i => i.rowType === 'begrotingspost');
       expect(posts.length).toBeGreaterThan(0);
       // RSX zet total direct op de post (geen recalc)
-      const total = posts.reduce((s, i) => s + i.total, 0);
-      expect(total).toBeCloseTo(expected(f), -1);
+      const total = posts.reduce((s, i) => s + Number(i.total), 0);
+      expect(Number(total)).toBeCloseTo(expected(f), -1);
     });
   }
 
@@ -86,7 +86,7 @@ describe('test-fixtures: alle 10 importeren via de echte importeurs', () => {
     const { items } = importBasCalcFile(Uint8Array.from(ab).buffer); // tight ArrayBuffer, zoals file.arrayBuffer()
     const posts = items.filter(i => i.rowType === 'begrotingspost');
     expect(posts.length).toBeGreaterThan(0);
-    const total = posts.reduce((s, i) => s + i.total, 0);
-    expect(total).toBeCloseTo(expected('10-xls-bascalc.xls'), -1);
+    const total = posts.reduce((s, i) => s + Number(i.total), 0);
+    expect(Number(total)).toBeCloseTo(expected('10-xls-bascalc.xls'), -1);
   });
 });

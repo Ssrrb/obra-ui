@@ -33,6 +33,9 @@ export interface UiSlice {
   includeSummary: boolean;
   splitView: boolean;
   splitDocumentId: string | null;
+  /** Rejected number input (e.g. beyond 24 integer / 12 fraction digits), shown above the grid. */
+  inputError: string | null;
+  setInputError: (message: string | null) => void;
   setTheme: (theme: ThemeName) => void;
   openDialog: (dialog: DialogType) => void;
   closeDialog: () => void;
@@ -114,6 +117,8 @@ export const createUiSlice: StateCreator<UiSlice> = (set, get) => ({
   includeSummary: false,
   splitView: false,
   splitDocumentId: null,
+  inputError: null,
+  setInputError: (inputError) => set({ inputError }),
   toggleIncludeCover: () => set((s) => ({ includeCover: !s.includeCover })),
   toggleIncludeSummary: () => set((s) => ({ includeSummary: !s.includeSummary })),
   toggleSplitView: () => set((s) => ({ splitView: !s.splitView, splitDocumentId: s.splitView ? null : s.splitDocumentId })),

@@ -7,6 +7,7 @@ import { formatUnit } from '@/i18n/formatUnit';
 import { BranchTreeEditor } from './BranchTreeEditor';
 import type { FieldChange } from '@/types/costModel';
 import './panels.css';
+import { fromNumber } from '@/utils/decimal';
 
 
 // OpenAEC section label style (JetBrains Mono, uppercase, amber on light)
@@ -33,7 +34,7 @@ const FIELD_KEYS = new Set([
 
 const fmtHistVal = (v: string | number | boolean | null): string => {
   if (v === null || v === '') return '—';
-  if (typeof v === 'number') return formatNumber(v);
+  if (typeof v === 'number') return formatNumber(fromNumber(v));
   return String(v);
 };
 

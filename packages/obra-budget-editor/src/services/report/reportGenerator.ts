@@ -1,5 +1,8 @@
 import type { CostItem, CostSchedule } from '../../types/costModel';
 import { makeReportContext, type ReportContext } from '@/i18n/reportI18n';
+import { CTRL_BUILD } from '@/services/buildFlags';
+import { dec, sumDec } from '@/utils/decimal';
+import { makeDecimalFormatter, type DecimalLike } from '@/utils/formatting';
 
 /**
  * Generates an HTML report for a cost schedule.
@@ -11,9 +14,9 @@ import { makeReportContext, type ReportContext } from '@/i18n/reportI18n';
  */
 export function generateReport(schedule: CostSchedule, items: CostItem[], ctx: ReportContext = makeReportContext()): string {
   const { t } = ctx;
-  const nf = new Intl.NumberFormat(ctx.intlLocale, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-  // Zelfde gedrag als utils/formatting: 0 en null blijven leeg.
-  const formatCurrency = (value: number | null): string => (value === null || value === 0 ? '' : nf.format(value));
+  const fmt = makeDecimalFormatter(ctx.intlLocale, CTRL_BUILD);
+  // Zelfde gedrag als utils/formatting: 0 en null blijven leeg. Exact decimal text, HALF_UP.
+  const formatCurrency = (value: DecimalLike): string => (value == null || dec(String(value)).isZero() ? '' : fmt(value));
   const formatNumber = formatCurrency;
   const L = (key: string): string => escapeHtml(t(key));
   const now = new Date();
@@ -21,7 +24,7 @@ export function generateReport(schedule: CostSchedule, items: CostItem[], ctx: R
 
   // Calculate grand total
   const topLevelItems = items.filter(i => i.parentId === null);
-  const grandTotal = topLevelItems.reduce((sum, item) => sum + item.total, 0);
+  const grandTotal = sumDec(topLevelItems.map((item) => item.total));
 
   // Build chapter summary
   const chapters = items.filter(i => i.rowType === 'chapter' && i.depth === 0);

@@ -16,6 +16,8 @@
  *   tabs = indentation depth
  */
 import MDBReader from 'mdb-reader';
+import { dec, fromNumber, str } from '@/utils/decimal';
+const nOrNull = (n: number | null | undefined) => (n == null ? null : fromNumber(n));
 import type { CostItem, CostSchedule, CompanyInfo, ResourceType, StagartRow } from '@/types/costModel';
 import { makeStaartItem } from '@/services/calculation/staartDefaults';
 import { makeCostItem, normalizeUnit, genId, genIfcGuid } from './core';
@@ -212,10 +214,10 @@ export function importWpCalcFile(buffer: ArrayBuffer): {
     client: calc?.naam || '',
     author: calc?.calculator || '',
     ifcGuid: genIfcGuid(),
-    uitvoeringskosten: 0,
-    algemeneKosten: 0,
-    winstRisico: 0,
-    tarieven: Object.fromEntries(tarieven),
+    uitvoeringskosten: '0',
+    algemeneKosten: '0',
+    winstRisico: '0',
+    tarieven: Object.fromEntries([...tarieven].map(([k, v]) => [k, fromNumber(v) ?? '0'])),
   };
 
   // Extract UKK/AK/W&R percentages from staart
@@ -223,9 +225,9 @@ export function importWpCalcFile(buffer: ArrayBuffer): {
     const omschr = (s.omschrijving || '').toLowerCase();
     if (s.percentage !== null) {
       if (omschr.includes('algemene kosten') || omschr.includes('algemene bedrijfskosten')) {
-        schedule.algemeneKosten = Math.round(s.percentage * 10000) / 100;
+        schedule.algemeneKosten = fromNumber(Math.round(s.percentage * 10000) / 100) ?? '0';
       } else if (omschr.includes('winst') || omschr.includes('risico')) {
-        schedule.winstRisico += Math.round((s.percentage || 0) * 10000) / 100;
+        schedule.winstRisico = str(dec(schedule.winstRisico).plus(fromNumber(Math.round((s.percentage || 0) * 10000) / 100) ?? '0'));
       }
     }
   }
@@ -373,26 +375,26 @@ export function importWpCalcFile(buffer: ArrayBuffer): {
   // ── Store staart rows in schedule for bottom panel ──
   schedule.staartRows = staartRows.map(s => ({
     label: s.omschrijving || '',
-    percentage: s.percentage !== null ? Math.round(s.percentage * 10000) / 100 : null,
-    loon: s.loon,
-    materiaal: s.materiaal,
-    materieel: s.materieel,
-    stelpost: s.stelpost,
-    onderaanneming: s.onderaanneming,
-    bedrag: s.bedrag,
-    subtotaal: s.subtotaal,
-    totaal: s.totaal,
+    percentage: s.percentage !== null ? fromNumber(Math.round(s.percentage * 10000) / 100) : null,
+    loon: nOrNull(s.loon),
+    materiaal: nOrNull(s.materiaal),
+    materieel: nOrNull(s.materieel),
+    stelpost: nOrNull(s.stelpost),
+    onderaanneming: nOrNull(s.onderaanneming),
+    bedrag: nOrNull(s.bedrag),
+    subtotaal: nOrNull(s.subtotaal),
+    totaal: nOrNull(s.totaal),
     itemtype: s.itemtype,
   } satisfies StagartRow));
 
   // ── Also create staart_* CostItems so live calculator can do its job ──
   // Mirrors synthesizeStaartItems() in staartDefaults.ts but pulls percentages
   // from the actual staart table (rounded the same way as schedule.staartRows).
-  const findPctFromStaart = (label: string): number | null => {
+  const findPctFromStaart = (label: string): string | null => {
     const needle = label.toLowerCase();
     const row = staartRows.find((r) => (r.omschrijving ?? '').toLowerCase().includes(needle));
     if (!row || row.percentage === null || row.percentage === undefined) return null;
-    return Math.round(row.percentage * 10000) / 100;
+    return fromNumber(Math.round(row.percentage * 10000) / 100);
   };
 
   let staartSort = sortOrder;
@@ -400,55 +402,55 @@ export function importWpCalcFile(buffer: ArrayBuffer): {
     makeStaartItem(
       'staart_ak_oa',
       'Algemene kosten over onderaanneming:',
-      findPctFromStaart('algemene kosten over onderaanneming') ?? 9,
+      findPctFromStaart('algemene kosten over onderaanneming') ?? '9',
       staartSort++,
     ),
     makeStaartItem(
       'staart_abk',
       'Algemene bedrijfskosten:',
-      findPctFromStaart('algemene bedrijfskosten') ?? 6,
+      findPctFromStaart('algemene bedrijfskosten') ?? '6',
       staartSort++,
     ),
     makeStaartItem(
       'staart_garanties',
       'Garanties:',
-      findPctFromStaart('garantie') ?? 2,
+      findPctFromStaart('garantie') ?? '2',
       staartSort++,
     ),
     makeStaartItem(
       'staart_wvpm',
       'Werkvoorbereiding & projectmanagement',
-      findPctFromStaart('werkvoorbereiding') ?? 2,
+      findPctFromStaart('werkvoorbereiding') ?? '2',
       staartSort++,
     ),
     makeStaartItem(
       'staart_risico',
       'Risico:',
-      findPctFromStaart('risico') ?? 3,
+      findPctFromStaart('risico') ?? '3',
       staartSort++,
     ),
     makeStaartItem(
       'staart_winst',
       'Winst:',
-      findPctFromStaart('winst') ?? 5,
+      findPctFromStaart('winst') ?? '5',
       staartSort++,
     ),
     makeStaartItem(
       'staart_verzekering',
       'Verzekering:',
-      findPctFromStaart('verzekering') ?? 0.5,
+      findPctFromStaart('verzekering') ?? '0.5',
       staartSort++,
     ),
     makeStaartItem(
       'staart_btw_laag',
       'Btw laag:',
-      findPctFromStaart('btw laag') ?? 9,
+      findPctFromStaart('btw laag') ?? '9',
       staartSort++,
     ),
     makeStaartItem(
       'staart_btw',
       'Btw hoog:',
-      findPctFromStaart('btw hoog') ?? findPctFromStaart('btw') ?? 21,
+      findPctFromStaart('btw hoog') ?? findPctFromStaart('btw') ?? '21',
       staartSort++,
     ),
     makeStaartItem(

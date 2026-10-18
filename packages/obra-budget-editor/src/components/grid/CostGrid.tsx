@@ -18,6 +18,10 @@ import { computeResourceTotals } from '@/services/grid/resourceTotals';
 import { computeHideTotalSet } from '@/services/grid/hideTotal';
 import { isItemChangedSince, changedFieldsSince } from '@/services/history/itemHistory';
 import { formatCurrency } from '@/utils/formatting';
+import { InputErrorBanner } from './InputErrorBanner';
+import { CTRL_BUILD } from '@/services/buildFlags';
+import { budgetTotals } from '@/services/totals/budgetTotals';
+import { dec } from '@/utils/decimal';
 import type { CostItem, ExcelLink, Branch } from '@/types/costModel';
 
 // Stable empty-array references for Zustand selectors — without these,
@@ -74,7 +78,8 @@ export const CostGrid: React.FC = () => {
     : s.columnWidths
   );
 
-  const branchesEnabled = useAppStore(s => s.schedule.branchesEnabled ?? false);
+  const schedule = useAppStore(s => s.schedule);
+  const branchesEnabled = schedule.branchesEnabled ?? false;
   // i18n.language in de deps: bij taalwissel opnieuw oplossen zodat
   // kolomlabels/-tooltips in de nieuwe taal doorsijpelen naar de rijen.
   const columns = useMemo(() => getColumnsForView(gridView, branchesEnabled), [gridView, branchesEnabled, i18n.language]);
@@ -498,6 +503,7 @@ export const CostGrid: React.FC = () => {
   return (
     <div className={`cost-grid-wrapper${isWpcalcView ? ' grid-view-wpcalc-wrapper' : ''}`}>
       <FindReplaceDialog open={showFindReplace} onClose={() => setShowFindReplace(false)} />
+      <InputErrorBanner />
       <div
         ref={containerRef}
         className={`cost-grid${isWpcalcView ? ' grid-view-wpcalc' : ''}`}
@@ -573,8 +579,9 @@ export const CostGrid: React.FC = () => {
         {visibleItems.length > 0 && (() => {
           // Eindtotaal ínclusief staartkosten en afronding (aanneemsom),
           // niet alleen de kostprijs — de staartregels staan er direct boven.
-          const grandTotal = getGrandTotal(items);
-          const heeftBtw = items.some(i => (i.rowType === 'staart_btw' || i.rowType === 'staart_btw_laag') && Math.abs(i.total) > 0.005);
+          // ctrl: the contract total of the money policy (IVA from ivaRate/ivaMode).
+          const grandTotal = CTRL_BUILD ? budgetTotals(schedule, items).contractTotal : getGrandTotal(items);
+          const heeftBtw = CTRL_BUILD || items.some(i => (i.rowType === 'staart_btw' || i.rowType === 'staart_btw_laag') && dec(i.total).abs().gt('0.005'));
           return (
             <div className="grid-total-row" style={{ height: ROW_HEIGHT, width: effectiveColumnWidths.reduce((s, w) => s + (w ?? 0), 0), minWidth: effectiveColumnWidths.reduce((s, w) => s + (w ?? 0), 0) }}>
               {columns.map((col, i) => (

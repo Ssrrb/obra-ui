@@ -21,6 +21,7 @@
  * net als bij de andere zware importeurs.
  */
 import type { CostItem, CostSchedule, ResourceType } from '@/types/costModel';
+import { fromNumber } from '@/utils/decimal';
 import { makeCostItem, parseNumber, normalizeUnit, genId } from './core';
 
 // ── dBASE (DBF/DBT) parser ────────────────────────────────────────────────
@@ -337,7 +338,7 @@ export function buildDncImport(
   const schedule: Partial<CostSchedule> = {
     name: meta?.projectName || 'DNC-import',
     projectName: meta?.projectName || 'DNC-import',
-    tarieven: { A: uurloon },
+    tarieven: { A: fromNumber(uurloon) ?? '0' },
   };
 
   // Staartpercentages uit VT (op omschrijving)
@@ -348,9 +349,9 @@ export function buildDncImport(
   const ak = vtPct(/algemene kosten/i);
   const wr = vtPct(/winst.*risico/i);
   const ukk = vtPct(/co.?rdinatie|uitvoering/i);
-  if (ak != null) schedule.algemeneKosten = ak;
-  if (wr != null) schedule.winstRisico = wr;
-  if (ukk != null) schedule.uitvoeringskosten = ukk;
+  if (ak != null) schedule.algemeneKosten = fromNumber(ak) ?? '0';
+  if (wr != null) schedule.winstRisico = fromNumber(wr) ?? '0';
+  if (ukk != null) schedule.uitvoeringskosten = fromNumber(ukk) ?? '0';
 
   // Projectkengetallen uit VD (>0)
   const props = VD.filter(r => parseNumber(r.WAARDE) > 0 && (r.OMSCHRIJF || '').trim())

@@ -13,6 +13,9 @@ importers:
       7z-wasm:
         specifier: ^1.2.0
         version: 1.2.0
+      '@ctrlmas/budget-engine':
+        specifier: link:/Users/sebastian/Desktop/obra-studio/worktrees/ctrl-budgets-decimal/obra-budget-engine
+        version: link:../../../ctrl-budgets-decimal/obra-budget-engine
       '@tauri-apps/api':
         specifier: ^2.10.1
         version: 2.12.4

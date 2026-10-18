@@ -3,6 +3,10 @@ import type { ReportView, PageOrientation, PageSize } from '@/state/slices/uiSli
 import { getStaartBreakdown } from '@/services/calculation/calculator';
 import { buildBouw1Html } from './bouw1PrintService';
 import { getReportContext, type ReportContext } from '@/i18n/reportI18n';
+import { CTRL_BUILD } from '@/services/buildFlags';
+import { dec, isZeroDec, str, sumDec } from '@/utils/decimal';
+import { makeDecimalFormatter, type DecimalLike } from '@/utils/formatting';
+import { ivaTotalsRows } from './ivaTotals';
 
 function escapeHtml(text: string): string {
   return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -10,17 +14,21 @@ function escapeHtml(text: string): string {
 
 /** Getalnotatie in de rapporttaal (twee decimalen). */
 interface ReportFormatters {
-  currency: (value: number) => string;
-  number: (value: number | null) => string;
-  percentage: (value: number) => string;
+  currency: (value: DecimalLike) => string;
+  number: (value: DecimalLike) => string;
+  percentage: (value: DecimalLike) => string;
+  /** Exact decimal formatter (used by the IVA totals block). */
+  decimal: (value: DecimalLike, scale?: number) => string;
 }
 
+/** Report numbers from the decimal text (no float): amounts 2 decimals HALF_UP; es-PY in the ctrl build. */
 function makeFormatters(ctx: ReportContext): ReportFormatters {
-  const nf = new Intl.NumberFormat(ctx.intlLocale, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  const fmt = makeDecimalFormatter(ctx.intlLocale, CTRL_BUILD);
   return {
-    currency: (value) => nf.format(value),
-    number: (value) => (value === null || value === 0 ? '' : nf.format(value)),
-    percentage: (value) => nf.format(value) + '%',
+    currency: (value) => fmt(value),
+    number: (value) => (value == null || dec(String(value)).isZero() ? '' : fmt(value)),
+    percentage: (value) => fmt(value) + '%',
+    decimal: fmt,
   };
 }
 
@@ -160,8 +168,8 @@ function getCellValue(item: CostItem, key: string, ctx: ReportContext, fmt: Repo
     // V/N/… per regel — ook op posten (S-kolom in de besteksopmaak)
     case 'verrekenbaar': return item.verrekenbaar ?? '';
     case 'normUnitPrice': return item.normUnitPrice != null ? fmtCurrency(item.normUnitPrice) : '';
-    case 'unitPrice': return item.unitPrice ? fmtCurrency(item.unitPrice) : '';
-    case 'total': return item.total === 0 ? '' : fmtCurrency(item.total);
+    case 'unitPrice': return isZeroDec(item.unitPrice) ? '' : fmtCurrency(item.unitPrice);
+    case 'total': return isZeroDec(item.total) ? '' : fmtCurrency(item.total);
     default: return '';
   }
 }
@@ -218,9 +226,9 @@ function buildHtml(
 
   const hasStaart = items.some(item => item.rowType.startsWith('staart_'));
   const breakdown = hasStaart ? getStaartBreakdown(items) : null;
-  const grandTotal = breakdown ? breakdown.aanneemsomAfgerond : items
+  const grandTotal = breakdown ? breakdown.aanneemsomAfgerond : str(sumDec(items
     .filter(item => item.parentId === null)
-    .reduce((sum, item) => sum + item.total, 0);
+    .map(item => item.total)));
 
   const normalItems = filterItems(items, view);
 
@@ -266,7 +274,7 @@ function buildHtml(
     if (!useSubtotalRows || !pendingSubtotalParentId) return '';
     const parent = items.find(i => i.id === pendingSubtotalParentId);
     pendingSubtotalParentId = null;
-    if (!parent || parent.total === 0) return '';
+    if (!parent || isZeroDec(parent.total)) return '';
     return `<tr class="subtotal-row">
       <td colspan="${colCount - 1}" class="total-label">${escapeHtml(t('totals.subtotal'))}</td>
       <td class="amount">${fmtCurrency(parent.total)}</td>
@@ -296,7 +304,7 @@ function buildHtml(
       const cells = columns.map(c => {
         if (c.key === 'description') return `<td class="desc"${indentStyle}>${escapeHtml(item.description)}</td>`;
         // Bij hoofdaanneming: geen totaal naast hoofdstuknaam
-        if (c.key === 'total') return `<td class="amount">${useSubtotalRows ? '' : (item.total === 0 ? '' : fmtCurrency(item.total))}</td>`;
+        if (c.key === 'total') return `<td class="amount">${useSubtotalRows ? '' : (isZeroDec(item.total) ? '' : fmtCurrency(item.total))}</td>`;
         if (c.key === 'code') return `<td class="code">${escapeHtml(item.code)}</td>`;
         // Clean views: S/V leeg op hoofdstukregels (de posten dragen de V)
         if (c.key === 'verrekenbaar') return `<td class="center">${cleanView ? '' : (item.verrekenbaar ?? '')}</td>`;
@@ -325,7 +333,13 @@ function buildHtml(
   tableRows += flushSubtotal();
 
   // Staartkosten section (only for views with total column)
-  if (hasTotalCol && hasStaart && breakdown) {
+  if (hasTotalCol && CTRL_BUILD) {
+    // ctrl: totals of the money policy (IVA from ivaRate/ivaMode), as in the editor.
+    tableRows += ivaTotalsRows(schedule, itemsIn, fmt.decimal, (label, amount, cls) => `<tr class="${cls}">
+      <td colspan="${colCount - 1}" class="total-label">${escapeHtml(label)}</td>
+      <td class="amount">${escapeHtml(amount)}</td>
+    </tr>`);
+  } else if (hasTotalCol && hasStaart && breakdown) {
     const totalLabelColspan = colCount - 1;
 
     tableRows += `<tr class="subtotal-row">
@@ -342,7 +356,7 @@ function buildHtml(
             <td class="amount">${fmtCurrency(item.total)}</td>
           </tr>`;
         } else {
-          const pctStr = fmtPercentage(item.staartPercentage ?? 0);
+          const pctStr = fmtPercentage(item.staartPercentage ?? '0');
           tableRows += `<tr class="staart-row">
             <td colspan="${colCount - 1}" class="desc">${escapeHtml(item.description)} (${pctStr})</td>
             <td class="amount">${fmtCurrency(item.total)}</td>
@@ -365,7 +379,7 @@ function buildHtml(
 
     // Excl-eindbedrag = aanneemsom + afronding (zonder btw — die zit wél in
     // aanneemsomAfgerond en hoort niet onder dit label).
-    const finalTotal = breakdown.aanneemsom + breakdown.afronding;
+    const finalTotal = dec(breakdown.aanneemsom).plus(dec(breakdown.afronding));
     tableRows += `<tr class="total-row">
       <td colspan="${totalLabelColspan}" class="total-label">${escapeHtml(t('totals.contractSumExclVat'))}</td>
       <td class="amount">${fmtCurrency(finalTotal)}</td>

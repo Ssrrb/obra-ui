@@ -44,11 +44,11 @@ describe('Default Budget', () => {
     const winst = items.find(i => i.rowType === 'staart_winst');
     const btw = items.find(i => i.rowType === 'staart_btw');
     const afr = items.find(i => i.rowType === 'staart_afronding');
-    expect(akOa!.staartPercentage).toBe(9);
-    expect(abk!.staartPercentage).toBe(6);
-    expect(risico!.staartPercentage).toBe(3);
-    expect(winst!.staartPercentage).toBe(5);
-    expect(btw!.staartPercentage).toBe(21);
+    expect(akOa!.staartPercentage).toBe('9');
+    expect(abk!.staartPercentage).toBe('6');
+    expect(risico!.staartPercentage).toBe('3');
+    expect(winst!.staartPercentage).toBe('5');
+    expect(btw!.staartPercentage).toBe('21');
     expect(afr!.staartPercentage).toBeNull();
   });
 
@@ -56,7 +56,7 @@ describe('Default Budget', () => {
     const items = recalculateItems(createDefaultItems());
     const total = getGrandTotal(items);
     // Empty budget with only staart items has 0 total
-    expect(total).toBe(0);
+    expect(total).toBe('0');
   });
 
   it('all parent references are valid', () => {
@@ -87,8 +87,8 @@ describe('Default Budget', () => {
     expect(schedule.algemeneKosten).toBe(pctOf('staart_ak_oa'));
     expect(schedule.winstRisico).toBe(pctOf('staart_winst'));
     // Waarden ongewijzigd t.o.v. voorheen (geen gedragswijziging):
-    expect(schedule.uitvoeringskosten).toBe(6);
-    expect(schedule.algemeneKosten).toBe(9);
-    expect(schedule.winstRisico).toBe(5);
+    expect(schedule.uitvoeringskosten).toBe('6');
+    expect(schedule.algemeneKosten).toBe('9');
+    expect(schedule.winstRisico).toBe('5');
   });
 });

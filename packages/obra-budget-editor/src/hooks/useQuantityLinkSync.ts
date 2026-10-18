@@ -4,6 +4,7 @@
  */
 import { useEffect } from 'react';
 import { useAppStore } from '@/state/appStore';
+import { fromNumber } from '@/utils/decimal';
 
 export function useQuantityLinkSync() {
   const items = useAppStore(s => s.items);
@@ -40,8 +41,10 @@ export function useQuantityLinkSync() {
         if (q) newValue = q[link.quantity] ?? null;
       }
 
-      if (newValue !== null && isFinite(newValue) && newValue !== item.quantity) {
-        updateItem(item.id, 'quantity', newValue);
+      // Linked sources (sub-sheet, PDF, IFC) only have doubles: shortest round-trip text.
+      const newDecimal = newValue !== null ? fromNumber(newValue) : null;
+      if (newDecimal !== null && newDecimal !== item.quantity) {
+        updateItem(item.id, 'quantity', newDecimal);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

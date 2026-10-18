@@ -41,7 +41,7 @@ describe('ifcx importer (round-trip)', () => {
     expect(post.parentId).toBe(chapter.id);
     expect(regels.every((r) => r.parentId === post.id)).toBe(true);
 
-    expect(getGrandTotal(items1)).toBeCloseTo(total0, 2);
+    expect(Number(getGrandTotal(items1))).toBeCloseTo(total0, 2);
   });
 
   it('preserves siblings with duplicate codes (generator key dedup)', () => {
@@ -56,7 +56,7 @@ describe('ifcx importer (round-trip)', () => {
     const res = importIfcx(generateIfcxJson(schedule, items0));
     const items1 = recalculateItems(res.items);
     expect(items1.filter((i) => i.rowType === 'regel')).toHaveLength(3); // niets verloren
-    expect(getGrandTotal(items1)).toBeCloseTo(60, 2); // 10 + 20 + 30
+    expect(Number(getGrandTotal(items1))).toBeCloseTo(60, 2); // 10 + 20 + 30
   });
 
   it('throws on invalid JSON', () => {
