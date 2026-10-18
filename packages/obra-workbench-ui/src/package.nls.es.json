@@ -14,11 +14,12 @@
   "accountsEmpty": "No hay cuentas conectadas.",
   "explorer": "Explorador de Ctrl+",
   "explorerEmpty": "Sin proyecto abierto. Abre un proyecto para ver sus documentos.",
-  "projectsWelcome": "No hay obras abiertas.\n[Nueva obra](command:ctrl.obra.create)\n[Mostrar proyecto de ejemplo](command:obra.showSample)",
+  "projectsWelcome": "Todavía no tienes obras.\n[Nueva obra](command:ctrl.obra.create)\n[Mostrar proyecto de ejemplo](command:obra.showSample)",
   "inboxWelcome": "La bandeja está vacía.",
   "cashflowWelcome": "No hay movimientos de caja.",
   "accountsWelcome": "No hay cuentas conectadas.",
   "explorerWelcome": "Sin proyecto abierto. Abre un proyecto para ver sus documentos.\n[Mostrar proyecto de ejemplo](command:obra.showSample)",
   "moduleSoon": "Próximamente",
+  "refreshObras": "Actualizar obras",
   "allObras": "Todas las obras"
 }

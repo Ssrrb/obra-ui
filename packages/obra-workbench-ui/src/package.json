@@ -45,6 +45,12 @@
         "title": "%allObras%",
         "category": "Ctrl+",
         "icon": "$(arrow-left)"
+      },
+      {
+        "command": "obra.refreshObras",
+        "title": "%refreshObras%",
+        "category": "Ctrl+",
+        "icon": "$(refresh)"
       }
     ],
     "viewsContainers": {
@@ -159,6 +165,11 @@
       "view/title": [
         {
           "command": "ctrl.obra.create",
+          "when": "view == obra.projects.tree && !obra.activeObra",
+          "group": "navigation"
+        },
+        {
+          "command": "obra.refreshObras",
           "when": "view == obra.projects.tree && !obra.activeObra",
           "group": "navigation"
         },

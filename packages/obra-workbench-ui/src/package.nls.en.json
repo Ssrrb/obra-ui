@@ -14,11 +14,12 @@
   "accountsEmpty": "No accounts are connected.",
   "explorer": "Ctrl+ Explorer",
   "explorerEmpty": "No project is open. Open a project to see its documents.",
-  "projectsWelcome": "No work sites are open.\n[New work site](command:ctrl.obra.create)\n[Show sample project](command:obra.showSample)",
+  "projectsWelcome": "You have no work sites yet.\n[New work site](command:ctrl.obra.create)\n[Show sample project](command:obra.showSample)",
   "inboxWelcome": "The inbox is empty.",
   "cashflowWelcome": "No cash flow entries.",
   "accountsWelcome": "No accounts are connected.",
   "explorerWelcome": "No project is open. Open a project to see its documents.\n[Show sample project](command:obra.showSample)",
   "moduleSoon": "Coming soon",
+  "refreshObras": "Refresh work sites",
   "allObras": "All work sites"
 }

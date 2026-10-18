@@ -15,19 +15,20 @@ function host(folders, files = {}, extensions = []) {
     EventEmitter: class { event = () => disposable(); fire() {} dispose() { this.disposed = true; } },
     TreeItem: class { constructor(label, collapsibleState) { Object.assign(this, { label, collapsibleState }); } },
     TreeItemCollapsibleState: { None: 0, Expanded: 2 }, ThemeIcon: Object.assign(class { constructor(id) { this.id = id; } }, { Folder: { id: 'folder' }, File: { id: 'file' } }),
-    Uri: { from: v => v, joinPath: (uri, ...parts) => ({ path: posix.join(uri.path, ...parts) }) },
+    Uri: { from: v => v, file: path => ({ path }), joinPath: (uri, ...parts) => ({ path: posix.join(uri.path, ...parts) }) },
+    RelativePattern: class { constructor(base, pattern) { Object.assign(this, { base, pattern }); } }, FileType: { File: 1, Directory: 2 },
     extensions: { all: extensions, onDidChange: () => disposable() },
-    commands: { registerCommand: (id, fn) => { commands.set(id, fn); return disposable(); }, executeCommand: async (...args) => calls.push(args) },
-    window: { createTreeView: (id, options) => { trees.set(id, options.treeDataProvider); const view = disposable(); views.set(id, view); return view; }, showTextDocument: async doc => { calls.push(['document', doc]); } },
+    commands: { registerCommand: (id, fn) => { commands.set(id, fn); return disposable(); }, executeCommand: async (...args) => { calls.push(args); if (args[0] === 'ctrl.obra.organizations') { return [{ id: 'org_1' }, { id: 'org_2' }]; } } },
+    window: { createTreeView: (id, options) => { trees.set(id, options.treeDataProvider); const view = { ...disposable(), onDidChangeVisibility: () => disposable() }; views.set(id, view); return view; }, withProgress: (options, task) => task(), showTextDocument: async doc => { calls.push(['document', doc]); } },
     workspace: { workspaceFolders: folders,
       findFiles: async () => Object.keys(files).filter(path => path.endsWith('/obra.json')).map(path => ({ path })),
-      fs: { readFile: async uri => { if (!(uri.path in files)) { throw new Error('missing'); } return new TextEncoder().encode(JSON.stringify(files[uri.path])); } },
+      fs: { readDirectory: async uri => [...new Set(Object.keys(files).filter(path => path.startsWith(uri.path + '/')).map(path => path.slice(uri.path.length + 1).split('/')[0]))].map(name => [name, 2]), readFile: async uri => { if (!(uri.path in files)) { throw new Error('missing'); } return new TextEncoder().encode(JSON.stringify(files[uri.path])); } },
       createFileSystemWatcher: () => ({ onDidCreate: disposable, onDidChange: disposable, onDidDelete: disposable, dispose() { this.disposed = true; } }),
       onDidChangeWorkspaceFolders: () => disposable(), getConfiguration: () => ({ get: () => enabled }), onDidChangeConfiguration: fn => { events.push(fn); return disposable(); }, registerTextDocumentContentProvider: (scheme, provider) => { contents.set(scheme, provider); return disposable(); }, openTextDocument: async uri => ({ uri, text: contents.get(uri.scheme).provideTextDocumentContent(uri) }) },
   };
   const context = { subscriptions: [], globalState: { value: false, get() { return this.value; }, async update(key, value) { this.value = value; } } };
   const module = { exports: {} };
-  vm.runInNewContext(readFileSync(new URL('../src/extension.cjs', import.meta.url), 'utf8'), { module, TextDecoder, require: name => name === 'vscode' ? api : require('../src/' + name.replace('./', '')) });
+  vm.runInNewContext(readFileSync(new URL('../src/extension.cjs', import.meta.url), 'utf8'), { module, TextDecoder, process: { env: { CTRL_CREATE_DOCUMENTS: '/docs' } }, require: name => name === 'vscode' ? api : ['os', 'path'].includes(name) ? require(name) : require('../src/' + name.replace('./', '')) });
   return { context, commands, trees, views, calls, activate: () => module.exports.activate(context), toggle: async value => { enabled = value; await events.at(-1)({ affectsConfiguration: () => true }); } };
 }
 test('empty startup, exact sample hierarchy/icons, read-only scheme, toggles and disposal', async () => {
@@ -76,4 +77,15 @@ test('obras list switches to the erp/ecms modules of the chosen obra and back', 
   await h.commands.get('obra.showObras')();
   assert.equal(h.views.get('obra.projects.tree').title, 'Obras');
   assert.deepEqual(plain(tree.getChildren().map(o => o.name)), ['Torre Sur']);
+});
+test('obras of the default root appear without an open folder and refresh pulls them', async () => {
+  const workspace = { schemaVersion: 1, clerkOrgId: 'org_1', companyId: 'c1', workspaceId: 'w1' };
+  const obra = { schemaVersion: 1, obraId: 'o1', name: 'Puente', companyId: 'c1', workspaceId: 'w1', modules: { effective: [] } };
+  const target = '/docs/Ctrl/Empresa/Puente';
+  const h = host(undefined, { '/docs/Ctrl/.ctrl/locations.json': { version: 1, locations: [{ orgId: 'org_1', target }] }, [`${target}/.ctrl/workspace.json`]: workspace, [`${target}/obras/o1/.ctrl/obra.json`]: obra });
+  await h.activate();
+  const tree = h.trees.get('obra.projects.tree');
+  assert.deepEqual(JSON.parse(JSON.stringify(tree.getChildren().map(o => o.key))), ['org_1/o1']);
+  await h.commands.get('obra.refreshObras')();
+  assert.deepEqual(JSON.parse(JSON.stringify(h.calls.filter(c => c[0] === 'obra-auth.runWorkspaceCli'))), [['obra-auth.runWorkspaceCli', { kind: 'pull', org: 'org_1' }], ['obra-auth.runWorkspaceCli', { kind: 'pull', org: 'org_2' }]]);
 });
