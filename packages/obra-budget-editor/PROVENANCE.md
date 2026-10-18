@@ -92,3 +92,48 @@ in upstream's own builds):
 The ctrl build also replaces the 3D and PDF viewers (hidden tabs) with empty
 stand-ins at build time (`src/ctrl/stubs/viewers.tsx`); the upstream files
 are unchanged.
+
+## Schema 2: decimal money (engine `@ctrlmas/budget-engine`)
+
+Unlike the gated changes above, this applies to every build: money is a
+canonical decimal string everywhere (schema 2 of ctrl's budget engine).
+
+- One arithmetic implementation. `src/types/costModel.ts` re-exports the
+  engine's OpenCalc types; `src/services/calculation/{calculator,
+  staartDefaults,urenProrate}.ts` re-export the engine's decimal port. The
+  engine index does not re-export its calculator, so the Vite configs and
+  `tsconfig.json` alias `@ctrlmas/budget-engine/opencalc/*` to the
+  package's `src/opencalc/*` (shipped in its `files`). Display-only
+  arithmetic (hours, resource columns, report columns) uses the engine's
+  decimal.js clone `Dec` through `src/utils/decimal.ts`.
+- Input: `src/utils/numericInput.ts` wraps the engine's `parseDecimalInput`
+  (es-PY: `.` thousands, `,` decimal; plain `1234.56`; formulas) and adds the
+  rejection message (24 integer / 12 fraction digits; never rounded). A
+  rejected grid or panel input shows `InputErrorBanner`. Typed prices are no
+  longer rounded to cents on input; the engine quantizes line amounts.
+- Display: `src/utils/formatting.ts` formats decimal text (es-PY; amounts 2
+  decimals HALF_UP, quantities every digit). Reports and print use the same
+  formatter (es-PY in the ctrl build).
+- Totals: `src/services/totals/budgetTotals.ts` (engine `computeTotals`)
+  feeds the totals panel (`BudgetTotalsPanel`, ctrl build), the grid footer
+  and status bar (ctrl build) and the printed reports (`ivaTotals.ts`).
+- IVA (ctrl build): `schedule.ivaMode` in the totals panel; per-row
+  `ivaRate` in the grid context menu (replaces the Dutch btw menu); the
+  Dutch btw rows are hidden in the staart panel. The engine makes
+  `staart_btw`/`staart_btw_laag` contribute zero in all builds.
+- Files: native `.ocs`/`.ifcCalc`/host JSON is read with the engine's
+  `upgradeDocumentText` (lossless-json: literals beyond double precision
+  survive; legacy v1 files via `upgradeDocument`). Native saves use
+  `serializeProjectForFile` (engine `downgradeForExport`, numbers, so
+  upstream Open Calc Studio still reads them). CSV and BC3 importers build
+  decimal text from the source literal (`parseDecimal` in
+  `importers/core.ts`). Excel: decimal text from each cell's stored value
+  `v` via `String(v)`; an `.xlsx` cell holds an IEEE double, so digits beyond
+  ~15–17 significant ones are not in the file and cannot be recovered.
+  Other importers (binary/XML formats with doubles or computed values) go
+  through `makeCostItem`, which converts numbers with their shortest
+  round-trip text.
+- Boundaries that stay numbers by design: Tauri/Rust report and MDB writer
+  payloads (`numbersForRust`, `wpcalcExporter`), IFCX JSON numbers, xlsx
+  cells written by the inschrijfstaat exporter, sub-sheet (spreadsheet)
+  cells and project properties (m², m³), the chat summary.
