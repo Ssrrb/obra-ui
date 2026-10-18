@@ -27,6 +27,13 @@ uses (verified against the archived `reference/vscode-token-map.md`).
 | DataTable | `data-grid` | [data-grid.yaml](data-grid.yaml) |
 | *(theme bridge, all components)* | `utilities/theme` | [theme.yaml](theme.yaml) |
 
+Non-toolkit ports (surfaces and engines from outside the archive) also record an
+extraction note:
+
+| Port | Source | Note |
+|---|---|---|
+| Budget module (PV-01 grid, import wizard, rubro picker, import engine) | SISTEMA-DE-CONTROL-OBRAS `src/modules/budgets` + `src/client/components` | [budget-module.yaml](budget-module.yaml) |
+
 ## do_not_copy (applies to every note)
 
 - FAST-specific architecture (`@microsoft/fast-element` templates, behaviors,

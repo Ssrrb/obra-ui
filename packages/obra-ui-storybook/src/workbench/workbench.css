@@ -1041,3 +1041,369 @@
 .obra-wb-region__frame .obra-wb-activitybar {
   border-radius: 0;
 }
+
+/* ---- Budget import wizard (PV-01 · Importar) ---- */
+
+.figures-tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+.obra-wb-steps {
+  display: flex;
+  align-items: center;
+  gap: var(--obra-space-1);
+  padding: var(--obra-space-1) var(--obra-space-2);
+  border: var(--obra-border-width-default) solid var(--obra-border-default);
+  /* Concentric with the chips inside (2px) + their padding (4px). */
+  border-radius: calc(var(--obra-radius-small) + var(--obra-space-1));
+  background: var(--obra-surface-input);
+}
+
+.obra-wb-step {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--obra-space-2);
+  padding: var(--obra-space-1) var(--obra-space-2);
+  border-radius: var(--obra-radius-control);
+  font-size: var(--obra-font-small);
+  font-weight: var(--obra-font-weight-medium);
+  color: var(--obra-text-primary);
+  white-space: nowrap;
+}
+
+.obra-wb-step__num {
+  display: inline-grid;
+  place-items: center;
+  min-width: var(--obra-space-4);
+  font-family: var(--obra-font-mono);
+  font-size: var(--obra-font-small);
+  font-weight: var(--obra-font-weight-bold);
+}
+
+.obra-wb-step--current {
+  background: var(--obra-surface-default);
+  font-weight: var(--obra-font-weight-bold);
+}
+
+.obra-wb-options {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--obra-space-1);
+}
+
+.obra-wb-option {
+  display: flex;
+  align-items: center;
+  gap: var(--obra-space-2);
+}
+
+.obra-wb-option > obra-checkbox,
+.obra-wb-option > obra-radio {
+  flex: 1;
+  min-width: 0;
+}
+
+/* The inner control span has no declared layout: give dot/box and label a row. */
+.obra-wb-option obra-checkbox::part(control),
+.obra-wb-option obra-radio::part(control) {
+  display: flex;
+  align-items: center;
+  gap: var(--obra-space-sm);
+}
+
+.obra-wb-option obra-checkbox::part(label),
+.obra-wb-option obra-radio::part(label) {
+  min-width: 0;
+}
+
+.obra-wb-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--obra-space-3);
+  padding: var(--obra-space-4);
+  border: var(--obra-border-width-default) solid var(--obra-border-default);
+  border-radius: var(--obra-radius-surface);
+  background: var(--obra-surface-raised);
+}
+
+.obra-wb-card__hint {
+  margin: 0;
+  font-size: var(--obra-font-small);
+  color: var(--obra-text-secondary);
+}
+
+.obra-wb-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--obra-space-4);
+  padding-top: var(--obra-space-3);
+  border-top: var(--obra-border-width-default) solid var(--obra-border-default);
+}
+
+.obra-wb-card__footer-side {
+  display: flex;
+  align-items: center;
+  gap: var(--obra-space-sm);
+}
+
+.obra-wb-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--obra-space-1);
+}
+
+.obra-wb-field__label {
+  font-size: var(--obra-font-small);
+  font-weight: var(--obra-font-weight-bold);
+  color: var(--obra-text-primary);
+}
+
+.obra-wb-import-drop {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--obra-space-2);
+  padding: var(--obra-space-5);
+  border: var(--obra-border-width-default) dashed var(--obra-border-default);
+  border-radius: var(--obra-radius-surface);
+  text-align: center;
+}
+
+.obra-wb-import-drop__icon {
+  font-size: var(--obra-font-size-lg);
+  color: var(--obra-text-secondary);
+}
+
+.obra-wb-import-drop__title {
+  font-weight: var(--obra-font-weight-bold);
+  color: var(--obra-text-primary);
+}
+
+.obra-wb-sheet-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--obra-space-2);
+}
+
+.obra-wb-structure-formats {
+  display: grid;
+  gap: var(--obra-space-3);
+  padding-top: var(--obra-space-3);
+  border-top: var(--obra-border-width-default) solid var(--obra-border-default);
+}
+
+.obra-wb-column-tools {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--obra-space-2);
+}
+
+.obra-wb-columns {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--obra-space-3);
+}
+
+.obra-wb-column {
+  display: flex;
+  flex-direction: column;
+  gap: var(--obra-space-2);
+  padding: var(--obra-space-3);
+  border: var(--obra-border-width-default) solid var(--obra-border-default);
+  border-radius: var(--obra-radius-surface);
+}
+
+.obra-wb-column__header {
+  display: flex;
+  align-items: center;
+  gap: var(--obra-space-2);
+  min-width: 0;
+}
+
+.obra-wb-column__letter {
+  flex-shrink: 0;
+  padding: 0 var(--obra-space-1);
+  background: var(--obra-surface-input);
+  border-radius: var(--obra-radius-small);
+  font-family: var(--obra-font-mono);
+  font-size: var(--obra-font-small);
+  font-weight: var(--obra-font-weight-bold);
+}
+
+.obra-wb-column__name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-weight: var(--obra-font-weight-bold);
+  color: var(--obra-text-primary);
+}
+
+.obra-wb-column__samples {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--obra-font-mono);
+  font-size: var(--obra-font-small);
+  color: var(--obra-text-secondary);
+}
+
+.obra-wb-recon__head {
+  display: flex;
+  align-items: center;
+  gap: var(--obra-space-2);
+}
+
+.obra-wb-recon__scale {
+  color: var(--obra-text-secondary);
+}
+
+.obra-wb-recon {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 64ch;
+}
+
+.obra-wb-recon__line {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--obra-space-4);
+  padding: var(--obra-space-1) 0;
+  border-top: var(--obra-border-width-default) solid var(--obra-border-default);
+  font-size: var(--obra-font-body);
+}
+
+.obra-wb-recon__line:first-child {
+  border-top: none;
+}
+
+.obra-wb-recon__line--strong {
+  font-weight: var(--obra-font-weight-bold);
+  color: var(--obra-text-primary);
+}
+
+.obra-wb-recon__value {
+  font-family: var(--obra-font-mono);
+}
+
+.obra-wb-treatment {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--obra-space-4);
+}
+
+.obra-wb-treatment__name {
+  font-weight: var(--obra-font-weight-medium);
+  color: var(--obra-text-primary);
+}
+
+.obra-wb-checks {
+  display: flex;
+  flex-direction: column;
+  gap: var(--obra-space-1);
+}
+
+.obra-wb-check {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--obra-space-2);
+  padding: var(--obra-space-1) var(--obra-space-2);
+  background: var(--obra-surface-default);
+  border-radius: var(--obra-radius-small);
+  font-size: var(--obra-font-small);
+}
+
+.obra-wb-check__result {
+  font-family: var(--obra-font-mono);
+  color: var(--obra-text-primary);
+  font-weight: var(--obra-font-weight-bold);
+}
+
+.obra-wb-check__result--mismatch {
+  color: var(--obra-text-danger);
+}
+
+.obra-wb-flag {
+  display: inline-block;
+  padding: 0 var(--obra-space-2);
+  border-radius: var(--obra-radius-round);
+  background: var(--obra-badge-background);
+  color: var(--obra-badge-foreground);
+  font-size: var(--obra-font-small);
+}
+
+.obra-wb-flag--ok {
+  color: var(--obra-text-primary);
+}
+
+.obra-wb-flag--alert {
+  background: var(--obra-text-field-background-error);
+  color: var(--obra-text-on-action);
+}
+
+.obra-wb-issue {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--obra-space-2);
+  margin: 0;
+  font-size: var(--obra-font-small);
+  color: var(--obra-text-secondary);
+}
+
+.obra-wb-issue--critical {
+  color: var(--obra-text-danger);
+  font-weight: var(--obra-font-weight-bold);
+}
+
+.obra-wb-rows-tools {
+  display: flex;
+  align-items: center;
+  gap: var(--obra-space-3);
+}
+
+.obra-wb-rows-tools obra-filter-bar {
+  flex: 1;
+  min-width: 0;
+}
+
+.obra-wb-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: var(--obra-space-3);
+}
+
+.obra-wb-stat {
+  display: flex;
+  flex-direction: column;
+  gap: var(--obra-space-1);
+  padding: var(--obra-space-3);
+  border: var(--obra-border-width-default) solid var(--obra-border-default);
+  border-radius: var(--obra-radius-surface);
+  background: var(--obra-surface-default);
+}
+
+.obra-wb-stat__label {
+  font-size: var(--obra-font-small);
+  color: var(--obra-text-secondary);
+}
+
+.obra-wb-stat__value {
+  font-family: var(--obra-font-mono);
+  font-size: var(--obra-font-size-md);
+  font-weight: var(--obra-font-weight-bold);
+  color: var(--obra-text-primary);
+}
+
+.obra-wb-overcommitment-note {
+  margin: 0;
+  font-size: var(--obra-font-small);
+  font-weight: var(--obra-font-weight-medium);
+  color: var(--obra-text-danger);
+}

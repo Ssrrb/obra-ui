@@ -2,7 +2,7 @@
 id: PV-01
 frameName: "PV-01 · Presupuesto"
 page: "02 · Proyecto"
-status: draft
+status: in-review
 rules: [L3-09, L3-10, L3-11, L1-31, L1-53, L1-55, L1-57, L1-58, L1-59]
 ---
 

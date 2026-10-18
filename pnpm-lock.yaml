@@ -131,6 +131,9 @@ importers:
       '@obra/ui':
         specifier: workspace:*
         version: link:../obra-ui
+      xlsx:
+        specifier: ^0.18.5
+        version: 0.18.5
     devDependencies:
       '@axe-core/playwright':
         specifier: ^4.10.1

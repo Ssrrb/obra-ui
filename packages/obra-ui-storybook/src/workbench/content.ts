@@ -236,6 +236,49 @@ export function companyProjectsEditor(state: ProjectListState = 'ready'): HTMLEl
   return surface;
 }
 
+// --- Ported from BudgetItemSelect (SISTEMA-DE-CONTROL-OBRAS): a destination
+// rubro picker for OC, pedidos and caja chica. Shows only leaf partidas with
+// their balance, Gastos Generales last (obra-select has no optgroups, so the
+// rubro travels inside the option text). Demo items mirror the PV-01 grid so
+// the balances read consistently.
+
+interface ImputableDemoItem {
+  rubro: string;
+  code: string;
+  name: string;
+  balance: string;
+}
+
+const IMPUTABLE_DEMO_ITEMS: ImputableDemoItem[] = [
+  { rubro: 'Estructura', code: '02.01', name: 'Hormigón armado', balance: '24.000.000,00' },
+  { rubro: 'Estructura', code: '02.02', name: 'Acero de refuerzo', balance: '25.000.000,00' },
+  { rubro: 'Obras preliminares', code: '01.01', name: 'Limpieza del terreno', balance: '2.700.000,00' },
+  { rubro: 'Obras preliminares', code: '01.02', name: 'Replanteo', balance: '1.600.000,00' },
+  { rubro: 'Gastos Generales / No imputados', code: 'GG', name: 'No imputados', balance: '0,00' },
+];
+
+export function budgetItemSelect(options: { selected?: string } = {}): HTMLElement {
+  return el(
+    'obra-select',
+    { 'aria-label': 'Rubro de destino', value: options.selected ?? '' },
+    [
+      el('obra-option', { value: '' }, ['Elegí el rubro de destino…']),
+      ...IMPUTABLE_DEMO_ITEMS.map((item) =>
+        el('obra-option', { value: item.code }, [
+          `${item.rubro} · ${item.code} ${item.name} — saldo ${item.balance}`,
+        ]),
+      ),
+    ],
+  );
+}
+
+/** Una partida excedida se registra igual y queda marcada (nunca solo el color). */
+export function budgetItemExceededNote(amount: string): HTMLElement {
+  return el('p', { class: 'obra-wb-overcommitment-note' }, [
+    `Partida excedida en ${amount}: la operación se registra igual y queda marcada.`,
+  ]);
+}
+
 // --- Project view · PV-01 Presupuesto ----------------------------------------
 
 export type BudgetState = 'ready' | 'loading' | 'error';
@@ -247,18 +290,41 @@ const BUDGET_COLUMNS: DataTableColumn[] = [
   { key: 'quantity', header: 'Cantidad', align: 'end', figures: 'tabular' },
   { key: 'unitPrice', header: 'Precio unitario (PYG)', align: 'end', figures: 'tabular' },
   { key: 'amount', header: 'Monto (PYG)', align: 'end', figures: 'tabular' },
+  { key: 'workUnit', header: 'Unidad de trabajo' },
+  { key: 'committed', header: 'Comprometido (PYG)', align: 'end', figures: 'tabular' },
+  { key: 'executed', header: 'Ejecutado (PYG)', align: 'end', figures: 'tabular' },
+  { key: 'measured', header: 'Medido (PYG)', align: 'end', figures: 'tabular' },
+  { key: 'available', header: 'Disponible (PYG)', align: 'end', figures: 'tabular' },
 ];
 
 // Rubros (level 0, bold) with their líneas (level 1). A subrubro would sit at
 // level 2; PV-01 shows the container levels it has data for.
+//
+// Ported from SISTEMA-DE-CONTROL-OBRAS BudgetItemsTab: every line carries its
+// work unit (L3-10, stays empty when the user names none) and the control
+// columns committed/executed/measured/available (L1-53, L1-55, L1-57), with
+// available = amount − committed. Money columns keep two decimals (L1-58).
 const BUDGET_ROWS: DataTableRow[] = [
-  { values: { code: '01', description: 'Obras preliminares', amount: '6.300.000,00' }, emphasis: 'group' },
-  { values: { code: '01.01', description: 'Limpieza del terreno', unit: 'm²', quantity: '120,00', unitPrice: '35.000,00', amount: '4.200.000,00' }, level: 1 },
-  { values: { code: '01.02', description: 'Replanteo', unit: 'm²', quantity: '120,00', unitPrice: '17.500,00', amount: '2.100.000,00' }, level: 1 },
-  { values: { code: '02', description: 'Estructura', amount: '101.000.000,00' }, emphasis: 'group' },
-  { values: { code: '02.01', description: 'Hormigón armado', unit: 'm³', quantity: '200,00', unitPrice: '320.000,00', amount: '64.000.000,00' }, level: 1 },
-  { values: { code: '02.02', description: 'Acero de refuerzo', unit: 'kg', quantity: '10.000,00', unitPrice: '3.700,00', amount: '37.000.000,00' }, level: 1 },
+  { values: { code: '01', description: 'Obras preliminares', amount: '6.300.000,00', workUnit: '', committed: '3.800.000,00', executed: '900.000,00', measured: '900.000,00', available: '2.500.000,00' }, emphasis: 'group' },
+  { values: { code: '01.01', description: 'Limpieza del terreno', unit: 'm²', quantity: '120,00', unitPrice: '35.000,00', amount: '4.200.000,00', workUnit: '', committed: '1.500.000,00', executed: '600.000,00', measured: '600.000,00', available: '2.700.000,00' }, level: 1 },
+  { values: { code: '01.02', description: 'Replanteo', unit: 'm²', quantity: '120,00', unitPrice: '17.500,00', amount: '2.100.000,00', workUnit: 'Demoliciones', committed: '300.000,00', executed: '300.000,00', measured: '300.000,00', available: '1.800.000,00' }, level: 1 },
+  { values: { code: '02', description: 'Estructura', amount: '101.000.000,00', workUnit: '', committed: '32.000.000,00', executed: '5.000.000,00', measured: '4.000.000,00', available: '69.000.000,00' }, emphasis: 'group' },
+  { values: { code: '02.01', description: 'Hormigón armado', unit: 'm³', quantity: '200,00', unitPrice: '320.000,00', amount: '64.000.000,00', workUnit: 'Estructura', committed: '20.000.000,00', executed: '4.000.000,00', measured: '3.000.000,00', available: '44.000.000,00' }, level: 1 },
+  { values: { code: '02.02', description: 'Acero de refuerzo', unit: 'kg', quantity: '10.000,00', unitPrice: '3.700,00', amount: '37.000.000,00', workUnit: 'Estructura', committed: '12.000.000,00', executed: '1.000.000,00', measured: '1.000.000,00', available: '25.000.000,00' }, level: 1 },
 ];
+
+/** Asigna a la línea de la obra el sobrecompromiso demo (L1-57: disponible negativo). */
+function withOvercommitment(rows: DataTableRow[]): DataTableRow[] {
+  return rows.map((row) => {
+    const spec = row as { values: Record<string, string> };
+    const code = String(spec.values?.code ?? '');
+    if (code !== '01' && !code.startsWith('01.')) return row;
+    return {
+      ...spec,
+      values: { ...spec.values, committed: '8.800.000,00', executed: '5.500.000,00', measured: '5.500.000,00', available: '-2.500.000,00' },
+    };
+  });
+}
 
 const CONTROL_COLUMNS: DataTableColumn[] = [
   { key: 'code', header: 'Código' },
@@ -291,9 +357,9 @@ function budgetToolbar(): HTMLElement {
   ]);
 }
 
-function budgetTable(): DataTableElement {
+function budgetTable(overcommitment: boolean): DataTableElement {
   const table = el('obra-data-table', { 'aria-label': 'Presupuesto' }) as DataTableElement;
-  table.setData(BUDGET_COLUMNS, BUDGET_ROWS);
+  table.setData(BUDGET_COLUMNS, overcommitment ? withOvercommitment(BUDGET_ROWS) : BUDGET_ROWS);
   return table;
 }
 
@@ -337,7 +403,7 @@ export function projectBudgetEditor(
     return surface;
   }
 
-  surface.append(budgetTable(), budgetSummary(), controlTable(!!options.overcommitment));
+  surface.append(searchField('Buscar la partida…'), budgetTable(!!options.overcommitment), budgetSummary(), controlTable(!!options.overcommitment));
   return surface;
 }
 

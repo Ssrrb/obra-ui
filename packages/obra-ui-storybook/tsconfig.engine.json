@@ -1,0 +1,17 @@
+{
+  "description": "Compila el motor de presupuestos a JS para node --test. El resto del paquete no emite (Storybook lo compila Vite).",
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "lib": ["ES2022"],
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "outDir": "dist-engine",
+    "rootDir": "src/workbench/modules/budgets/engine",
+    "noEmit": false,
+    "types": []
+  },
+  "include": ["src/workbench/modules/budgets/engine/**/*.ts"]
+}

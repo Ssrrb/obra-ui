@@ -1,0 +1,47 @@
+component: Budget module universe (PV-01 surfaces)
+obra: >
+  Storybook workbench previews — PV-01 Presupuesto grid, the four-step import
+  wizard, and the destination-rubro picker. No `@obra/ui` product component
+  changed: the port lives in the preview layer only.
+source:
+  product_repo: SISTEMA-DE-CONTROL-OBRAS (module `src/modules/budgets`, client `src/client/components`)
+  files:
+    - src/modules/budgets/engine/ (types, matrixExtractor, xlsxWorkbook, columnAnalyzer, rowClassifier, unitNormalizer, budgetTree, preview)
+    - src/client/components/BudgetItemsTab.tsx
+    - src/client/components/ExcelBudgetImporter.tsx
+    - src/client/components/BudgetItemSelect.tsx
+
+extract:
+  engine: >
+    Pure TypeScript budget-import engine ported verbatim into
+    `packages/obra-ui-storybook/src/workbench/modules/budgets/engine/`
+    (tsconfig.engine.json → dist-engine, `node --test` under tests/engine/,
+    ported from the vitest suite).
+  import_wizard: >
+    Four steps — Carga (file / pasted table / Google Sheets), Estructura
+    (sheets, number format, hidden rows, header row, column roles), Revisión y
+    cuadre (reconciliation, surcharge treatments, arithmetic strategy, row
+    kinds and levels, issue filtering), Confirmar (counts, control budget,
+    unbalanced-acceptance checkbox) — composed from obra-select, obra-radio,
+    obra-checkbox, obra-filter-bar, obra-data-table, obra-property-row.
+  grid: >
+    Per-line control columns (committed / executed / measured / available, with
+    available = amount − committed) and the work-unit column, which stays empty
+    when the user names no work unit.
+  copy: >
+    The source's Spanish voseo wording kept where PV-01 `ui/screens/project/budget.md`
+    does not define it; PV-01 copy table remains authoritative.
+
+do_not_copy:
+  - React, Tailwind and lucide-react (surfaces use @obra/ui web components)
+  - server-side pieces (`budgetImportService` Prisma commit, `budgetImport.controller`),
+    which stay in the product repo
+  - `DomainError`/HTTP status coupling (engine throws a local `BudgetEngineError`)
+
+notes: >
+  Design authority is PV-01 (`ui/screens/project/budget.md`) + wiki terminology,
+  not the source layout: the flat "Partidas Presupuestarias" tab maps onto the
+  single budget tree (rubro → subrubro → línea), BC3 import stays listed by the
+  spec, and the import button in the PV-01 toolbar enters the wizard. Live
+  engine wiring of the wizard surfaces is intentionally not in the static
+  preview; the engine runs under pnpm test:engine in @obra/ui-storybook.

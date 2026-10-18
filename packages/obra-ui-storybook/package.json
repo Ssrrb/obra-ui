@@ -7,10 +7,13 @@
   "scripts": {
     "storybook": "storybook dev -p 6006 --no-open",
     "build-storybook": "storybook build -o storybook-static",
-    "a11y": "node scripts/a11y.mjs"
+    "a11y": "node scripts/a11y.mjs",
+    "build:engine": "tsc -p tsconfig.engine.json",
+    "test:engine": "tsc -p tsconfig.engine.json && node --test \"tests/engine/*.test.mjs\""
   },
   "dependencies": {
-    "@obra/ui": "workspace:*"
+    "@obra/ui": "workspace:*",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.10.1",
