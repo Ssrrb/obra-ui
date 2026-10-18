@@ -1,7 +1,7 @@
 {
   "name": "obra-workbench-ui",
-  "displayName": "Obra Navigation",
-  "description": "Native Obra company and project navigation.",
+  "displayName": "Ctrl+ Navigation",
+  "description": "Native Ctrl+ company and project navigation.",
   "publisher": "obra",
   "version": "0.1.0",
   "license": "MIT",
@@ -17,7 +17,7 @@
   ],
   "contributes": {
     "configuration": {
-      "title": "Obra",
+      "title": "Ctrl+",
       "properties": {
         "obra.sidebar.enabled": {
           "type": "boolean",
@@ -31,14 +31,20 @@
       {
         "command": "obra.showSample",
         "title": "%showSample%",
-        "category": "Obra",
+        "category": "Ctrl+",
         "enablement": "config.obra.sidebar.enabled"
       },
       {
         "command": "obra.exitPreview",
         "title": "%exitPreview%",
-        "category": "Obra",
+        "category": "Ctrl+",
         "enablement": "obra.preview"
+      },
+      {
+        "command": "obra.showObras",
+        "title": "%allObras%",
+        "category": "Ctrl+",
+        "icon": "$(arrow-left)"
       }
     ],
     "viewsContainers": {
@@ -152,9 +158,25 @@
     "menus": {
       "view/title": [
         {
+          "command": "ctrl.obra.create",
+          "when": "view == obra.projects.tree && !obra.activeObra",
+          "group": "navigation"
+        },
+        {
           "command": "obra.exitPreview",
           "when": "obra.preview && view =~ /^obra\\./",
           "group": "navigation"
+        },
+        {
+          "command": "obra.showObras",
+          "when": "view == obra.projects.tree && obra.activeObra",
+          "group": "navigation"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "obra.showObras",
+          "when": "obra.activeObra"
         }
       ]
     }
