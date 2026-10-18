@@ -14,8 +14,8 @@ importers:
         specifier: ^1.2.0
         version: 1.2.0
       '@ctrlmas/budget-engine':
-        specifier: link:/Users/sebastian/Desktop/obra-studio/worktrees/ctrl-budgets-decimal/obra-budget-engine
-        version: link:../../../ctrl-budgets-decimal/obra-budget-engine
+        specifier: file:./vendor/ctrlmas-budget-engine-0.1.0.tgz
+        version: file:packages/obra-budget-editor/vendor/ctrlmas-budget-engine-0.1.0.tgz
       '@tauri-apps/api':
         specifier: ^2.10.1
         version: 2.12.4
@@ -321,6 +321,10 @@ packages:
   '@csstools/css-tokenizer@4.0.2':
     resolution: {integrity: sha512-OoKoR0f76dCY666JlcbhmVTs2drYj1GUXZTYTcbUgJjh9Nv41aFfZ21bPQTERm5+L5cBDo466NltB2lplS5GBw==}
     engines: {node: '>=20.19.0'}
+
+  '@ctrlmas/budget-engine@file:packages/obra-budget-editor/vendor/ctrlmas-budget-engine-0.1.0.tgz':
+    resolution: {integrity: sha512-GFss4DQDFDxtHdNzudCR8/MD4I5PtRHm8vd0+0jpdGirV89kAuBUN4lnXdYEBe4mM8II268sns2ay6qxF9ESAQ==, tarball: file:packages/obra-budget-editor/vendor/ctrlmas-budget-engine-0.1.0.tgz}
+    version: 0.1.0
 
   '@dimforge/rapier3d-compat@0.12.0':
     resolution: {integrity: sha512-uekIGetywIgopfD97oDL5PfeezkFpNhwlzlaEYNOA0N6ghdsOvh/HYjSMek5Q2O1PYvRSDFcqFVJl4r4ZBwOow==}
@@ -1922,6 +1926,9 @@ packages:
     resolution: {integrity: sha512-lyuxPGr/Wfhrlem2CL/UcnUc1zcqKAImBDzukY7Y5F/yQiNdko6+fRLevlw1HgMySw7f611UIY408EtxRSoK3Q==}
     hasBin: true
 
+  lossless-json@4.3.2:
+    resolution: {integrity: sha512-TWT1oIGJKaHkme0nDFoW9Tsv0/IZxy6P8rzD03hZpk7de04PWGfl/uMj/WcENrJLNF4P+QGGByPjap6qx++bDQ==}
+
   loupe@3.2.1:
     resolution: {integrity: sha512-CdzqowRJCeLU72bHvWqwRBBlLcMEtIvGrlvef74kMnV2AolS9Y8xUv1I0U/MNAWMhBlKIoyuEgoJ0t/bbwHbLQ==}
 
@@ -2778,6 +2785,11 @@ snapshots:
       css-tree: 3.2.1
 
   '@csstools/css-tokenizer@4.0.2': {}
+
+  '@ctrlmas/budget-engine@file:packages/obra-budget-editor/vendor/ctrlmas-budget-engine-0.1.0.tgz':
+    dependencies:
+      decimal.js: 10.6.0
+      lossless-json: 4.3.2
 
   '@dimforge/rapier3d-compat@0.12.0': {}
 
@@ -4095,6 +4107,8 @@ snapshots:
   loose-envify@1.4.0:
     dependencies:
       js-tokens: 4.0.0
+
+  lossless-json@4.3.2: {}
 
   loupe@3.2.1: {}
 

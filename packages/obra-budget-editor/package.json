@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "7z-wasm": "^1.2.0",
-    "@ctrlmas/budget-engine": "link:/Users/sebastian/Desktop/obra-studio/worktrees/ctrl-budgets-decimal/obra-budget-engine",
+    "@ctrlmas/budget-engine": "file:./vendor/ctrlmas-budget-engine-0.1.0.tgz",
     "@tauri-apps/api": "^2.10.1",
     "@tauri-apps/plugin-dialog": "^2.6.0",
     "@tauri-apps/plugin-fs": "^2.4.5",
