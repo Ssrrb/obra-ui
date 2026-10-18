@@ -719,6 +719,8 @@ export default function Backstage({ open, onClose, onOpenSettings }: BackstagePr
                   <span>{t("importPanel.fromTemplateDesc")}</span>
                 </div>
               </button>
+              {/* ctrl: only IFC, Excel/CSV and BC3; the rest are Dutch-market formats. */}
+              {!CTRL_BUILD && (<>
               <button
                 className="bs-panel-option"
                 onClick={() => void handleXmlImport('CUF-XML', ['cuf', 'xml'], importCuf)}
@@ -729,6 +731,7 @@ export default function Backstage({ open, onClose, onOpenSettings }: BackstagePr
                   <span>{t("importPanel.cufDesc")}</span>
                 </div>
               </button>
+              </>)}
               <button
                 className="bs-panel-option"
                 onClick={() => void handleGenericImport()}
@@ -739,6 +742,8 @@ export default function Backstage({ open, onClose, onOpenSettings }: BackstagePr
                   <span>{t("importPanel.excelCsvDesc")}</span>
                 </div>
               </button>
+              {/* ctrl: Dutch-market formats. */}
+              {!CTRL_BUILD && (<>
               <button
                 className="bs-panel-option"
                 onClick={() => void handleXmlImport(t('importPanel.stabuTitle'), ['s01'], importS01)}
@@ -789,6 +794,7 @@ export default function Backstage({ open, onClose, onOpenSettings }: BackstagePr
                   <span>{t("importPanel.rsuDesc")}</span>
                 </div>
               </button>
+              </>)}
               <button className="bs-panel-option" onClick={() => void handleBc3Import()}>
                 <div className="bs-panel-option-icon" dangerouslySetInnerHTML={{ __html: ICONS.import }} />
                 <div className="bs-panel-option-text">
@@ -796,6 +802,8 @@ export default function Backstage({ open, onClose, onOpenSettings }: BackstagePr
                   <span>{t("importPanel.bc3Desc")}</span>
                 </div>
               </button>
+              {/* ctrl: Austrian and Dutch price formats. */}
+              {!CTRL_BUILD && (<>
               <button
                 className="bs-panel-option"
                 onClick={() => void handleXmlImport('ÖNORM A 2063', ['onlv', 'onlb'], importOnlv)}
@@ -836,6 +844,7 @@ export default function Backstage({ open, onClose, onOpenSettings }: BackstagePr
                   <span>{t("importPanel.nsxDesc")}</span>
                 </div>
               </button>
+              </>)}
               {extensionImporters.map((imp) => (
                 <button key={imp.id} className="bs-panel-option" onClick={() => handleExtensionImport(imp.id)}>
                   <div className="bs-panel-option-icon" dangerouslySetInnerHTML={{ __html: imp.icon || ICONS.import }} />
